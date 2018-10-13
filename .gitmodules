@@ -1,0 +1,18 @@
+[submodule "submodules/cpp_utils"]
+	path = submodules/cpp_utils
+url=https://github.com/objective-audio/cpp_utils.git
+[submodule "submodules/objc_utils"]
+	path = submodules/objc_utils
+url=https://github.com/objective-audio/objc_utils.git
+[submodule "submodules/audio_engine"]
+	path = submodules/audio_engine
+url=https://github.com/objective-audio/audio_engine.git
+[submodule "submodules/processing"]
+	path = submodules/processing
+url=https://github.com/objective-audio/processing.git
+[submodule "submodules/db"]
+	path = submodules/db
+url=https://github.com/objective-audio/db.git
+[submodule "submodules/ui"]
+	path = submodules/ui
+url=https://github.com/objective-audio/ui.git

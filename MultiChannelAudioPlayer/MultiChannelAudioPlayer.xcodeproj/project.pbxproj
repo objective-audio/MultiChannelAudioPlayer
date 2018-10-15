@@ -493,6 +493,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B685EDE62171ABE9002EDC9B /* Build configuration list for PBXNativeTarget "MultiChannelAudioPlayer" */;
 			buildPhases = (
+				B6FDB6482174D5A400AF4365 /* ShellScript */,
 				B685EDC12171ABE8002EDC9B /* Sources */,
 				B685EDC22171ABE8002EDC9B /* Frameworks */,
 				B685EDC32171ABE8002EDC9B /* Resources */,
@@ -580,6 +581,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B6FDB6482174D5A400AF4365 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "../script/format.sh\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B685EDC12171ABE8002EDC9B /* Sources */ = {

@@ -32,6 +32,32 @@
 		B685EDD52171ABE9002EDC9B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B685EDD32171ABE9002EDC9B /* LaunchScreen.storyboard */; };
 		B685EDD82171ABE9002EDC9B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B685EDD72171ABE9002EDC9B /* main.m */; };
 		B685EDE22171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B685EDE12171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m */; };
+		B6FDB62C2174D06C00AF4365 /* yas_processing_sync_source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5E92174D06C00AF4365 /* yas_processing_sync_source.cpp */; };
+		B6FDB62D2174D06C00AF4365 /* yas_processing_channel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5EA2174D06C00AF4365 /* yas_processing_channel.cpp */; };
+		B6FDB62E2174D06C00AF4365 /* yas_processing_compare_modules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5EF2174D06C00AF4365 /* yas_processing_compare_modules.cpp */; };
+		B6FDB62F2174D06C00AF4365 /* yas_processing_math2_modules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5F12174D06C00AF4365 /* yas_processing_math2_modules.cpp */; };
+		B6FDB6302174D06C00AF4365 /* yas_processing_generator_modules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5FA2174D06C00AF4365 /* yas_processing_generator_modules.cpp */; };
+		B6FDB6312174D06C00AF4365 /* yas_processing_math1_modules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5FC2174D06C00AF4365 /* yas_processing_math1_modules.cpp */; };
+		B6FDB6322174D06C00AF4365 /* yas_processing_number_to_signal_module.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5FD2174D06C00AF4365 /* yas_processing_number_to_signal_module.cpp */; };
+		B6FDB6332174D06C00AF4365 /* yas_processing_envelope_module.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6002174D06C00AF4365 /* yas_processing_envelope_module.cpp */; };
+		B6FDB6342174D06C00AF4365 /* yas_processing_routing_modules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6012174D06C00AF4365 /* yas_processing_routing_modules.cpp */; };
+		B6FDB6352174D06C00AF4365 /* yas_processing_constant_module.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6042174D06C00AF4365 /* yas_processing_constant_module.cpp */; };
+		B6FDB6362174D06C00AF4365 /* yas_processing_cast_module.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6052174D06C00AF4365 /* yas_processing_cast_module.cpp */; };
+		B6FDB6372174D06C00AF4365 /* yas_processing_sub_timeline_module.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6062174D06C00AF4365 /* yas_processing_sub_timeline_module.cpp */; };
+		B6FDB6382174D06C00AF4365 /* yas_processing_module.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6082174D06C00AF4365 /* yas_processing_module.cpp */; };
+		B6FDB6392174D06C00AF4365 /* yas_processing_send_number_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB60A2174D06C00AF4365 /* yas_processing_send_number_processor.cpp */; };
+		B6FDB63A2174D06C00AF4365 /* yas_processing_receive_number_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB60D2174D06C00AF4365 /* yas_processing_receive_number_processor.cpp */; };
+		B6FDB63B2174D06C00AF4365 /* yas_processing_remove_signal_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB60F2174D06C00AF4365 /* yas_processing_remove_signal_processor.cpp */; };
+		B6FDB63C2174D06C00AF4365 /* yas_processing_remove_number_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6132174D06C00AF4365 /* yas_processing_remove_number_processor.cpp */; };
+		B6FDB63D2174D06C00AF4365 /* yas_processing_receive_signal_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6142174D06C00AF4365 /* yas_processing_receive_signal_processor.cpp */; };
+		B6FDB63E2174D06C00AF4365 /* yas_processing_send_signal_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6152174D06C00AF4365 /* yas_processing_send_signal_processor.cpp */; };
+		B6FDB63F2174D06C00AF4365 /* yas_processing_track.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6172174D06C00AF4365 /* yas_processing_track.cpp */; };
+		B6FDB6402174D06C00AF4365 /* yas_processing_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6192174D06C00AF4365 /* yas_processing_stream.cpp */; };
+		B6FDB6412174D06C00AF4365 /* yas_processing_timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB61A2174D06C00AF4365 /* yas_processing_timeline.cpp */; };
+		B6FDB6422174D06C00AF4365 /* yas_processing_event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6202174D06C00AF4365 /* yas_processing_event.cpp */; };
+		B6FDB6432174D06C00AF4365 /* yas_processing_time.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6222174D06C00AF4365 /* yas_processing_time.cpp */; };
+		B6FDB6442174D06C00AF4365 /* yas_processing_signal_event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6272174D06C00AF4365 /* yas_processing_signal_event.cpp */; };
+		B6FDB6452174D06C00AF4365 /* yas_processing_number_event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6282174D06C00AF4365 /* yas_processing_number_event.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +149,72 @@
 		B685EDDD2171ABE9002EDC9B /* MultiChannelAudioPlayerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MultiChannelAudioPlayerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B685EDE12171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultiChannelAudioPlayerTests.m; sourceTree = "<group>"; };
 		B685EDE32171ABE9002EDC9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B6FDB5E62174D06C00AF4365 /* yas_processing_track.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_track.h; sourceTree = "<group>"; };
+		B6FDB5E72174D06C00AF4365 /* yas_processing_channel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_channel.h; sourceTree = "<group>"; };
+		B6FDB5E82174D06C00AF4365 /* yas_processing_channel_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_channel_private.h; sourceTree = "<group>"; };
+		B6FDB5E92174D06C00AF4365 /* yas_processing_sync_source.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_sync_source.cpp; sourceTree = "<group>"; };
+		B6FDB5EA2174D06C00AF4365 /* yas_processing_channel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_channel.cpp; sourceTree = "<group>"; };
+		B6FDB5EB2174D06C00AF4365 /* yas_processing_processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_processor.h; sourceTree = "<group>"; };
+		B6FDB5EC2174D06C00AF4365 /* yas_processing_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_time.h; sourceTree = "<group>"; };
+		B6FDB5EE2174D06C00AF4365 /* yas_processing_generator_modules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_generator_modules.h; sourceTree = "<group>"; };
+		B6FDB5EF2174D06C00AF4365 /* yas_processing_compare_modules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_compare_modules.cpp; sourceTree = "<group>"; };
+		B6FDB5F02174D06C00AF4365 /* yas_processing_sub_timeline_module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_sub_timeline_module.h; sourceTree = "<group>"; };
+		B6FDB5F12174D06C00AF4365 /* yas_processing_math2_modules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_math2_modules.cpp; sourceTree = "<group>"; };
+		B6FDB5F22174D06C00AF4365 /* yas_processing_cast_module_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_cast_module_private.h; sourceTree = "<group>"; };
+		B6FDB5F42174D06C00AF4365 /* yas_processing_number_process_context_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_number_process_context_private.h; sourceTree = "<group>"; };
+		B6FDB5F52174D06C00AF4365 /* yas_processing_signal_process_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_signal_process_context.h; sourceTree = "<group>"; };
+		B6FDB5F62174D06C00AF4365 /* yas_processing_number_process_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_number_process_context.h; sourceTree = "<group>"; };
+		B6FDB5F72174D06C00AF4365 /* yas_processing_signal_process_context_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_signal_process_context_private.h; sourceTree = "<group>"; };
+		B6FDB5F82174D06C00AF4365 /* yas_processing_compare_modules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_compare_modules.h; sourceTree = "<group>"; };
+		B6FDB5F92174D06C00AF4365 /* yas_processing_routing_modules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_routing_modules.h; sourceTree = "<group>"; };
+		B6FDB5FA2174D06C00AF4365 /* yas_processing_generator_modules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_generator_modules.cpp; sourceTree = "<group>"; };
+		B6FDB5FB2174D06C00AF4365 /* yas_processing_math2_modules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_math2_modules.h; sourceTree = "<group>"; };
+		B6FDB5FC2174D06C00AF4365 /* yas_processing_math1_modules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_math1_modules.cpp; sourceTree = "<group>"; };
+		B6FDB5FD2174D06C00AF4365 /* yas_processing_number_to_signal_module.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_number_to_signal_module.cpp; sourceTree = "<group>"; };
+		B6FDB5FE2174D06C00AF4365 /* yas_processing_math1_modules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_math1_modules.h; sourceTree = "<group>"; };
+		B6FDB5FF2174D06C00AF4365 /* yas_processing_number_to_signal_module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_number_to_signal_module.h; sourceTree = "<group>"; };
+		B6FDB6002174D06C00AF4365 /* yas_processing_envelope_module.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_envelope_module.cpp; sourceTree = "<group>"; };
+		B6FDB6012174D06C00AF4365 /* yas_processing_routing_modules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_routing_modules.cpp; sourceTree = "<group>"; };
+		B6FDB6022174D06C00AF4365 /* yas_processing_envelope_module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_envelope_module.h; sourceTree = "<group>"; };
+		B6FDB6032174D06C00AF4365 /* yas_processing_cast_module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_cast_module.h; sourceTree = "<group>"; };
+		B6FDB6042174D06C00AF4365 /* yas_processing_constant_module.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_constant_module.cpp; sourceTree = "<group>"; };
+		B6FDB6052174D06C00AF4365 /* yas_processing_cast_module.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_cast_module.cpp; sourceTree = "<group>"; };
+		B6FDB6062174D06C00AF4365 /* yas_processing_sub_timeline_module.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_sub_timeline_module.cpp; sourceTree = "<group>"; };
+		B6FDB6072174D06C00AF4365 /* yas_processing_constant_module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_constant_module.h; sourceTree = "<group>"; };
+		B6FDB6082174D06C00AF4365 /* yas_processing_module.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_module.cpp; sourceTree = "<group>"; };
+		B6FDB60A2174D06C00AF4365 /* yas_processing_send_number_processor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_send_number_processor.cpp; sourceTree = "<group>"; };
+		B6FDB60B2174D06C00AF4365 /* yas_processing_send_number_processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_send_number_processor.h; sourceTree = "<group>"; };
+		B6FDB60C2174D06C00AF4365 /* yas_processing_receive_signal_processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_receive_signal_processor.h; sourceTree = "<group>"; };
+		B6FDB60D2174D06C00AF4365 /* yas_processing_receive_number_processor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_receive_number_processor.cpp; sourceTree = "<group>"; };
+		B6FDB60E2174D06C00AF4365 /* yas_processing_remove_number_processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_remove_number_processor.h; sourceTree = "<group>"; };
+		B6FDB60F2174D06C00AF4365 /* yas_processing_remove_signal_processor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_remove_signal_processor.cpp; sourceTree = "<group>"; };
+		B6FDB6102174D06C00AF4365 /* yas_processing_remove_signal_processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_remove_signal_processor.h; sourceTree = "<group>"; };
+		B6FDB6112174D06C00AF4365 /* yas_processing_receive_number_processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_receive_number_processor.h; sourceTree = "<group>"; };
+		B6FDB6122174D06C00AF4365 /* yas_processing_send_signal_processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_send_signal_processor.h; sourceTree = "<group>"; };
+		B6FDB6132174D06C00AF4365 /* yas_processing_remove_number_processor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_remove_number_processor.cpp; sourceTree = "<group>"; };
+		B6FDB6142174D06C00AF4365 /* yas_processing_receive_signal_processor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_receive_signal_processor.cpp; sourceTree = "<group>"; };
+		B6FDB6152174D06C00AF4365 /* yas_processing_send_signal_processor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_send_signal_processor.cpp; sourceTree = "<group>"; };
+		B6FDB6162174D06C00AF4365 /* yas_processing_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_stream.h; sourceTree = "<group>"; };
+		B6FDB6172174D06C00AF4365 /* yas_processing_track.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_track.cpp; sourceTree = "<group>"; };
+		B6FDB6182174D06C00AF4365 /* yas_processing_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_types.h; sourceTree = "<group>"; };
+		B6FDB6192174D06C00AF4365 /* yas_processing_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_stream.cpp; sourceTree = "<group>"; };
+		B6FDB61A2174D06C00AF4365 /* yas_processing_timeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_timeline.cpp; sourceTree = "<group>"; };
+		B6FDB61B2174D06C00AF4365 /* yas_processing_event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_event.h; sourceTree = "<group>"; };
+		B6FDB61C2174D06C00AF4365 /* yas_processing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing.h; sourceTree = "<group>"; };
+		B6FDB61D2174D06C00AF4365 /* yas_processing_module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_module.h; sourceTree = "<group>"; };
+		B6FDB61E2174D06C00AF4365 /* yas_processing_connector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_connector.h; sourceTree = "<group>"; };
+		B6FDB61F2174D06C00AF4365 /* yas_processing_sync_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_sync_source.h; sourceTree = "<group>"; };
+		B6FDB6202174D06C00AF4365 /* yas_processing_event.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_event.cpp; sourceTree = "<group>"; };
+		B6FDB6212174D06C00AF4365 /* yas_processing_connector_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_connector_private.h; sourceTree = "<group>"; };
+		B6FDB6222174D06C00AF4365 /* yas_processing_time.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_time.cpp; sourceTree = "<group>"; };
+		B6FDB6242174D06C00AF4365 /* yas_processing_number_event_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_number_event_private.h; sourceTree = "<group>"; };
+		B6FDB6252174D06C00AF4365 /* yas_processing_number_event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_number_event.h; sourceTree = "<group>"; };
+		B6FDB6262174D06C00AF4365 /* yas_processing_signal_event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_signal_event.h; sourceTree = "<group>"; };
+		B6FDB6272174D06C00AF4365 /* yas_processing_signal_event.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_signal_event.cpp; sourceTree = "<group>"; };
+		B6FDB6282174D06C00AF4365 /* yas_processing_number_event.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_processing_number_event.cpp; sourceTree = "<group>"; };
+		B6FDB6292174D06C00AF4365 /* yas_processing_signal_event_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_signal_event_private.h; sourceTree = "<group>"; };
+		B6FDB62A2174D06C00AF4365 /* yas_processing_constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_constants.h; sourceTree = "<group>"; };
+		B6FDB62B2174D06C00AF4365 /* yas_processing_timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_timeline.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +239,7 @@
 		B679E2AB2172BE6600859687 /* submodules */ = {
 			isa = PBXGroup;
 			children = (
+				B6FDB5E52174D06C00AF4365 /* processing */,
 				B679E2B12172BF3600859687 /* cpp_utils */,
 				B679E2AC2172BEB700859687 /* objc_utils */,
 			);
@@ -287,6 +380,112 @@
 			path = MultiChannelAudioPlayerTests;
 			sourceTree = "<group>";
 		};
+		B6FDB5E52174D06C00AF4365 /* processing */ = {
+			isa = PBXGroup;
+			children = (
+				B6FDB5E62174D06C00AF4365 /* yas_processing_track.h */,
+				B6FDB5E72174D06C00AF4365 /* yas_processing_channel.h */,
+				B6FDB5E82174D06C00AF4365 /* yas_processing_channel_private.h */,
+				B6FDB5E92174D06C00AF4365 /* yas_processing_sync_source.cpp */,
+				B6FDB5EA2174D06C00AF4365 /* yas_processing_channel.cpp */,
+				B6FDB5EB2174D06C00AF4365 /* yas_processing_processor.h */,
+				B6FDB5EC2174D06C00AF4365 /* yas_processing_time.h */,
+				B6FDB5ED2174D06C00AF4365 /* module */,
+				B6FDB6082174D06C00AF4365 /* yas_processing_module.cpp */,
+				B6FDB6092174D06C00AF4365 /* processor */,
+				B6FDB6162174D06C00AF4365 /* yas_processing_stream.h */,
+				B6FDB6172174D06C00AF4365 /* yas_processing_track.cpp */,
+				B6FDB6182174D06C00AF4365 /* yas_processing_types.h */,
+				B6FDB6192174D06C00AF4365 /* yas_processing_stream.cpp */,
+				B6FDB61A2174D06C00AF4365 /* yas_processing_timeline.cpp */,
+				B6FDB61B2174D06C00AF4365 /* yas_processing_event.h */,
+				B6FDB61C2174D06C00AF4365 /* yas_processing.h */,
+				B6FDB61D2174D06C00AF4365 /* yas_processing_module.h */,
+				B6FDB61E2174D06C00AF4365 /* yas_processing_connector.h */,
+				B6FDB61F2174D06C00AF4365 /* yas_processing_sync_source.h */,
+				B6FDB6202174D06C00AF4365 /* yas_processing_event.cpp */,
+				B6FDB6212174D06C00AF4365 /* yas_processing_connector_private.h */,
+				B6FDB6222174D06C00AF4365 /* yas_processing_time.cpp */,
+				B6FDB6232174D06C00AF4365 /* event */,
+				B6FDB62A2174D06C00AF4365 /* yas_processing_constants.h */,
+				B6FDB62B2174D06C00AF4365 /* yas_processing_timeline.h */,
+			);
+			name = processing;
+			path = ../../../submodules/processing/processing;
+			sourceTree = "<group>";
+		};
+		B6FDB5ED2174D06C00AF4365 /* module */ = {
+			isa = PBXGroup;
+			children = (
+				B6FDB5EE2174D06C00AF4365 /* yas_processing_generator_modules.h */,
+				B6FDB5EF2174D06C00AF4365 /* yas_processing_compare_modules.cpp */,
+				B6FDB5F02174D06C00AF4365 /* yas_processing_sub_timeline_module.h */,
+				B6FDB5F12174D06C00AF4365 /* yas_processing_math2_modules.cpp */,
+				B6FDB5F22174D06C00AF4365 /* yas_processing_cast_module_private.h */,
+				B6FDB5F32174D06C00AF4365 /* context */,
+				B6FDB5F82174D06C00AF4365 /* yas_processing_compare_modules.h */,
+				B6FDB5F92174D06C00AF4365 /* yas_processing_routing_modules.h */,
+				B6FDB5FA2174D06C00AF4365 /* yas_processing_generator_modules.cpp */,
+				B6FDB5FB2174D06C00AF4365 /* yas_processing_math2_modules.h */,
+				B6FDB5FC2174D06C00AF4365 /* yas_processing_math1_modules.cpp */,
+				B6FDB5FD2174D06C00AF4365 /* yas_processing_number_to_signal_module.cpp */,
+				B6FDB5FE2174D06C00AF4365 /* yas_processing_math1_modules.h */,
+				B6FDB5FF2174D06C00AF4365 /* yas_processing_number_to_signal_module.h */,
+				B6FDB6002174D06C00AF4365 /* yas_processing_envelope_module.cpp */,
+				B6FDB6012174D06C00AF4365 /* yas_processing_routing_modules.cpp */,
+				B6FDB6022174D06C00AF4365 /* yas_processing_envelope_module.h */,
+				B6FDB6032174D06C00AF4365 /* yas_processing_cast_module.h */,
+				B6FDB6042174D06C00AF4365 /* yas_processing_constant_module.cpp */,
+				B6FDB6052174D06C00AF4365 /* yas_processing_cast_module.cpp */,
+				B6FDB6062174D06C00AF4365 /* yas_processing_sub_timeline_module.cpp */,
+				B6FDB6072174D06C00AF4365 /* yas_processing_constant_module.h */,
+			);
+			path = module;
+			sourceTree = "<group>";
+		};
+		B6FDB5F32174D06C00AF4365 /* context */ = {
+			isa = PBXGroup;
+			children = (
+				B6FDB5F42174D06C00AF4365 /* yas_processing_number_process_context_private.h */,
+				B6FDB5F52174D06C00AF4365 /* yas_processing_signal_process_context.h */,
+				B6FDB5F62174D06C00AF4365 /* yas_processing_number_process_context.h */,
+				B6FDB5F72174D06C00AF4365 /* yas_processing_signal_process_context_private.h */,
+			);
+			path = context;
+			sourceTree = "<group>";
+		};
+		B6FDB6092174D06C00AF4365 /* processor */ = {
+			isa = PBXGroup;
+			children = (
+				B6FDB60A2174D06C00AF4365 /* yas_processing_send_number_processor.cpp */,
+				B6FDB60B2174D06C00AF4365 /* yas_processing_send_number_processor.h */,
+				B6FDB60C2174D06C00AF4365 /* yas_processing_receive_signal_processor.h */,
+				B6FDB60D2174D06C00AF4365 /* yas_processing_receive_number_processor.cpp */,
+				B6FDB60E2174D06C00AF4365 /* yas_processing_remove_number_processor.h */,
+				B6FDB60F2174D06C00AF4365 /* yas_processing_remove_signal_processor.cpp */,
+				B6FDB6102174D06C00AF4365 /* yas_processing_remove_signal_processor.h */,
+				B6FDB6112174D06C00AF4365 /* yas_processing_receive_number_processor.h */,
+				B6FDB6122174D06C00AF4365 /* yas_processing_send_signal_processor.h */,
+				B6FDB6132174D06C00AF4365 /* yas_processing_remove_number_processor.cpp */,
+				B6FDB6142174D06C00AF4365 /* yas_processing_receive_signal_processor.cpp */,
+				B6FDB6152174D06C00AF4365 /* yas_processing_send_signal_processor.cpp */,
+			);
+			path = processor;
+			sourceTree = "<group>";
+		};
+		B6FDB6232174D06C00AF4365 /* event */ = {
+			isa = PBXGroup;
+			children = (
+				B6FDB6242174D06C00AF4365 /* yas_processing_number_event_private.h */,
+				B6FDB6252174D06C00AF4365 /* yas_processing_number_event.h */,
+				B6FDB6262174D06C00AF4365 /* yas_processing_signal_event.h */,
+				B6FDB6272174D06C00AF4365 /* yas_processing_signal_event.cpp */,
+				B6FDB6282174D06C00AF4365 /* yas_processing_number_event.cpp */,
+				B6FDB6292174D06C00AF4365 /* yas_processing_signal_event_private.h */,
+			);
+			path = event;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -387,25 +586,51 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6FDB6392174D06C00AF4365 /* yas_processing_send_number_processor.cpp in Sources */,
 				B679E2F12172BF3700859687 /* yas_version.cpp in Sources */,
 				B679E2FA2172BF3700859687 /* yas_stl_utils.cpp in Sources */,
+				B6FDB6322174D06C00AF4365 /* yas_processing_number_to_signal_module.cpp in Sources */,
+				B6FDB6302174D06C00AF4365 /* yas_processing_generator_modules.cpp in Sources */,
+				B6FDB6372174D06C00AF4365 /* yas_processing_sub_timeline_module.cpp in Sources */,
+				B6FDB63F2174D06C00AF4365 /* yas_processing_track.cpp in Sources */,
 				B679E2F32172BF3700859687 /* yas_data.cpp in Sources */,
+				B6FDB6422174D06C00AF4365 /* yas_processing_event.cpp in Sources */,
+				B6FDB63A2174D06C00AF4365 /* yas_processing_receive_number_processor.cpp in Sources */,
+				B6FDB6452174D06C00AF4365 /* yas_processing_number_event.cpp in Sources */,
+				B6FDB63C2174D06C00AF4365 /* yas_processing_remove_number_processor.cpp in Sources */,
 				B679E2F22172BF3700859687 /* yas_flex_ptr.cpp in Sources */,
+				B6FDB63B2174D06C00AF4365 /* yas_processing_remove_signal_processor.cpp in Sources */,
+				B6FDB63D2174D06C00AF4365 /* yas_processing_receive_signal_processor.cpp in Sources */,
+				B6FDB6352174D06C00AF4365 /* yas_processing_constant_module.cpp in Sources */,
 				B685EDCD2171ABE8002EDC9B /* ViewController.m in Sources */,
 				B679E2F72172BF3700859687 /* yas_protocol.cpp in Sources */,
 				B679E2FB2172BF3700859687 /* yas_cf_utils.mm in Sources */,
+				B6FDB6362174D06C00AF4365 /* yas_processing_cast_module.cpp in Sources */,
+				B6FDB6402174D06C00AF4365 /* yas_processing_stream.cpp in Sources */,
 				B685EDD82171ABE9002EDC9B /* main.m in Sources */,
+				B6FDB63E2174D06C00AF4365 /* yas_processing_send_signal_processor.cpp in Sources */,
+				B6FDB6382174D06C00AF4365 /* yas_processing_module.cpp in Sources */,
 				B679E2F82172BF3700859687 /* yas_any.cpp in Sources */,
 				B679E2B02172BEB700859687 /* yas_objc_unowned.m in Sources */,
+				B6FDB62F2174D06C00AF4365 /* yas_processing_math2_modules.cpp in Sources */,
 				B679E2FC2172BF3700859687 /* yas_cf_ref.cpp in Sources */,
 				B685EDCA2171ABE8002EDC9B /* AppDelegate.m in Sources */,
+				B6FDB62C2174D06C00AF4365 /* yas_processing_sync_source.cpp in Sources */,
 				B679E2EF2172BF3700859687 /* yas_timer.mm in Sources */,
+				B6FDB6342174D06C00AF4365 /* yas_processing_routing_modules.cpp in Sources */,
+				B6FDB6312174D06C00AF4365 /* yas_processing_math1_modules.cpp in Sources */,
 				B679E2F02172BF3700859687 /* yas_delaying_caller.cpp in Sources */,
 				B679E2F62172BF3700859687 /* yas_exception.cpp in Sources */,
+				B6FDB6412174D06C00AF4365 /* yas_processing_timeline.cpp in Sources */,
+				B6FDB6432174D06C00AF4365 /* yas_processing_time.cpp in Sources */,
+				B6FDB62D2174D06C00AF4365 /* yas_processing_channel.cpp in Sources */,
+				B6FDB62E2174D06C00AF4365 /* yas_processing_compare_modules.cpp in Sources */,
+				B6FDB6442174D06C00AF4365 /* yas_processing_signal_event.cpp in Sources */,
 				B679E2F92172BF3700859687 /* yas_each_dictionary.cpp in Sources */,
 				B679E2FE2172BF3700859687 /* yas_boolean.cpp in Sources */,
 				B679E2FD2172BF3700859687 /* yas_objc_ptr.mm in Sources */,
 				B679E2F42172BF3700859687 /* yas_operation.cpp in Sources */,
+				B6FDB6332174D06C00AF4365 /* yas_processing_envelope_module.cpp in Sources */,
 				B679E2F52172BF3700859687 /* yas_base.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

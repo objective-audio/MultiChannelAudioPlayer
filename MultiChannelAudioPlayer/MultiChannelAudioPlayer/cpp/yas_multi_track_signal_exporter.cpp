@@ -7,9 +7,11 @@
 using namespace yas::multi_track;
 
 struct signal_exporter::impl : base::impl {
-    impl(std::string const &path) {
+    std::string _root_path;
+
+    impl(std::string const &root_path) : _root_path(root_path) {
     }
 };
 
-signal_exporter::signal_exporter(std::string const &path) : base(std::make_shared<impl>(path)) {
+signal_exporter::signal_exporter(std::string const &root_path) : base(std::make_shared<impl>(root_path)) {
 }

@@ -3,9 +3,14 @@
 //
 
 #include "yas_multi_track_signal_exporter.h"
+#include "yas_cf_utils.h"
 #include "yas_operation.h"
 
 using namespace yas::multi_track;
+
+namespace yas::multi_track::utils {
+#warning ディレクトリがなければ作る関数を追加
+}
 
 struct signal_exporter::impl : base::impl {
     audio::format _format;
@@ -16,6 +21,15 @@ struct signal_exporter::impl : base::impl {
         : _format(audio::format::args{
               .sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}),
           _root_path(root_path) {
+        auto file_manager = [NSFileManager defaultManager];
+        BOOL is_directory = NO;
+        CFStringRef cf_path = to_cf_object(this->_root_path);
+        auto file_exists = [file_manager fileExistsAtPath:(__bridge NSString *)cf_path isDirectory:&is_directory];
+        if (!file_exists) {
+#warning directoryを作成
+        } else if (!is_directory) {
+            throw std::runtime_error("root_path is file.");
+        }
     }
 
     void export_file(uint32_t const trk_idx, proc::time::range const &range,

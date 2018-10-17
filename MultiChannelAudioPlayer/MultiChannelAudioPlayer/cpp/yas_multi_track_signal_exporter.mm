@@ -21,3 +21,8 @@ signal_exporter::signal_exporter(double const sample_rate, audio::pcm_format con
                                  std::string const &root_path)
     : base(std::make_shared<impl>(sample_rate, pcm_format, root_path)) {
 }
+
+void signal_exporter::export_file(uint32_t const trk_idx, proc::time::range const &range,
+                                  std::function<void(audio::pcm_buffer, proc::time::range const &)>) {
+#warning todo
+}

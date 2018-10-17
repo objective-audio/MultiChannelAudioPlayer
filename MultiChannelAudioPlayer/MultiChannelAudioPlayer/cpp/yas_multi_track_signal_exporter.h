@@ -13,7 +13,7 @@ namespace yas::multi_track {
 struct signal_exporter : base {
     class impl;
 
-    signal_exporter(std::string const &root_path);
+    signal_exporter(double const sample_rate, audio::pcm_format const pcm_format, std::string const &root_path);
 
     void export_file(uint32_t const trk_idx, proc::time::range const &range,
                      std::function<void(proc::time::range const &range)>);

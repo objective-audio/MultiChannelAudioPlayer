@@ -19,8 +19,11 @@ struct signal_exporter::impl : base::impl {
     }
 
     void export_file(uint32_t const trk_idx, proc::time::range const &range,
-                     std::function<void(audio::pcm_buffer, proc::time::range const &)> &&handler) {
+                     std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&handler) {
+        operation op([trk_idx, range, handler = std::move(handler)](operation const &) {
 #warning todo
+        });
+        this->_queue.push_back(std::move(op));
     }
 };
 
@@ -30,6 +33,6 @@ signal_exporter::signal_exporter(double const sample_rate, audio::pcm_format con
 }
 
 void signal_exporter::export_file(uint32_t const trk_idx, proc::time::range const &range,
-                                  std::function<void(audio::pcm_buffer, proc::time::range const &)> handler) {
+                                  std::function<void(audio::pcm_buffer &, proc::time::range const &)> handler) {
     impl_ptr<impl>()->export_file(trk_idx, range, std::move(handler));
 }

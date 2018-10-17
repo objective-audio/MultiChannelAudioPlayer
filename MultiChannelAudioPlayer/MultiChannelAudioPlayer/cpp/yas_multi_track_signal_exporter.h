@@ -15,7 +15,7 @@ struct signal_exporter : base {
 
     signal_exporter(double const sample_rate, audio::pcm_format const pcm_format, std::string const &root_path);
 
-    void export_file(uint32_t const trk_idx, proc::time::range const &range,
+    void export_file(uint32_t const trk_idx, proc::time::range const &,
                      std::function<void(audio::pcm_buffer, proc::time::range const &)>);
 };
 }  // namespace yas::multi_track

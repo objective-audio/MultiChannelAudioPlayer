@@ -1,5 +1,5 @@
 //
-//  yas_multi_track_signal_exporter.cpp
+//  yas_multi_track_signal_exporter.mm
 //
 
 #include "yas_multi_track_signal_exporter.h"

@@ -5,6 +5,7 @@
 #pragma once
 
 #include <string>
+#include "yas_audio.h"
 #include "yas_base.h"
 #include "yas_processing.h"
 

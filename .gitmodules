@@ -16,3 +16,6 @@ url=https://github.com/objective-audio/db.git
 [submodule "submodules/ui"]
 	path = submodules/ui
 url=https://github.com/objective-audio/ui.git
+[submodule "submodules/chaining"]
+	path = submodules/chaining
+	url = https://github.com/objective-audio/chaining.git

@@ -98,6 +98,7 @@
 		B6FDB6E02177629000AF4365 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FDB6DF2177629000AF4365 /* AudioToolbox.framework */; };
 		B6FDB6E22177629500AF4365 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FDB6E12177629500AF4365 /* AVFoundation.framework */; };
 		B6FDB6E52178C41300AF4365 /* yas_file_manager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */; };
+		B6FDB6E82178D91500AF4365 /* yas_path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E62178D91500AF4365 /* yas_path.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -364,6 +365,8 @@
 		B6FDB6E12177629500AF4365 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_file_manager.mm; sourceTree = "<group>"; };
 		B6FDB6E42178C41300AF4365 /* yas_file_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_file_manager.h; sourceTree = "<group>"; };
+		B6FDB6E62178D91500AF4365 /* yas_path.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_path.cpp; sourceTree = "<group>"; };
+		B6FDB6E72178D91500AF4365 /* yas_path.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_path.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -649,6 +652,8 @@
 				B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */,
 				B6FDB64C2177568500AF4365 /* yas_multi_track_signal_exporter.h */,
 				B6FDB64B2177568500AF4365 /* yas_multi_track_signal_exporter.mm */,
+				B6FDB6E62178D91500AF4365 /* yas_path.cpp */,
+				B6FDB6E72178D91500AF4365 /* yas_path.h */,
 			);
 			path = cpp;
 			sourceTree = "<group>";
@@ -970,6 +975,7 @@
 				B6FDB6382174D06C00AF4365 /* yas_processing_module.cpp in Sources */,
 				B679E2F82172BF3700859687 /* yas_any.cpp in Sources */,
 				B679E2B02172BEB700859687 /* yas_objc_unowned.m in Sources */,
+				B6FDB6E82178D91500AF4365 /* yas_path.cpp in Sources */,
 				B6FDB62F2174D06C00AF4365 /* yas_processing_math2_modules.cpp in Sources */,
 				B679E2FC2172BF3700859687 /* yas_cf_ref.cpp in Sources */,
 				B685EDCA2171ABE8002EDC9B /* AppDelegate.m in Sources */,

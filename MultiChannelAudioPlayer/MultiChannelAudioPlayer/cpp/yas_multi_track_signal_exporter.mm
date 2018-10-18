@@ -25,7 +25,9 @@ struct signal_exporter::impl : base::impl {
 
     void export_file(uint32_t const trk_idx, proc::time::range const &range,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&handler) {
-        operation op([trk_idx, range, handler = std::move(handler), format = this->_format](operation const &) {
+        std::string path = this->_root_path + "/" + to_string(trk_idx);
+        operation op([trk_idx, range, handler = std::move(handler), format = this->_format,
+                      path = std::move(path)](operation const &) {
             proc::frame_index_t const sample_rate = format.sample_rate();
 #warning マイナスを想定したい
             proc::frame_index_t const file_frame = range.frame - range.frame % sample_rate;

@@ -18,7 +18,9 @@ struct signal_exporter::impl : base::impl {
         : _format(audio::format::args{
               .sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}),
           _root_path(root_path) {
-        file_manager::create_directory_if_not_exists(this->_root_path);
+        if (auto result = file_manager::create_directory_if_not_exists(this->_root_path); result.is_error()) {
+            std::runtime_error(to_string(result.error()));
+        }
     }
 
     void export_file(uint32_t const trk_idx, proc::time::range const &range,

@@ -14,13 +14,13 @@ struct file_manager {
         file_exists,
     };
 
-    enum class kind {
+    enum class file_kind {
         file,
         directory,
     };
 
     using create_dir_result_t = result<std::nullptr_t, create_dir_error>;
-    using exists_result_t = result<kind, std::nullptr_t>;
+    using exists_result_t = result<file_kind, std::nullptr_t>;
 
     static create_dir_result_t create_directory_if_not_exists(std::string const &path);
     static exists_result_t file_exists(std::string const &path);

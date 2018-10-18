@@ -35,9 +35,9 @@ file_manager::exists_result_t file_manager::file_exists(std::string const &path)
 
     if ([file_manager fileExistsAtPath:(__bridge NSString *)cf_path isDirectory:&is_directory]) {
         if (is_directory) {
-            return exists_result_t{kind::directory};
+            return exists_result_t{file_kind::directory};
         } else {
-            return exists_result_t{kind::file};
+            return exists_result_t{file_kind::file};
         }
     } else {
         return exists_result_t{nullptr};

@@ -98,8 +98,8 @@
 		B6FDB6E02177629000AF4365 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FDB6DF2177629000AF4365 /* AudioToolbox.framework */; };
 		B6FDB6E22177629500AF4365 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FDB6E12177629500AF4365 /* AVFoundation.framework */; };
 		B6FDB6E52178C41300AF4365 /* yas_file_manager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */; };
-		B6FDB6E82178D91500AF4365 /* yas_url.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E62178D91500AF4365 /* yas_url.cpp */; };
-		B6FDB6EA217A12B900AF4365 /* yas_path_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E9217A12B900AF4365 /* yas_path_tests.mm */; };
+		B6FDB6E82178D91500AF4365 /* yas_url.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E62178D91500AF4365 /* yas_url.mm */; };
+		B6FDB6EA217A12B900AF4365 /* yas_url_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E9217A12B900AF4365 /* yas_url_tests.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -366,9 +366,9 @@
 		B6FDB6E12177629500AF4365 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_file_manager.mm; sourceTree = "<group>"; };
 		B6FDB6E42178C41300AF4365 /* yas_file_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_file_manager.h; sourceTree = "<group>"; };
-		B6FDB6E62178D91500AF4365 /* yas_url.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_url.cpp; sourceTree = "<group>"; };
+		B6FDB6E62178D91500AF4365 /* yas_url.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_url.mm; sourceTree = "<group>"; };
 		B6FDB6E72178D91500AF4365 /* yas_url.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_url.h; sourceTree = "<group>"; };
-		B6FDB6E9217A12B900AF4365 /* yas_path_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_path_tests.mm; sourceTree = "<group>"; };
+		B6FDB6E9217A12B900AF4365 /* yas_url_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_url_tests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -536,7 +536,7 @@
 			isa = PBXGroup;
 			children = (
 				B685EDE12171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m */,
-				B6FDB6E9217A12B900AF4365 /* yas_path_tests.mm */,
+				B6FDB6E9217A12B900AF4365 /* yas_url_tests.mm */,
 				B685EDE32171ABE9002EDC9B /* Info.plist */,
 			);
 			path = MultiChannelAudioPlayerTests;
@@ -655,7 +655,7 @@
 				B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */,
 				B6FDB64C2177568500AF4365 /* yas_multi_track_signal_exporter.h */,
 				B6FDB64B2177568500AF4365 /* yas_multi_track_signal_exporter.mm */,
-				B6FDB6E62178D91500AF4365 /* yas_url.cpp */,
+				B6FDB6E62178D91500AF4365 /* yas_url.mm */,
 				B6FDB6E72178D91500AF4365 /* yas_url.h */,
 			);
 			path = cpp;
@@ -978,7 +978,7 @@
 				B6FDB6382174D06C00AF4365 /* yas_processing_module.cpp in Sources */,
 				B679E2F82172BF3700859687 /* yas_any.cpp in Sources */,
 				B679E2B02172BEB700859687 /* yas_objc_unowned.m in Sources */,
-				B6FDB6E82178D91500AF4365 /* yas_url.cpp in Sources */,
+				B6FDB6E82178D91500AF4365 /* yas_url.mm in Sources */,
 				B6FDB62F2174D06C00AF4365 /* yas_processing_math2_modules.cpp in Sources */,
 				B679E2FC2172BF3700859687 /* yas_cf_ref.cpp in Sources */,
 				B685EDCA2171ABE8002EDC9B /* AppDelegate.m in Sources */,
@@ -1025,7 +1025,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6FDB6EA217A12B900AF4365 /* yas_path_tests.mm in Sources */,
+				B6FDB6EA217A12B900AF4365 /* yas_url_tests.mm in Sources */,
 				B685EDE22171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

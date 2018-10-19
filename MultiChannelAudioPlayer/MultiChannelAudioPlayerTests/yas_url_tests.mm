@@ -3,15 +3,16 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <iostream>
 #import "yas_url.h"
 
 using namespace yas;
 
-@interface yas_path_tests : XCTestCase
+@interface yas_url_tests : XCTestCase
 
 @end
 
-@implementation yas_path_tests
+@implementation yas_url_tests
 
 - (void)setUp {
 }
@@ -23,6 +24,12 @@ using namespace yas;
     auto url = yas::url{"test/dir"};
 
     XCTAssertEqual(url.path(), "test/dir");
+}
+
+- (void)test_make_file_url {
+    auto url = yas::url::file_url("test/dir");
+
+    XCTAssertEqual(url.path(), "/test/dir");
 }
 
 - (void)test_make_path_last_slash {

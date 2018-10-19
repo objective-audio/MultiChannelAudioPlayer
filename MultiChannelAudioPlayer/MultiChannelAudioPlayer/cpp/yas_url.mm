@@ -35,7 +35,7 @@ std::string url::path() const {
     return to_string((__bridge CFStringRef)(impl_ptr<impl>()->_url.object().path));
 }
 
-url url::appending(std::string const &str) {
+url url::appending(std::string const &str) const {
     auto url = make_objc_ptr<NSURL *>([=]() {
         return [impl_ptr<impl>()->_url.object() URLByAppendingPathComponent:(__bridge NSString *)to_cf_object(str)];
     });

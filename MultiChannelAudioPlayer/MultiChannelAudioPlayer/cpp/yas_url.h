@@ -16,7 +16,7 @@ struct url : base {
 
     std::string path() const;
 
-    url appending(std::string const &);
+    url appending(std::string const &) const;
 
    protected:
     url(std::shared_ptr<impl> &&);

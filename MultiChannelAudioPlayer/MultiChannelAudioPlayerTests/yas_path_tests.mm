@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_path.h"
+#import "yas_url.h"
 
 using namespace yas;
 
@@ -20,22 +20,22 @@ using namespace yas;
 }
 
 - (void)test_make_path {
-    auto path = yas::path{"test/dir"};
+    auto url = yas::url{"test/dir"};
 
-    XCTAssertEqual(path.str(), "test/dir");
+    XCTAssertEqual(url.path(), "test/dir");
 }
 
 - (void)test_make_path_last_slash {
-    auto path = yas::path{"test/dir/"};
+    auto url = yas::url{"test/dir/"};
 
-    XCTAssertEqual(path.str(), "test/dir");
+    XCTAssertEqual(url.path(), "test/dir");
 }
 
 - (void)test_append {
-    auto path = yas::path{"test/dir"};
-    auto appended = path.appending("file.ext");
+    auto url = yas::url{"test/dir"};
+    auto appended = url.appending("file.ext");
 
-    XCTAssertEqual(appended.str(), "test/dir/file.ext");
+    XCTAssertEqual(appended.path(), "test/dir/file.ext");
 }
 
 @end

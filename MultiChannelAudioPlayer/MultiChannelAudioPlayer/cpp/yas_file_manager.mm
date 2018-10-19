@@ -12,7 +12,7 @@ file_manager::create_dir_result_t file_manager::create_directory_if_not_exists(s
     auto file_manager = [NSFileManager defaultManager];
     CFStringRef cf_path = to_cf_object(path);
 
-    if (auto exists_result = file_manager::file_exists(path); !exists_result) {
+    if (auto exists_result = file_manager::file_exists(path); exists_result.is_error()) {
         NSError *error = nil;
         if (![file_manager createDirectoryAtPath:(__bridge NSString *)cf_path
                      withIntermediateDirectories:YES

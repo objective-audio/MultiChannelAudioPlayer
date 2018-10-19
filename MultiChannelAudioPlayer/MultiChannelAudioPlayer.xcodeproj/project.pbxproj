@@ -99,6 +99,7 @@
 		B6FDB6E22177629500AF4365 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FDB6E12177629500AF4365 /* AVFoundation.framework */; };
 		B6FDB6E52178C41300AF4365 /* yas_file_manager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */; };
 		B6FDB6E82178D91500AF4365 /* yas_path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E62178D91500AF4365 /* yas_path.cpp */; };
+		B6FDB6EA217A12B900AF4365 /* yas_path_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E9217A12B900AF4365 /* yas_path_tests.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -367,6 +368,7 @@
 		B6FDB6E42178C41300AF4365 /* yas_file_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_file_manager.h; sourceTree = "<group>"; };
 		B6FDB6E62178D91500AF4365 /* yas_path.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_path.cpp; sourceTree = "<group>"; };
 		B6FDB6E72178D91500AF4365 /* yas_path.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_path.h; sourceTree = "<group>"; };
+		B6FDB6E9217A12B900AF4365 /* yas_path_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_path_tests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -534,6 +536,7 @@
 			isa = PBXGroup;
 			children = (
 				B685EDE12171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m */,
+				B6FDB6E9217A12B900AF4365 /* yas_path_tests.mm */,
 				B685EDE32171ABE9002EDC9B /* Info.plist */,
 			);
 			path = MultiChannelAudioPlayerTests;
@@ -1022,6 +1025,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6FDB6EA217A12B900AF4365 /* yas_path_tests.mm in Sources */,
 				B685EDE22171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

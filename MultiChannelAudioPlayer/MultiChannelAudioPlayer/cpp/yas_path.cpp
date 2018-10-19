@@ -16,6 +16,6 @@ std::string path::str() const {
     return this->_str;
 }
 
-path path::append(std::string const &str) {
+path path::appending(std::string const &str) {
     return this->_str + "/" + str;
 }

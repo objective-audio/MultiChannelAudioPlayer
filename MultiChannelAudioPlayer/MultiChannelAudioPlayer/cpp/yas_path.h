@@ -12,7 +12,7 @@ struct path {
 
     std::string str() const;
 
-    path append(std::string const &);
+    path appending(std::string const &);
 
    private:
     std::string _str;

@@ -11,14 +11,14 @@ using namespace yas::multi_track;
 
 struct signal_exporter::impl : base::impl {
     audio::format _format;
-    std::string const _root_path;
+    url const _root_url;
     operation_queue _queue;
 
-    impl(double const sample_rate, audio::pcm_format const pcm_format, std::string const &root_path)
+    impl(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url)
         : _format(audio::format::args{
               .sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}),
-          _root_path(root_path) {
-        if (auto result = file_manager::create_directory_if_not_exists(this->_root_path); result.is_error()) {
+          _root_url(root_url) {
+        if (auto result = file_manager::create_directory_if_not_exists(this->_root_url.path()); result.is_error()) {
             std::runtime_error(to_string(result.error()));
         }
     }
@@ -41,9 +41,8 @@ struct signal_exporter::impl : base::impl {
     }
 };
 
-signal_exporter::signal_exporter(double const sample_rate, audio::pcm_format const pcm_format,
-                                 std::string const &root_path)
-    : base(std::make_shared<impl>(sample_rate, pcm_format, root_path)) {
+signal_exporter::signal_exporter(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url)
+    : base(std::make_shared<impl>(sample_rate, pcm_format, root_url)) {
 }
 
 void signal_exporter::export_file(uint32_t const trk_idx, proc::time::range const &range,

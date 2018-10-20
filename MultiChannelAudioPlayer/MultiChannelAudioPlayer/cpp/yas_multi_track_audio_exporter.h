@@ -1,5 +1,5 @@
 //
-//  yas_multi_track_signal_exporter.h
+//  yas_multi_track_audio_exporter.h
 //
 
 #pragma once
@@ -11,10 +11,10 @@
 #include "yas_url.h"
 
 namespace yas::multi_track {
-struct signal_exporter : base {
+struct audio_exporter : base {
     class impl;
 
-    signal_exporter(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url);
+    audio_exporter(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url);
 
     void export_file(uint32_t const trk_idx, proc::time::range const &,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)>);

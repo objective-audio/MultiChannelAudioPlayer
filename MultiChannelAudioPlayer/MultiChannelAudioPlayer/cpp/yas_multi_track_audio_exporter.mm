@@ -32,6 +32,7 @@ struct audio_exporter::impl : base::impl {
 #warning マイナスを想定したい
             proc::frame_index_t const file_frame = range.frame - range.frame % sample_rate;
             proc::length_t const file_length = sample_rate;
+            std::string const file_name = std::to_string(file_frame) + ".caf";
 
             auto file_range = proc::time::range{file_frame, file_length};
 #warning todo

@@ -31,11 +31,16 @@ struct audio_exporter::impl : base::impl {
                       trk_url = std::move(trk_url)](operation const &) {
             proc::length_t const sample_rate = format.sample_rate();
             proc::length_t const file_length = sample_rate;
-            proc::frame_index_t const file_frame = math::floor_int(range.frame, file_length);
-            std::string const file_name = std::to_string(file_frame) + ".caf";
 
-            auto file_range = proc::time::range{file_frame, file_length};
+            proc::frame_index_t file_frame_idx = math::floor_int(range.frame, file_length);
+            proc::frame_index_t const end_frame_idx = file_frame_idx + file_length;
+
+            while (file_frame_idx < end_frame_idx) {
+                std::string const file_name = std::to_string(file_frame_idx / sample_rate) + ".caf";
+                proc::time::range const file_range{file_frame_idx, file_length};
 #warning todo
+                file_frame_idx += file_length;
+            }
         });
         this->_queue.push_back(std::move(op));
     }

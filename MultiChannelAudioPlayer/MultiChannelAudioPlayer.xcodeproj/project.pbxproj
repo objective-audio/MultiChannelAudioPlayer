@@ -17,7 +17,6 @@
 		B679E2F52172BF3700859687 /* yas_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B679E2D52172BF3600859687 /* yas_base.cpp */; };
 		B679E2F62172BF3700859687 /* yas_exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B679E2D72172BF3700859687 /* yas_exception.cpp */; };
 		B679E2F72172BF3700859687 /* yas_protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B679E2D82172BF3700859687 /* yas_protocol.cpp */; };
-		B679E2F82172BF3700859687 /* yas_any.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B679E2DB2172BF3700859687 /* yas_any.cpp */; };
 		B679E2F92172BF3700859687 /* yas_each_dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B679E2E42172BF3700859687 /* yas_each_dictionary.cpp */; };
 		B679E2FA2172BF3700859687 /* yas_stl_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B679E2E52172BF3700859687 /* yas_stl_utils.cpp */; };
 		B679E2FB2172BF3700859687 /* yas_cf_utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = B679E2E62172BF3700859687 /* yas_cf_utils.mm */; };
@@ -132,7 +131,6 @@
 		B679E2BF2172BF3600859687 /* yas_each_dictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_each_dictionary.h; sourceTree = "<group>"; };
 		B679E2C02172BF3600859687 /* yas_type_traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_type_traits.h; sourceTree = "<group>"; };
 		B679E2C12172BF3600859687 /* yas_each_index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_each_index.h; sourceTree = "<group>"; };
-		B679E2C22172BF3600859687 /* yas_any.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_any.h; sourceTree = "<group>"; };
 		B679E2C32172BF3600859687 /* yas_cf_ref.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_cf_ref.h; sourceTree = "<group>"; };
 		B679E2C42172BF3600859687 /* yas_data_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_data_private.h; sourceTree = "<group>"; };
 		B679E2C52172BF3600859687 /* yas_result_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_result_private.h; sourceTree = "<group>"; };
@@ -148,7 +146,6 @@
 		B679E2CF2172BF3600859687 /* yas_data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_data.cpp; sourceTree = "<group>"; };
 		B679E2D02172BF3600859687 /* yas_operation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_operation.cpp; sourceTree = "<group>"; };
 		B679E2D12172BF3600859687 /* yas_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_base.h; sourceTree = "<group>"; };
-		B679E2D22172BF3600859687 /* yas_any_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_any_private.h; sourceTree = "<group>"; };
 		B679E2D32172BF3600859687 /* yas_base_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_base_private.h; sourceTree = "<group>"; };
 		B679E2D42172BF3600859687 /* yas_flow_graph_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flow_graph_private.h; sourceTree = "<group>"; };
 		B679E2D52172BF3600859687 /* yas_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_base.cpp; sourceTree = "<group>"; };
@@ -157,7 +154,6 @@
 		B679E2D82172BF3700859687 /* yas_protocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_protocol.cpp; sourceTree = "<group>"; };
 		B679E2D92172BF3700859687 /* yas_protocol_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_protocol_private.h; sourceTree = "<group>"; };
 		B679E2DA2172BF3700859687 /* yas_each_data_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_each_data_private.h; sourceTree = "<group>"; };
-		B679E2DB2172BF3700859687 /* yas_any.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_any.cpp; sourceTree = "<group>"; };
 		B679E2DC2172BF3700859687 /* yas_fast_each_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_fast_each_private.h; sourceTree = "<group>"; };
 		B679E2DD2172BF3700859687 /* yas_delaying_caller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_delaying_caller.h; sourceTree = "<group>"; };
 		B679E2DE2172BF3700859687 /* yas_stl_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_stl_utils.h; sourceTree = "<group>"; };
@@ -419,9 +415,6 @@
 		B679E2B12172BF3600859687 /* cpp_utils */ = {
 			isa = PBXGroup;
 			children = (
-				B679E2D22172BF3600859687 /* yas_any_private.h */,
-				B679E2DB2172BF3700859687 /* yas_any.cpp */,
-				B679E2C22172BF3600859687 /* yas_any.h */,
 				B679E2D32172BF3600859687 /* yas_base_private.h */,
 				B679E2D52172BF3600859687 /* yas_base.cpp */,
 				B679E2D12172BF3600859687 /* yas_base.h */,
@@ -976,7 +969,6 @@
 				B6FDB6AD2177618E00AF4365 /* yas_audio_engine_device_io.cpp in Sources */,
 				B6FDB63E2174D06C00AF4365 /* yas_processing_send_signal_processor.cpp in Sources */,
 				B6FDB6382174D06C00AF4365 /* yas_processing_module.cpp in Sources */,
-				B679E2F82172BF3700859687 /* yas_any.cpp in Sources */,
 				B679E2B02172BEB700859687 /* yas_objc_unowned.m in Sources */,
 				B6FDB6E82178D91500AF4365 /* yas_url.mm in Sources */,
 				B6FDB62F2174D06C00AF4365 /* yas_processing_math2_modules.cpp in Sources */,

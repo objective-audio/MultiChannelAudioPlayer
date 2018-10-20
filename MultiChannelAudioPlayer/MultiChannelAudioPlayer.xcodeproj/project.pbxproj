@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B61A406C217B51BB00B2717C /* yas_math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61A406A217B51BB00B2717C /* yas_math.cpp */; };
 		B679E2B02172BEB700859687 /* yas_objc_unowned.m in Sources */ = {isa = PBXBuildFile; fileRef = B679E2AD2172BEB700859687 /* yas_objc_unowned.m */; };
 		B679E2EF2172BF3700859687 /* yas_timer.mm in Sources */ = {isa = PBXBuildFile; fileRef = B679E2B52172BF3600859687 /* yas_timer.mm */; };
 		B679E2F02172BF3700859687 /* yas_delaying_caller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B679E2B82172BF3600859687 /* yas_delaying_caller.cpp */; };
@@ -112,6 +113,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B61A406A217B51BB00B2717C /* yas_math.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_math.cpp; sourceTree = "<group>"; };
+		B61A406B217B51BB00B2717C /* yas_math.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_math.h; sourceTree = "<group>"; };
 		B679E2AD2172BEB700859687 /* yas_objc_unowned.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = yas_objc_unowned.m; sourceTree = "<group>"; };
 		B679E2AE2172BEB700859687 /* yas_objc_macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_objc_macros.h; sourceTree = "<group>"; };
 		B679E2AF2172BEB700859687 /* yas_objc_unowned.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_objc_unowned.h; sourceTree = "<group>"; };
@@ -650,6 +653,8 @@
 				B6FDB64B2177568500AF4365 /* yas_multi_track_audio_exporter.mm */,
 				B6FDB6E62178D91500AF4365 /* yas_url.mm */,
 				B6FDB6E72178D91500AF4365 /* yas_url.h */,
+				B61A406A217B51BB00B2717C /* yas_math.cpp */,
+				B61A406B217B51BB00B2717C /* yas_math.h */,
 			);
 			path = cpp;
 			sourceTree = "<group>";
@@ -1006,6 +1011,7 @@
 				B679E2FE2172BF3700859687 /* yas_boolean.cpp in Sources */,
 				B6FDB6B52177618E00AF4365 /* yas_audio_engine_au.cpp in Sources */,
 				B679E2FD2172BF3700859687 /* yas_objc_ptr.mm in Sources */,
+				B61A406C217B51BB00B2717C /* yas_math.cpp in Sources */,
 				B679E2F42172BF3700859687 /* yas_operation.cpp in Sources */,
 				B6FDB6332174D06C00AF4365 /* yas_processing_envelope_module.cpp in Sources */,
 				B6FDB69F2177618E00AF4365 /* yas_audio_file_utils.mm in Sources */,

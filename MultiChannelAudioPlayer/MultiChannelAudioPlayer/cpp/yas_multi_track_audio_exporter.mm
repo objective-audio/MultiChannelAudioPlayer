@@ -5,6 +5,7 @@
 #include "yas_multi_track_audio_exporter.h"
 #include "yas_cf_utils.h"
 #include "yas_file_manager.h"
+#include "yas_math.h"
 #include "yas_operation.h"
 
 using namespace yas::multi_track;
@@ -28,10 +29,9 @@ struct audio_exporter::impl : base::impl {
         auto trk_url = this->_root_url.appending(to_string(trk_idx));
         operation op([trk_idx, range, handler = std::move(handler), format = this->_format,
                       trk_url = std::move(trk_url)](operation const &) {
-            proc::frame_index_t const sample_rate = format.sample_rate();
-#warning マイナスを想定したい
-            proc::frame_index_t const file_frame = range.frame - range.frame % sample_rate;
+            proc::length_t const sample_rate = format.sample_rate();
             proc::length_t const file_length = sample_rate;
+            proc::frame_index_t const file_frame = math::floor_int(range.frame, file_length);
             std::string const file_name = std::to_string(file_frame) + ".caf";
 
             auto file_range = proc::time::range{file_frame, file_length};

@@ -14,5 +14,4 @@ int64_t math::floor_int(int64_t const value, uint64_t const range) {
     } else {
         return value - ((int64_t)range + value % (int64_t)range);
     }
-
 }

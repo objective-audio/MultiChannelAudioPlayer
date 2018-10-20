@@ -7,15 +7,14 @@
 
 using namespace yas;
 
-int64_t math::floor_int(int64_t const value, uint64_t const range) {
+int64_t math::floor_int(int64_t const value, uint32_t const range) {
     if (value == 0) {
         return 0;
-    } else if (value > 0) {
-        return value - value % (int64_t)range;
+    } else if (int64_t const mod = value % range; value > 0) {
+        return value - mod;
+    } else if (mod != 0) {
+        return value - (mod + range);
     } else {
-        std::cout << "value[" + std::to_string(value) + "] - (range[" + std::to_string(range) + "] + [" +
-                         std::to_string(value % (int64_t)range) + "]"
-                  << std::endl;
-        return value - ((int64_t)range + value % (int64_t)range);
+        return value;
     }
 }

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <CoreFoundation/CoreFoundation.h>
 #include <string>
 #include "yas_base.h"
 
@@ -15,6 +16,7 @@ struct url : base {
     static url file_url(std::string const &path);
 
     std::string path() const;
+    CFURLRef cf_url() const;
 
     url appending(std::string const &) const;
 

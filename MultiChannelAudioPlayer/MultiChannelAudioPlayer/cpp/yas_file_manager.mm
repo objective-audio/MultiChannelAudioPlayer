@@ -43,6 +43,18 @@ file_manager::exists_result_t file_manager::file_exists(std::string const &path)
     }
 }
 
+file_manager::remove_result_t file_manager::remove_file(std::string const &path) {
+    if (file_manager::file_exists(path)) {
+        auto file_manager = [NSFileManager defaultManager];
+        CFStringRef cf_path = to_cf_object(path);
+
+        if (![file_manager removeItemAtPath:(__bridge NSString *)cf_path error:nil]) {
+            return remove_result_t{remove_error::remove_failed};
+        }
+    }
+    return remove_result_t{nullptr};
+}
+
 std::string yas::to_string(file_manager::create_dir_error const &error) {
     switch (error) {
         case file_manager::create_dir_error::create_failed:

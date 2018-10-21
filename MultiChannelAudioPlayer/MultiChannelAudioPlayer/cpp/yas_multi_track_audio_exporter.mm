@@ -111,12 +111,12 @@ struct audio_exporter::impl : base::impl {
                 }
 
                 file_frame_idx += file_length;
-
-                dispatch_async(dispatch_get_main_queue(),
-                               [result_handler = std::move(result_handler), export_result = std::move(export_result)] {
-                                   result_handler(export_result);
-                               });
             }
+
+            dispatch_async(dispatch_get_main_queue(),
+                           [result_handler = std::move(result_handler), export_result = std::move(export_result)] {
+                               result_handler(export_result);
+                           });
         });
         this->_queue.push_back(std::move(op));
     }

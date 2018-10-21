@@ -30,11 +30,13 @@ struct audio_exporter::impl : base::impl {
     }
 
     void export_file(uint32_t const trk_idx, proc::time::range const &range,
-                     std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&handler) {
+                     std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&proc_handler,
+                     std::function<void(export_result_t const &)> &&result_handler) {
         auto trk_url = this->_root_url.appending(to_string(trk_idx));
 
-        operation op([trk_idx, range, handler = std::move(handler), format = this->_format,
-                      trk_url = std::move(trk_url), file_buffer = this->_file_buffer,
+        operation op([trk_idx, range, proc_handler = std::move(proc_handler),
+                      result_handler = std::move(result_handler), format = this->_format, trk_url = std::move(trk_url),
+                      file_buffer = this->_file_buffer,
                       process_buffer = this->_process_buffer](operation const &) mutable {
             proc::length_t const sample_rate = format.sample_rate();
             proc::length_t const file_length = sample_rate;
@@ -42,12 +44,14 @@ struct audio_exporter::impl : base::impl {
             proc::frame_index_t file_frame_idx = math::floor_int(range.frame, file_length);
             proc::frame_index_t const end_frame_idx = file_frame_idx + file_length;
 
+            export_result_t export_result{nullptr};
+
             while (file_frame_idx < end_frame_idx) {
                 std::string const file_name = std::to_string(file_frame_idx / sample_rate) + ".caf";
                 auto const file_url = trk_url.appending(file_name);
                 proc::time::range const file_range{file_frame_idx, file_length};
 
-                // バッファをクリアする
+                // 1秒バッファをクリアする
                 file_buffer.clear();
 
                 // ファイルがあれば1秒バッファへの読み込み
@@ -62,28 +66,31 @@ struct audio_exporter::impl : base::impl {
 
                 // ファイルがあれば消す
                 if (auto result = file_manager::remove_file(file_url.path()); result.is_error()) {
-                    std::cout << "erase file error" << std::endl;
+                    export_result = export_result_t{export_error::erase_file_failed};
                     break;
                 }
 
                 // 処理をする範囲を調べる
                 auto opt_process_range = file_range.intersect(range);
                 if (!opt_process_range) {
+                    export_result = export_result_t{export_error::invalid_process_range};
                     break;
                 }
-
                 proc::time::range const &process_range = *opt_process_range;
+
+                // 処理バッファをリセットして長さを合わせる
+                process_buffer.reset();
                 process_buffer.set_frame_length(static_cast<uint32_t>(process_range.length));
 
                 // 作業バッファへの書き込みをクロージャで行う
-                handler(process_buffer, process_range);
+                proc_handler(process_buffer, process_range);
 
                 // 作業バッファから1秒バッファへのコピー
                 if (auto result = file_buffer.copy_from(process_buffer, 0,
                                                         static_cast<uint32_t>(process_range.frame - file_frame_idx),
                                                         static_cast<uint32_t>(process_range.length));
                     result.is_error()) {
-                    std::cout << "copy buffer error" << std::endl;
+                    export_result = export_result_t{export_error::copy_buffer_failed};
                     break;
                 }
 
@@ -95,15 +102,20 @@ struct audio_exporter::impl : base::impl {
                                                                format.sample_byte_count() * sizeof(Byte))})) {
                     audio::file &file = result.value();
                     if (auto write_result = file.write_from_buffer(file_buffer); write_result.is_error()) {
-                        std::cout << "write file error" << std::endl;
+                        export_result = export_result_t{export_error::write_failed};
                         break;
                     }
                 } else {
-                    std::cout << "create file error" << std::endl;
+                    export_result = export_result_t{export_error::create_file_failed};
                     break;
                 }
 
                 file_frame_idx += file_length;
+
+                dispatch_async(dispatch_get_main_queue(),
+                               [result_handler = std::move(result_handler), export_result = std::move(export_result)] {
+                                   result_handler(export_result);
+                               });
             }
         });
         this->_queue.push_back(std::move(op));
@@ -115,6 +127,7 @@ audio_exporter::audio_exporter(double const sample_rate, audio::pcm_format const
 }
 
 void audio_exporter::export_file(uint32_t const trk_idx, proc::time::range const &range,
-                                 std::function<void(audio::pcm_buffer &, proc::time::range const &)> handler) {
-    impl_ptr<impl>()->export_file(trk_idx, range, std::move(handler));
+                                 std::function<void(audio::pcm_buffer &, proc::time::range const &)> proc_handler,
+                                 std::function<void(export_result_t const &)> completion_handler) {
+    impl_ptr<impl>()->export_file(trk_idx, range, std::move(proc_handler), std::move(completion_handler));
 }

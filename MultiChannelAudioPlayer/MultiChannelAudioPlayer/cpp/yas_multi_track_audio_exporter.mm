@@ -88,12 +88,19 @@ struct audio_exporter::impl : base::impl {
                 }
 
                 // 1秒バッファからファイルへの書き込み
-                if (auto result =
-                        audio::make_created_file({.file_url = file_url.cf_url(),
-                                                  .file_type = audio::file_type::core_audio_format,
-                                                  .settings = audio::wave_file_settings(
-                                                      format.sample_rate(), 1, format.sample_byte_count() * 8)})) {
-#warning todo
+                if (auto result = audio::make_created_file(
+                        {.file_url = file_url.cf_url(),
+                         .file_type = audio::file_type::core_audio_format,
+                         .settings = audio::wave_file_settings(format.sample_rate(), 1,
+                                                               format.sample_byte_count() * sizeof(Byte))})) {
+                    audio::file &file = result.value();
+                    if (auto write_result = file.write_from_buffer(file_buffer); write_result.is_error()) {
+                        std::cout << "write file error" << std::endl;
+                        break;
+                    }
+                } else {
+                    std::cout << "create file error" << std::endl;
+                    break;
                 }
 
                 file_frame_idx += file_length;

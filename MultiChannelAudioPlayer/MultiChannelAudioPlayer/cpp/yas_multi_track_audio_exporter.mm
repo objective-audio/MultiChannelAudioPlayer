@@ -14,11 +14,13 @@ struct audio_exporter::impl : base::impl {
     audio::format _format;
     url const _root_url;
     operation_queue _queue;
+    audio::pcm_buffer _buffer;
 
     impl(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url)
         : _format(audio::format::args{
               .sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}),
-          _root_url(root_url) {
+          _root_url(root_url),
+          _buffer(this->_format, static_cast<uint32_t>(sample_rate)) {
         if (auto result = file_manager::create_directory_if_not_exists(this->_root_url.path()); result.is_error()) {
             std::runtime_error(to_string(result.error()));
         }
@@ -38,6 +40,13 @@ struct audio_exporter::impl : base::impl {
             while (file_frame_idx < end_frame_idx) {
                 std::string const file_name = std::to_string(file_frame_idx / sample_rate) + ".caf";
                 proc::time::range const file_range{file_frame_idx, file_length};
+
+                // 1秒バッファを作る（使い回す？）
+                // ファイルからの1秒バッファへの読み込み
+                // 作業バッファを作る
+                // 作業バッファへの書き込みをクロージャで行う
+                // 作業バッファから1秒バッファへのコピー
+                // 1秒バッファからファイルへの書き込み
 #warning todo
                 file_frame_idx += file_length;
             }

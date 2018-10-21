@@ -15,14 +15,14 @@ struct audio_exporter::impl : base::impl {
     audio::format _format;
     url const _root_url;
     operation_queue _queue;
-    audio::pcm_buffer _one_sec_buffer;
+    audio::pcm_buffer _file_buffer;
     audio::pcm_buffer _process_buffer;
 
     impl(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url)
         : _format(audio::format::args{
               .sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}),
           _root_url(root_url),
-          _one_sec_buffer(this->_format, static_cast<uint32_t>(sample_rate)),
+          _file_buffer(this->_format, static_cast<uint32_t>(sample_rate)),
           _process_buffer(this->_format, static_cast<uint32_t>(sample_rate)) {
         if (auto result = file_manager::create_directory_if_not_exists(this->_root_url.path()); result.is_error()) {
             std::runtime_error(to_string(result.error()));
@@ -33,7 +33,7 @@ struct audio_exporter::impl : base::impl {
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&handler) {
         auto trk_url = this->_root_url.appending(to_string(trk_idx));
         operation op([trk_idx, range, handler = std::move(handler), format = this->_format,
-                      trk_url = std::move(trk_url), one_sec_buffer = this->_one_sec_buffer,
+                      trk_url = std::move(trk_url), file_buffer = this->_file_buffer,
                       process_buffer = this->_process_buffer](operation const &) mutable {
             proc::length_t const sample_rate = format.sample_rate();
             proc::length_t const file_length = sample_rate;
@@ -47,7 +47,7 @@ struct audio_exporter::impl : base::impl {
                 proc::time::range const file_range{file_frame_idx, file_length};
 
                 // バッファをクリアする
-                one_sec_buffer.clear();
+                file_buffer.clear();
 
                 // ファイルがあれば1秒バッファへの読み込み
                 if (auto result = audio::make_opened_file(
@@ -55,13 +55,12 @@ struct audio_exporter::impl : base::impl {
                     result.is_success() && result.value().file_format() == format &&
                     result.value().file_length() == file_length) {
                     audio::file &file = result.value();
-                    file.read_into_buffer(one_sec_buffer);
+                    file.read_into_buffer(file_buffer);
                 }
 
                 // ファイルがあれば消す
                 if (auto result = file_manager::remove_file(file_url.path()); result.is_error()) {
                     std::cout << "erase file error" << std::endl;
-#warning 消せなかった場合はどうする？エラーを送信する？
                 }
 
                 // 処理をする範囲を調べる
@@ -74,7 +73,16 @@ struct audio_exporter::impl : base::impl {
                 process_buffer.set_frame_length(static_cast<uint32_t>(process_range.length));
 
                 // 作業バッファへの書き込みをクロージャで行う
+                handler(process_buffer, process_range);
+
                 // 作業バッファから1秒バッファへのコピー
+                if (auto result = file_buffer.copy_from(process_buffer, 0,
+                                                        static_cast<uint32_t>(process_range.frame - file_frame_idx),
+                                                        static_cast<uint32_t>(process_range.length));
+                    result.is_error()) {
+                    std::cout << "copy buffer error" << std::endl;
+                }
+
                 // 1秒バッファからファイルへの書き込み
 #warning todo
                 file_frame_idx += file_length;

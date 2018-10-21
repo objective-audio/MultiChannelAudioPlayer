@@ -32,6 +32,7 @@ struct audio_exporter::impl : base::impl {
     void export_file(uint32_t const trk_idx, proc::time::range const &range,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&handler) {
         auto trk_url = this->_root_url.appending(to_string(trk_idx));
+
         operation op([trk_idx, range, handler = std::move(handler), format = this->_format,
                       trk_url = std::move(trk_url), file_buffer = this->_file_buffer,
                       process_buffer = this->_process_buffer](operation const &) mutable {
@@ -56,11 +57,13 @@ struct audio_exporter::impl : base::impl {
                     result.value().file_length() == file_length) {
                     audio::file &file = result.value();
                     file.read_into_buffer(file_buffer);
+                    file.close();
                 }
 
                 // ファイルがあれば消す
                 if (auto result = file_manager::remove_file(file_url.path()); result.is_error()) {
                     std::cout << "erase file error" << std::endl;
+                    break;
                 }
 
                 // 処理をする範囲を調べる
@@ -81,10 +84,18 @@ struct audio_exporter::impl : base::impl {
                                                         static_cast<uint32_t>(process_range.length));
                     result.is_error()) {
                     std::cout << "copy buffer error" << std::endl;
+                    break;
                 }
 
                 // 1秒バッファからファイルへの書き込み
+                if (auto result =
+                        audio::make_created_file({.file_url = file_url.cf_url(),
+                                                  .file_type = audio::file_type::core_audio_format,
+                                                  .settings = audio::wave_file_settings(
+                                                      format.sample_rate(), 1, format.sample_byte_count() * 8)})) {
 #warning todo
+                }
+
                 file_frame_idx += file_length;
             }
         });

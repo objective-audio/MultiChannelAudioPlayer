@@ -24,3 +24,5 @@ struct url : base {
     url(std::shared_ptr<impl> &&);
 };
 }  // namespace yas
+
+std::ostream &operator<<(std::ostream &os, yas::url const &url);

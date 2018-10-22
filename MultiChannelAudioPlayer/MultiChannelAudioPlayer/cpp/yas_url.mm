@@ -45,3 +45,10 @@ url url::appending(std::string const &str) const {
     });
     return yas::url{std::make_shared<impl>(std::move(url))};
 }
+
+#pragma mark -
+
+std::ostream &operator<<(std::ostream &os, url const &url) {
+    os << url.path();
+    return os;
+}

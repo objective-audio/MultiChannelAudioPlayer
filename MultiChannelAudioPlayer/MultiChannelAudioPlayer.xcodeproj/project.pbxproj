@@ -27,6 +27,7 @@
 		B679E2FD2172BF3700859687 /* yas_objc_ptr.mm in Sources */ = {isa = PBXBuildFile; fileRef = B679E2E92172BF3700859687 /* yas_objc_ptr.mm */; };
 		B679E2FE2172BF3700859687 /* yas_boolean.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B679E2EC2172BF3700859687 /* yas_boolean.cpp */; };
 		B679E3012172BFBE00859687 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B679E3002172BFBE00859687 /* Accelerate.framework */; };
+		B6821266217D550600E24A6B /* yas_multi_track_audio_exporter_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6821265217D550600E24A6B /* yas_multi_track_audio_exporter_tests.mm */; };
 		B685EDCA2171ABE8002EDC9B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B685EDC92171ABE8002EDC9B /* AppDelegate.m */; };
 		B685EDCD2171ABE8002EDC9B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B685EDCC2171ABE8002EDC9B /* ViewController.m */; };
 		B685EDD02171ABE8002EDC9B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B685EDCE2171ABE8002EDC9B /* Main.storyboard */; };
@@ -182,6 +183,7 @@
 		B679E2ED2172BF3700859687 /* yas_flow_graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flow_graph.h; sourceTree = "<group>"; };
 		B679E2EE2172BF3700859687 /* yas_operation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_operation.h; sourceTree = "<group>"; };
 		B679E3002172BFBE00859687 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		B6821265217D550600E24A6B /* yas_multi_track_audio_exporter_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_multi_track_audio_exporter_tests.mm; sourceTree = "<group>"; };
 		B685EDC52171ABE8002EDC9B /* MultiChannelAudioPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiChannelAudioPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B685EDC82171ABE8002EDC9B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B685EDC92171ABE8002EDC9B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -539,6 +541,7 @@
 				B685EDE12171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m */,
 				B6FDB6E9217A12B900AF4365 /* yas_url_tests.mm */,
 				B61A406D217B536200B2717C /* yas_math_tests.mm */,
+				B6821265217D550600E24A6B /* yas_multi_track_audio_exporter_tests.mm */,
 				B685EDE32171ABE9002EDC9B /* Info.plist */,
 			);
 			path = MultiChannelAudioPlayerTests;
@@ -1033,6 +1036,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6FDB6EA217A12B900AF4365 /* yas_url_tests.mm in Sources */,
+				B6821266217D550600E24A6B /* yas_multi_track_audio_exporter_tests.mm in Sources */,
 				B61A406E217B536200B2717C /* yas_math_tests.mm in Sources */,
 				B685EDE22171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m in Sources */,
 			);

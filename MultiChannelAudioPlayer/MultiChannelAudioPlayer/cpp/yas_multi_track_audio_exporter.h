@@ -31,3 +31,7 @@ struct audio_exporter : base {
                      std::function<void(export_result_t const &)> result_handler);
 };
 }  // namespace yas::multi_track
+
+namespace yas {
+std::string to_string(multi_track::audio_exporter::export_error const &);
+}

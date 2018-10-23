@@ -3,11 +3,12 @@
 //
 
 #include "yas_multi_track_audio_exporter.h"
-#include <iostream>
 #include "yas_cf_utils.h"
 #include "yas_file_manager.h"
 #include "yas_math.h"
 #include "yas_operation.h"
+
+#include <iostream>
 
 using namespace yas::multi_track;
 
@@ -32,7 +33,7 @@ struct audio_exporter::impl : base::impl {
     void export_file(uint32_t const trk_idx, proc::time::range const &range,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&proc_handler,
                      std::function<void(export_result_t const &)> &&result_handler) {
-        auto trk_url = this->_root_url.appending(to_string(trk_idx));
+        auto trk_url = this->_root_url.appending(std::to_string(trk_idx));
 
         operation op([trk_idx, range, proc_handler = std::move(proc_handler),
                       result_handler = std::move(result_handler), format = this->_format, trk_url = std::move(trk_url),
@@ -134,4 +135,21 @@ void audio_exporter::export_file(uint32_t const trk_idx, proc::time::range const
                                  std::function<void(audio::pcm_buffer &, proc::time::range const &)> proc_handler,
                                  std::function<void(export_result_t const &)> completion_handler) {
     impl_ptr<impl>()->export_file(trk_idx, range, std::move(proc_handler), std::move(completion_handler));
+}
+
+#pragma mark -
+
+std::string yas::to_string(multi_track::audio_exporter::export_error const &error) {
+    switch (error) {
+        case multi_track::audio_exporter::export_error::erase_file_failed:
+            return "erase_file_failed";
+        case multi_track::audio_exporter::export_error::invalid_process_range:
+            return "invalid_process_range";
+        case multi_track::audio_exporter::export_error::copy_buffer_failed:
+            return "copy_buffer_failed";
+        case multi_track::audio_exporter::export_error::write_failed:
+            return "write_failed";
+        case multi_track::audio_exporter::export_error::create_file_failed:
+            return "create_file_failed";
+    }
 }

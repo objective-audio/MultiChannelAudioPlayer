@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "yas_file_manager.h"
 #import "yas_multi_track_audio_exporter.h"
 #import "yas_system_url.h"
 
@@ -15,9 +16,13 @@ using namespace yas;
 @implementation yas_multi_track_audio_exporter_tests
 
 - (void)setUp {
+    auto document_url = system_url::directory_url(system_url::dir::document);
+    file_manager::remove_files_in_directory(document_url.path());
 }
 
 - (void)tearDown {
+    auto document_url = system_url::directory_url(system_url::dir::document);
+    file_manager::remove_files_in_directory(document_url.path());
 }
 
 - (void)test_export_file {

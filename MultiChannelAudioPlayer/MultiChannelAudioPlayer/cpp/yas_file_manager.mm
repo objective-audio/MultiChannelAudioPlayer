@@ -49,10 +49,40 @@ file_manager::remove_result_t file_manager::remove_file(std::string const &path)
         CFStringRef cf_path = to_cf_object(path);
 
         if (![file_manager removeItemAtPath:(__bridge NSString *)cf_path error:nil]) {
-            return remove_result_t{remove_error::remove_failed};
+            return remove_result_t{remove_file_error::remove_failed};
         }
     }
     return remove_result_t{nullptr};
+}
+
+file_manager::remove_files_result_t file_manager::remove_files_in_directory(std::string const &path) {
+    if (auto const result = file_manager::file_exists(path)) {
+        if (result.value() != file_kind::directory) {
+            return remove_files_result_t{remove_files_error::not_directory};
+        }
+    } else {
+        return remove_files_result_t{nullptr};
+    }
+
+    auto file_manager = [NSFileManager defaultManager];
+    CFStringRef cf_path = to_cf_object(path);
+
+    @autoreleasepool {
+        NSError *error = nil;
+        NSArray<NSString *> *contents =
+            [file_manager contentsOfDirectoryAtPath:(__bridge NSString *)cf_path error:&error];
+        if (error) {
+            return remove_files_result_t{remove_files_error::find_contents_failed};
+        }
+
+        for (NSString *content in contents) {
+            if (![file_manager removeItemAtPath:content error:nil]) {
+                return remove_files_result_t{remove_files_error::remove_failed};
+            }
+        }
+
+        return remove_files_result_t{nullptr};
+    }
 }
 
 std::string yas::to_string(file_manager::create_dir_error const &error) {

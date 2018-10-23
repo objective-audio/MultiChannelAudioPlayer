@@ -69,14 +69,17 @@ file_manager::remove_files_result_t file_manager::remove_files_in_directory(std:
 
     @autoreleasepool {
         NSError *error = nil;
-        NSArray<NSString *> *contents =
-            [file_manager contentsOfDirectoryAtPath:(__bridge NSString *)cf_path error:&error];
+        NSArray<NSURL *> *urls =
+            [file_manager contentsOfDirectoryAtURL:[NSURL fileURLWithPath:(__bridge NSString *)cf_path]
+                        includingPropertiesForKeys:nil
+                                           options:kNilOptions
+                                             error:&error];
         if (error) {
             return remove_files_result_t{remove_files_error::find_contents_failed};
         }
 
-        for (NSString *content in contents) {
-            if (![file_manager removeItemAtPath:content error:nil]) {
+        for (NSURL *url in urls) {
+            if (![file_manager removeItemAtURL:url error:nil]) {
                 return remove_files_result_t{remove_files_error::remove_failed};
             }
         }

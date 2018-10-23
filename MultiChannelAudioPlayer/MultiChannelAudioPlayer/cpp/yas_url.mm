@@ -48,6 +48,12 @@ url url::appending(std::string const &str) const {
 
 #pragma mark -
 
+std::string yas::to_string(url const &url) {
+    return url.path();
+}
+
+#pragma mark -
+
 std::ostream &operator<<(std::ostream &os, url const &url) {
     os << url.path();
     return os;

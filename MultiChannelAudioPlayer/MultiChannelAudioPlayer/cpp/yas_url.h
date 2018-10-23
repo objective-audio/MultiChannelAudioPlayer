@@ -23,6 +23,8 @@ struct url : base {
    protected:
     url(std::shared_ptr<impl> &&);
 };
+
+std::string to_string(url const &);
 }  // namespace yas
 
 std::ostream &operator<<(std::ostream &os, yas::url const &url);

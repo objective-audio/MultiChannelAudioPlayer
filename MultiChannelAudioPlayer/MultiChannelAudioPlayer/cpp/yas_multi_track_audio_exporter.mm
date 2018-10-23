@@ -49,7 +49,8 @@ struct audio_exporter::impl : base::impl {
 
             if (auto result = file_manager::create_directory_if_not_exists(trk_url.path())) {
                 while (file_frame_idx < end_frame_idx) {
-                    std::string const file_name = std::to_string(file_frame_idx / sample_rate) + ".caf";
+                    std::string const file_name = std::to_string(file_frame_idx / (int64_t)sample_rate) + ".caf";
+                    std::cout << "filename : " << file_name << std::endl;
                     auto const file_url = trk_url.appending(file_name);
                     proc::time::range const file_range{file_frame_idx, file_length};
 

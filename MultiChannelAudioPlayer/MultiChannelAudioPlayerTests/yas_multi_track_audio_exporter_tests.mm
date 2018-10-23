@@ -36,8 +36,8 @@ using namespace yas;
     proc::time::range range{0, static_cast<proc::length_t>(48000)};
 
     exporter.export_file(0, range, [](auto &pcm_buffer, auto const &range) { NSLog(@"process"); },
-                         [&expectation](auto const &result) {
-                             NSLog(@"result");
+                         [=](auto const &result) {
+                             XCTAssertTrue(result.is_success());
                              [expectation fulfill];
                          });
 

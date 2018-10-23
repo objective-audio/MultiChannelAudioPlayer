@@ -95,11 +95,11 @@ struct audio_exporter::impl : base::impl {
                 }
 
                 // 1秒バッファからファイルへの書き込み
-                if (auto result = audio::make_created_file(
-                        {.file_url = file_url.cf_url(),
-                         .file_type = audio::file_type::core_audio_format,
-                         .settings = audio::wave_file_settings(format.sample_rate(), 1,
-                                                               format.sample_byte_count() * sizeof(Byte))})) {
+                if (auto result =
+                        audio::make_created_file({.file_url = file_url.cf_url(),
+                                                  .file_type = audio::file_type::core_audio_format,
+                                                  .settings = audio::wave_file_settings(
+                                                      format.sample_rate(), 1, format.sample_byte_count() * 8)})) {
                     audio::file &file = result.value();
                     if (auto write_result = file.write_from_buffer(file_buffer); write_result.is_error()) {
                         export_result = export_result_t{export_error::write_failed};

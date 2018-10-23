@@ -43,7 +43,7 @@ struct audio_exporter::impl : base::impl {
             proc::length_t const file_length = sample_rate;
 
             proc::frame_index_t file_frame_idx = math::floor_int(range.frame, file_length);
-            proc::frame_index_t const end_frame_idx = file_frame_idx + file_length;
+            proc::frame_index_t const end_frame_idx = range.next_frame();
 
             export_result_t export_result{nullptr};
 
@@ -100,6 +100,8 @@ struct audio_exporter::impl : base::impl {
                     if (auto result =
                             audio::make_created_file({.file_url = file_url.cf_url(),
                                                       .file_type = audio::file_type::core_audio_format,
+                                                      .pcm_format = format.pcm_format(),
+                                                      .interleaved = false,
                                                       .settings = audio::wave_file_settings(
                                                           format.sample_rate(), 1, format.sample_byte_count() * 8)})) {
                         audio::file &file = result.value();

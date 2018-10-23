@@ -36,7 +36,7 @@ using namespace yas;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"export"];
 
-    exporter.export_file(0, proc::time::range{0, static_cast<proc::length_t>(48001)},
+    exporter.export_file(0, proc::time::range{0, static_cast<proc::length_t>(48000)},
                          [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) { NSLog(@"process"); },
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
@@ -54,11 +54,11 @@ using namespace yas;
         XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
     }
 
-    {
-        auto const exists_result = file_manager::file_exists(document_url.appending("0/1.caf").path());
-        XCTAssertTrue(exists_result);
-        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
-    }
+    //    {
+    //        auto const exists_result = file_manager::file_exists(document_url.appending("0/1.caf").path());
+    //        XCTAssertTrue(exists_result);
+    //        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
+    //    }
 }
 
 @end

@@ -18,13 +18,11 @@ using namespace yas;
 @implementation yas_multi_track_audio_exporter_tests
 
 - (void)setUp {
-    auto document_url = system_url::directory_url(system_url::dir::document);
-    file_manager::remove_files_in_directory(document_url.path());
+    [self remove_document_files];
 }
 
 - (void)tearDown {
-    auto document_url = system_url::directory_url(system_url::dir::document);
-    file_manager::remove_files_in_directory(document_url.path());
+    [self remove_document_files];
 }
 
 - (void)test_export_file {
@@ -65,6 +63,11 @@ using namespace yas;
         XCTAssertTrue(exists_result);
         XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
     }
+}
+
+- (void)remove_document_files {
+    auto document_url = system_url::directory_url(system_url::dir::document);
+    file_manager::remove_files_in_directory(document_url.path());
 }
 
 @end

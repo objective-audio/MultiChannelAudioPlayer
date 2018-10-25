@@ -132,7 +132,35 @@ using namespace yas;
 
     [self waitForExpectations:@[secondExp] timeout:10.0];
 
-#warning 値をチェック
+    {
+        auto url = document_url.appending("0/-1.caf");
+
+        auto const exists_result = file_manager::file_exists(url.path());
+        XCTAssertTrue(exists_result);
+        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
+
+        assert_file(format, url, {0, 0, -1});
+    }
+
+    {
+        auto url = document_url.appending("0/0.caf");
+
+        auto const exists_result = file_manager::file_exists(url.path());
+        XCTAssertTrue(exists_result);
+        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
+
+        assert_file(format, url, {0, 100, 2});
+    }
+
+    {
+        auto url = document_url.appending("0/1.caf");
+
+        auto const exists_result = file_manager::file_exists(url.path());
+        XCTAssertTrue(exists_result);
+        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
+
+        assert_file(format, url, {3, 0, 0});
+    }
 }
 
 - (void)remove_document_files {

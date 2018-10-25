@@ -35,7 +35,7 @@ using namespace yas;
 
     multi_track::audio_exporter exporter{sample_rate, audio::pcm_format::int16, document_url};
 
-    XCTestExpectation *expectation = [self expectationWithDescription:@"export"];
+    XCTestExpectation *firstExp = [self expectationWithDescription:@"export_first"];
 
     exporter.export_file(0, proc::time::range{-1, static_cast<proc::length_t>(file_length + 2)},
                          [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
@@ -51,10 +51,10 @@ using namespace yas;
                              if (!result) {
                                  std::cout << to_string(result.error()) << std::endl;
                              }
-                             [expectation fulfill];
+                             [firstExp fulfill];
                          });
 
-    [self waitForExpectations:@[expectation] timeout:10.0];
+    [self waitForExpectations:@[firstExp] timeout:10.0];
 
     auto assert_file = [=](audio::format const &format, url const &url, std::vector<int16_t> const &expected) {
         uint32_t const expected_length = static_cast<uint32_t>(expected.size());
@@ -111,6 +111,28 @@ using namespace yas;
 
         assert_file(format, url, {3, 0, 0});
     }
+
+    XCTestExpectation *secondExp = [self expectationWithDescription:@"export_second"];
+
+    exporter.export_file(0, proc::time::range{1, 1},
+                         [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                             int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
+                             auto each = make_fast_each(range.length);
+                             while (yas_each_next(each)) {
+                                 data[yas_each_index(each)] = 100;
+                             }
+                         },
+                         [=](auto const &result) {
+                             XCTAssertTrue(result.is_success());
+                             if (!result) {
+                                 std::cout << to_string(result.error()) << std::endl;
+                             }
+                             [secondExp fulfill];
+                         });
+
+    [self waitForExpectations:@[secondExp] timeout:10.0];
+
+#warning 値をチェック
 }
 
 - (void)remove_document_files {

@@ -36,6 +36,7 @@
 		B685EDD82171ABE9002EDC9B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B685EDD72171ABE9002EDC9B /* main.m */; };
 		B685EDE22171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B685EDE12171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m */; };
 		B6D2D4DD217E05190036AE6D /* yas_system_url_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6D2D4DC217E05190036AE6D /* yas_system_url_tests.mm */; };
+		B6DB824421820C4C00BBCC89 /* yas_multi_track_audio_player.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DB824221820C4C00BBCC89 /* yas_multi_track_audio_player.mm */; };
 		B6FDB62C2174D06C00AF4365 /* yas_processing_sync_source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5E92174D06C00AF4365 /* yas_processing_sync_source.cpp */; };
 		B6FDB62D2174D06C00AF4365 /* yas_processing_channel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5EA2174D06C00AF4365 /* yas_processing_channel.cpp */; };
 		B6FDB62E2174D06C00AF4365 /* yas_processing_compare_modules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5EF2174D06C00AF4365 /* yas_processing_compare_modules.cpp */; };
@@ -199,6 +200,8 @@
 		B685EDE12171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultiChannelAudioPlayerTests.m; sourceTree = "<group>"; };
 		B685EDE32171ABE9002EDC9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B6D2D4DC217E05190036AE6D /* yas_system_url_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_system_url_tests.mm; sourceTree = "<group>"; };
+		B6DB824221820C4C00BBCC89 /* yas_multi_track_audio_player.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_multi_track_audio_player.mm; sourceTree = "<group>"; };
+		B6DB824321820C4C00BBCC89 /* yas_multi_track_audio_player.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_multi_track_audio_player.h; sourceTree = "<group>"; };
 		B6FDB5E62174D06C00AF4365 /* yas_processing_track.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_track.h; sourceTree = "<group>"; };
 		B6FDB5E72174D06C00AF4365 /* yas_processing_channel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_channel.h; sourceTree = "<group>"; };
 		B6FDB5E82174D06C00AF4365 /* yas_processing_channel_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_channel_private.h; sourceTree = "<group>"; };
@@ -661,14 +664,16 @@
 			children = (
 				B6FDB6E42178C41300AF4365 /* yas_file_manager.h */,
 				B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */,
-				B61A4070217C12E900B2717C /* yas_system_url.h */,
-				B6821267217D562400E24A6B /* yas_system_url.mm */,
-				B6FDB64C2177568500AF4365 /* yas_multi_track_audio_exporter.h */,
-				B6FDB64B2177568500AF4365 /* yas_multi_track_audio_exporter.mm */,
-				B6FDB6E62178D91500AF4365 /* yas_url.mm */,
-				B6FDB6E72178D91500AF4365 /* yas_url.h */,
 				B61A406A217B51BB00B2717C /* yas_math.cpp */,
 				B61A406B217B51BB00B2717C /* yas_math.h */,
+				B6FDB64C2177568500AF4365 /* yas_multi_track_audio_exporter.h */,
+				B6FDB64B2177568500AF4365 /* yas_multi_track_audio_exporter.mm */,
+				B6DB824321820C4C00BBCC89 /* yas_multi_track_audio_player.h */,
+				B6DB824221820C4C00BBCC89 /* yas_multi_track_audio_player.mm */,
+				B61A4070217C12E900B2717C /* yas_system_url.h */,
+				B6821267217D562400E24A6B /* yas_system_url.mm */,
+				B6FDB6E72178D91500AF4365 /* yas_url.h */,
+				B6FDB6E62178D91500AF4365 /* yas_url.mm */,
 			);
 			path = cpp;
 			sourceTree = "<group>";
@@ -966,6 +971,7 @@
 				B6FDB6452174D06C00AF4365 /* yas_processing_number_event.cpp in Sources */,
 				B6FDB63C2174D06C00AF4365 /* yas_processing_remove_number_processor.cpp in Sources */,
 				B679E2F22172BF3700859687 /* yas_flex_ptr.cpp in Sources */,
+				B6DB824421820C4C00BBCC89 /* yas_multi_track_audio_player.mm in Sources */,
 				B6FDB63B2174D06C00AF4365 /* yas_processing_remove_signal_processor.cpp in Sources */,
 				B6FDB63D2174D06C00AF4365 /* yas_processing_receive_signal_processor.cpp in Sources */,
 				B6FDB64D2177568500AF4365 /* yas_multi_track_audio_exporter.mm in Sources */,

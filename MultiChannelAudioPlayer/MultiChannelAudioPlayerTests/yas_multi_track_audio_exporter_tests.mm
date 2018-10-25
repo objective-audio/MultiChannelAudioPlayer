@@ -7,8 +7,6 @@
 #import "yas_multi_track_audio_exporter.h"
 #import "yas_system_url.h"
 
-#import <iostream>
-
 using namespace yas;
 
 @interface yas_multi_track_audio_exporter_tests : XCTestCase
@@ -27,7 +25,6 @@ using namespace yas;
 
 - (void)test_export_file {
     auto document_url = system_url::directory_url(system_url::dir::document);
-    std::cout << document_url << std::endl;
     double const sample_rate = 3;
     uint32_t const file_length = sample_rate;
     audio::format format{audio::format::args{
@@ -48,9 +45,6 @@ using namespace yas;
                          },
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
-                             if (!result) {
-                                 std::cout << to_string(result.error()) << std::endl;
-                             }
                              [firstExp fulfill];
                          });
 
@@ -124,9 +118,6 @@ using namespace yas;
                          },
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
-                             if (!result) {
-                                 std::cout << to_string(result.error()) << std::endl;
-                             }
                              [secondExp fulfill];
                          });
 

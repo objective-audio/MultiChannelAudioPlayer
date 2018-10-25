@@ -57,10 +57,11 @@ struct audio_exporter::impl : base::impl {
                     // ファイルがあれば1秒バッファへの読み込み
                     if (auto result = audio::make_opened_file(
                             {.file_url = file_url.cf_url(), .pcm_format = format.pcm_format(), .interleaved = false});
-                        result.is_success() && result.value().file_format() == format &&
-                        result.value().file_length() == file_length) {
+                        result.is_success()) {
                         audio::file &file = result.value();
-                        file.read_into_buffer(file_buffer);
+                        if (file.processing_format() == format && file.file_length() == file_length) {
+                            file.read_into_buffer(file_buffer);
+                        }
                         file.close();
                     }
 

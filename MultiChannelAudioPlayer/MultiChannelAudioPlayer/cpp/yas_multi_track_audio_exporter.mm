@@ -32,7 +32,7 @@ struct audio_exporter::impl : base::impl {
     void export_file(uint32_t const trk_idx, proc::time::range const &range,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&proc_handler,
                      std::function<void(export_result_t const &)> &&result_handler) {
-        auto trk_url = this->_root_url.appending(std::to_string(trk_idx));
+        auto trk_url = multi_track::track_url(this->_root_url, trk_idx);
 
         operation op([trk_idx, range, proc_handler = std::move(proc_handler),
                       result_handler = std::move(result_handler), format = this->_format, trk_url = std::move(trk_url),
@@ -48,8 +48,7 @@ struct audio_exporter::impl : base::impl {
 
             if (auto result = file_manager::create_directory_if_not_exists(trk_url.path())) {
                 while (file_frame_idx < end_frame_idx) {
-                    std::string const file_name = std::to_string(file_frame_idx / (int64_t)sample_rate) + ".caf";
-                    auto const file_url = trk_url.appending(file_name);
+                    auto const file_url = multi_track::file_url(trk_url, file_frame_idx, sample_rate);
                     proc::time::range const file_range{file_frame_idx, file_length};
 
                     // 1秒バッファをクリアする

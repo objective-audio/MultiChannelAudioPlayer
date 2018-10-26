@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "yas_audio.h"
 #include "yas_base.h"
 #include "yas_url.h"
 
@@ -11,6 +12,6 @@ namespace yas::multi_track {
 struct audio_player : base {
     class impl;
 
-    audio_player();
+    audio_player(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url);
 };
 }  // namespace yas::multi_track

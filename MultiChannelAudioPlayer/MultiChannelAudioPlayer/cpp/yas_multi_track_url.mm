@@ -15,3 +15,13 @@ struct multi_track::url::impl : base::impl {
 
 multi_track::url::url(yas::url const &root_url) : base(std::make_shared<impl>(root_url)) {
 }
+
+yas::url multi_track::url::track_url(uint32_t const trk_idx) {
+    yas::url const &root_url = impl_ptr<impl>()->_root_url;
+    return root_url.appending(std::to_string(trk_idx));
+}
+
+yas::url multi_track::url::file_url(uint32_t const trk_idx, int64_t const file_idx) {
+    yas::url const trk_url = this->track_url(trk_idx);
+    return trk_url.appending(std::to_string(file_idx) + ".caf");
+}

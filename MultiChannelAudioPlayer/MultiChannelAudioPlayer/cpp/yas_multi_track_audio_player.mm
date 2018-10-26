@@ -22,3 +22,15 @@ struct audio_player::impl : base::impl {
 audio_player::audio_player(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url)
     : base(std::make_shared<impl>(sample_rate, pcm_format, root_url)) {
 }
+
+void audio_player::play() {
+#warning
+}
+
+void audio_player::stop() {
+#warning
+}
+
+void audio_player::seek(int64_t const frame_idx) {
+#warning
+}

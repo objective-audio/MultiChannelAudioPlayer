@@ -6,6 +6,7 @@
 #include "yas_cf_utils.h"
 #include "yas_file_manager.h"
 #include "yas_math.h"
+#include "yas_multi_track_url.h"
 #include "yas_operation.h"
 
 using namespace yas::multi_track;

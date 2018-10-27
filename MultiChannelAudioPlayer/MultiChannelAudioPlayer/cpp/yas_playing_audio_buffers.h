@@ -4,8 +4,13 @@
 
 #pragma once
 
+#include "yas_audio.h"
+
 namespace yas::playing {
-    struct audio_buffers {
-        
-    };
-}
+
+struct audio_buffers : base {
+    class impl;
+
+    audio_buffers();
+};
+}  // namespace yas::playing

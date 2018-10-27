@@ -46,11 +46,19 @@ struct audio_exporter::impl : base::impl {
 
             if (auto result = file_manager::create_directory_if_not_exists(ch_url.path())) {
                 while (file_frame_idx < end_frame_idx) {
+                    if (operation.is_canceled()) {
+                        return;
+                    }
+
                     auto const file_url = url_utils::caf_url(ch_url, file_frame_idx, sample_rate);
                     proc::time::range const file_range{file_frame_idx, file_length};
 
                     // 1秒バッファをクリアする
                     file_buffer.clear();
+
+                    if (operation.is_canceled()) {
+                        return;
+                    }
 
                     // ファイルがあれば1秒バッファへの読み込み
                     if (auto result = audio::make_opened_file(
@@ -61,6 +69,10 @@ struct audio_exporter::impl : base::impl {
                             file.read_into_buffer(file_buffer);
                         }
                         file.close();
+                    }
+
+                    if (operation.is_canceled()) {
+                        return;
                     }
 
                     // ファイルがあれば消す
@@ -81,8 +93,16 @@ struct audio_exporter::impl : base::impl {
                     process_buffer.reset();
                     process_buffer.set_frame_length(static_cast<uint32_t>(process_range.length));
 
+                    if (operation.is_canceled()) {
+                        return;
+                    }
+
                     // 作業バッファへの書き込みをクロージャで行う
                     proc_handler(process_buffer, process_range);
+
+                    if (operation.is_canceled()) {
+                        return;
+                    }
 
                     // 作業バッファから1秒バッファへのコピー
                     if (auto result = file_buffer.copy_from(process_buffer, 0,
@@ -91,6 +111,10 @@ struct audio_exporter::impl : base::impl {
                         result.is_error()) {
                         export_result = export_result_t{export_error::copy_buffer_failed};
                         break;
+                    }
+
+                    if (operation.is_canceled()) {
+                        return;
                     }
 
                     // 1秒バッファからファイルへの書き込み
@@ -115,6 +139,8 @@ struct audio_exporter::impl : base::impl {
 
                     file_frame_idx += file_length;
                 }
+            } else {
+                export_result = export_result_t{export_error::create_dir_failed};
             }
 
             dispatch_async(dispatch_get_main_queue(),

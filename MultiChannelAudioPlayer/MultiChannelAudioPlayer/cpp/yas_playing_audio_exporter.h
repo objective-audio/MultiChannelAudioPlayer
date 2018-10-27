@@ -15,6 +15,7 @@ struct audio_exporter : base {
     class impl;
 
     enum class export_error {
+        create_dir_failed,
         erase_file_failed,
         invalid_process_range,
         copy_buffer_failed,

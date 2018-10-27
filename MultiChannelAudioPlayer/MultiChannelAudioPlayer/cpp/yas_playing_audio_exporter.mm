@@ -32,7 +32,7 @@ struct audio_exporter::impl : base::impl {
     void export_file(uint32_t const trk_idx, proc::time::range const &range,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&proc_handler,
                      std::function<void(export_result_t const &)> &&result_handler) {
-        auto trk_url = playing::track_url(this->_root_url, trk_idx);
+        auto trk_url = playing::channel_url(this->_root_url, trk_idx);
 
         operation op([trk_idx, range, proc_handler = std::move(proc_handler),
                       result_handler = std::move(result_handler), format = this->_format, trk_url = std::move(trk_url),

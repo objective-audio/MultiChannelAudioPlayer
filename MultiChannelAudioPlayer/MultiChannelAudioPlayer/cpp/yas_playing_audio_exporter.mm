@@ -47,7 +47,7 @@ struct audio_exporter::impl : base::impl {
 
             if (auto result = file_manager::create_directory_if_not_exists(ch_url.path())) {
                 while (file_frame_idx < end_frame_idx) {
-                    auto const file_url = playing::file_url(ch_url, file_frame_idx, sample_rate);
+                    auto const file_url = playing::caf_url(ch_url, file_frame_idx, sample_rate);
                     proc::time::range const file_range{file_frame_idx, file_length};
 
                     // 1秒バッファをクリアする

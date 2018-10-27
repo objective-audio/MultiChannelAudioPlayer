@@ -7,8 +7,8 @@
 
 using namespace yas;
 
-yas::url playing::channel_url(yas::url const &root_url, uint32_t const trk_idx) {
-    return root_url.appending(std::to_string(trk_idx));
+yas::url playing::channel_url(yas::url const &root_url, uint32_t const ch_idx) {
+    return root_url.appending(std::to_string(ch_idx));
 }
 
 yas::url playing::file_url(yas::url const &ch_url, int64_t const file_frame_idx, int64_t const sample_rate) {

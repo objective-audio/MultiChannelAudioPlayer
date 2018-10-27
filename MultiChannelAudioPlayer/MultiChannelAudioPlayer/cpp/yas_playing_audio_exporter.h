@@ -30,7 +30,7 @@ struct audio_exporter : base {
 
     audio_exporter(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url);
 
-    void export_file(uint32_t const trk_idx, proc::time::range const &,
+    void export_file(uint32_t const ch_idx, proc::time::range const &,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> proc_handler,
                      std::function<void(export_result_t const &)> result_handler);
 

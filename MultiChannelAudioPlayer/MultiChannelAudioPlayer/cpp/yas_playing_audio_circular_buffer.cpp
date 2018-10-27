@@ -4,7 +4,7 @@
 
 #include "yas_playing_audio_circular_buffer.h"
 #include <mutex>
-#include "yas_audio_pcm_buffer.h"
+#include "yas_audio_format.h"
 #include "yas_fast_each.h"
 
 using namespace yas;
@@ -27,7 +27,6 @@ struct audio_circular_buffer::impl : base::impl {
     };
 
     std::vector<buffer> _buffers;
-    std::recursive_mutex _mutex;
 
     impl(audio::format const &format, uint32_t const count) {
         auto each = make_fast_each(count);
@@ -39,4 +38,8 @@ struct audio_circular_buffer::impl : base::impl {
 
 audio_circular_buffer::audio_circular_buffer(audio::format const &format, uint32_t const count)
     : base(std::make_shared<impl>(format, count)) {
+}
+
+void read(audio::pcm_buffer &out_buffer) {
+#warning todo bufferをロックして読み出す
 }

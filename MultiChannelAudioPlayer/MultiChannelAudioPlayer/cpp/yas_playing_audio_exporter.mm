@@ -193,5 +193,7 @@ std::string yas::to_string(playing::audio_exporter::export_error const &error) {
             return "write_failed";
         case playing::audio_exporter::export_error::create_file_failed:
             return "create_file_failed";
+        case playing::audio_exporter::export_error::create_dir_failed:
+            return "create_dir_failed";
     }
 }

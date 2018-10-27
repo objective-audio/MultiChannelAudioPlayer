@@ -34,7 +34,7 @@ struct audio_exporter : base {
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> proc_handler,
                      std::function<void(export_result_t const &)> result_handler);
 
-    void clear_all_files(std::function<void(clear_result_t const &)> result_handler);
+    void clear(std::function<void(clear_result_t const &)> result_handler);
 };
 }  // namespace yas::playing
 

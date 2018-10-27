@@ -150,7 +150,7 @@ void audio_exporter::export_file(uint32_t const ch_idx, proc::time::range const 
     impl_ptr<impl>()->export_file(ch_idx, range, std::move(proc_handler), std::move(completion_handler));
 }
 
-void audio_exporter::clear_all_files(std::function<void(clear_result_t const &)> result_handler) {
+void audio_exporter::clear(std::function<void(clear_result_t const &)> result_handler) {
     impl_ptr<impl>()->clear_all_files(result_handler);
 }
 

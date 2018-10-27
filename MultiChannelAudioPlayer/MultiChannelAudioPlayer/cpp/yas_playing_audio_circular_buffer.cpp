@@ -19,6 +19,7 @@ struct audio_circular_buffer::impl : base::impl {
 
     struct buffer {
         audio::pcm_buffer buffer;
+        int64_t begin_frame;
         buffer_state state = buffer_state::unloaded;
     };
 

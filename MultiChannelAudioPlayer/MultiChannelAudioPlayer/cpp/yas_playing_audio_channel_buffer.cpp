@@ -19,7 +19,7 @@ struct audio_channel_buffer::impl : base::impl {
     impl(audio::format const &format) {
         auto each = make_fast_each(buffer_count);
         while (yas_each_next(each)) {
-            auto buffer = audio::pcm_buffer{format, uint32_t(format.sample_rate())};
+            this->_buffers.emplace_back(audio::pcm_buffer{format, uint32_t(format.sample_rate())});
         }
     }
 };

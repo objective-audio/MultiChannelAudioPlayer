@@ -136,6 +136,7 @@ struct audio_exporter::impl : base::impl {
                 result_handler(clear_result_t{clear_error::remove_failed});
             }
         });
+        this->_queue.push_back(std::move(op));
     }
 };
 

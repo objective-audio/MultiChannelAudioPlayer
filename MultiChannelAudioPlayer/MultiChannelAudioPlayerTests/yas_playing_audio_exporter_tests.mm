@@ -24,13 +24,14 @@ using namespace yas;
 }
 
 - (void)test_export_file {
-    auto document_url = system_url_utils::directory_url(system_url_utils::dir::document);
+    auto doc_url = system_url_utils::directory_url(system_url_utils::dir::document);
+    auto root_url = doc_url.appending("root");
     double const sample_rate = 3;
     uint32_t const file_length = sample_rate;
     audio::format format{audio::format::args{
         .sample_rate = sample_rate, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
 
-    playing::audio_exporter exporter{sample_rate, audio::pcm_format::int16, document_url};
+    playing::audio_exporter exporter{sample_rate, audio::pcm_format::int16, root_url};
 
     XCTestExpectation *firstExp = [self expectationWithDescription:@"export_first"];
 
@@ -77,7 +78,7 @@ using namespace yas;
     };
 
     {
-        auto url = document_url.appending("0/-1.caf");
+        auto url = root_url.appending("0/-1.caf");
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
@@ -87,7 +88,7 @@ using namespace yas;
     }
 
     {
-        auto url = document_url.appending("0/0.caf");
+        auto url = root_url.appending("0/0.caf");
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
@@ -97,7 +98,7 @@ using namespace yas;
     }
 
     {
-        auto url = document_url.appending("0/1.caf");
+        auto url = root_url.appending("0/1.caf");
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
@@ -124,7 +125,7 @@ using namespace yas;
     [self waitForExpectations:@[secondExp] timeout:10.0];
 
     {
-        auto url = document_url.appending("0/-1.caf");
+        auto url = root_url.appending("0/-1.caf");
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
@@ -134,7 +135,7 @@ using namespace yas;
     }
 
     {
-        auto url = document_url.appending("0/0.caf");
+        auto url = root_url.appending("0/0.caf");
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
@@ -144,7 +145,7 @@ using namespace yas;
     }
 
     {
-        auto url = document_url.appending("0/1.caf");
+        auto url = root_url.appending("0/1.caf");
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
@@ -152,6 +153,17 @@ using namespace yas;
 
         assert_file(format, url, {3, 0, 0});
     }
+
+    XCTestExpectation *clearExp = [self expectationWithDescription:@"clear"];
+
+    exporter.clear_all_files([=](auto const &result) {
+        XCTAssertTrue(result.is_success());
+        [clearExp fulfill];
+    });
+
+    [self waitForExpectations:@[clearExp] timeout:10.0];
+
+    XCTAssertFalse(file_manager::file_exists(root_url.path()));
 }
 
 - (void)remove_document_files {

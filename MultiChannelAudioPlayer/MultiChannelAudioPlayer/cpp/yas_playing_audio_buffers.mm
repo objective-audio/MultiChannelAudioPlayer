@@ -9,9 +9,11 @@ using namespace yas::playing;
 
 struct audio_play_buffers::impl : base::impl {
     std::size_t const _ch_count;
+    audio::format const _format;
 
     impl(double const sample_rate, audio::pcm_format const pcm_format, std::size_t const ch_count)
-        : _ch_count(ch_count) {
+        : _ch_count(ch_count),
+          _format({.sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}) {
     }
 };
 

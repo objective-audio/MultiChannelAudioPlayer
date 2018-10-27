@@ -19,8 +19,7 @@ struct audio_exporter::impl : base::impl {
     audio::pcm_buffer _process_buffer;
 
     impl(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url)
-        : _format(audio::format::args{
-              .sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}),
+        : _format({.sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}),
           _root_url(root_url),
           _file_buffer(this->_format, static_cast<uint32_t>(sample_rate)),
           _process_buffer(this->_format, static_cast<uint32_t>(sample_rate)) {

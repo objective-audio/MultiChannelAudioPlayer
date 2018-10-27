@@ -156,7 +156,7 @@ using namespace yas;
 
     XCTestExpectation *clearExp = [self expectationWithDescription:@"clear"];
 
-    exporter.clear_all_files([=](auto const &result) {
+    exporter.clear([=](auto const &result) {
         XCTAssertTrue(result.is_success());
         [clearExp fulfill];
     });

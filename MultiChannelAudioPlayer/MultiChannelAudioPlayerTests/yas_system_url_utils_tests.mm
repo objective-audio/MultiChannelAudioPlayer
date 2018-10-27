@@ -1,20 +1,18 @@
 //
-//  yas_system_url_tests.mm
+//  yas_system_url_utils_tests.mm
 //
 
 #import <XCTest/XCTest.h>
 #import "yas_system_url_utils.h"
 #import "yas_url.h"
 
-#import <iostream>
-
 using namespace yas;
 
-@interface yas_system_url_tests : XCTestCase
+@interface yas_system_url_utils_tests : XCTestCase
 
 @end
 
-@implementation yas_system_url_tests
+@implementation yas_system_url_utils_tests
 
 - (void)setUp {
 }

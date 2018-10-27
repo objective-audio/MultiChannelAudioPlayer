@@ -10,7 +10,7 @@
 		B61A406C217B51BB00B2717C /* yas_math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61A406A217B51BB00B2717C /* yas_math.cpp */; };
 		B61A406E217B536200B2717C /* yas_math_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61A406D217B536200B2717C /* yas_math_tests.mm */; };
 		B6652B4221833E6300A3A41C /* yas_playing_url_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6652B4021833E6300A3A41C /* yas_playing_url_utils.cpp */; };
-		B6652B442183F15800A3A41C /* yas_playing_url_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6652B432183F15800A3A41C /* yas_playing_url_tests.mm */; };
+		B6652B442183F15800A3A41C /* yas_playing_url_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6652B432183F15800A3A41C /* yas_playing_url_utils_tests.mm */; };
 		B679E2B02172BEB700859687 /* yas_objc_unowned.m in Sources */ = {isa = PBXBuildFile; fileRef = B679E2AD2172BEB700859687 /* yas_objc_unowned.m */; };
 		B679E2EF2172BF3700859687 /* yas_timer.mm in Sources */ = {isa = PBXBuildFile; fileRef = B679E2B52172BF3600859687 /* yas_timer.mm */; };
 		B679E2F02172BF3700859687 /* yas_delaying_caller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B679E2B82172BF3600859687 /* yas_delaying_caller.cpp */; };
@@ -37,7 +37,7 @@
 		B685EDD52171ABE9002EDC9B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B685EDD32171ABE9002EDC9B /* LaunchScreen.storyboard */; };
 		B685EDD82171ABE9002EDC9B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B685EDD72171ABE9002EDC9B /* main.m */; };
 		B685EDE22171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B685EDE12171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m */; };
-		B6D2D4DD217E05190036AE6D /* yas_system_url_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6D2D4DC217E05190036AE6D /* yas_system_url_tests.mm */; };
+		B6D2D4DD217E05190036AE6D /* yas_system_url_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6D2D4DC217E05190036AE6D /* yas_system_url_utils_tests.mm */; };
 		B6DB824421820C4C00BBCC89 /* yas_playing_audio_player.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DB824221820C4C00BBCC89 /* yas_playing_audio_player.mm */; };
 		B6FDB62C2174D06C00AF4365 /* yas_processing_sync_source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5E92174D06C00AF4365 /* yas_processing_sync_source.cpp */; };
 		B6FDB62D2174D06C00AF4365 /* yas_processing_channel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB5EA2174D06C00AF4365 /* yas_processing_channel.cpp */; };
@@ -126,7 +126,7 @@
 		B61A4070217C12E900B2717C /* yas_system_url_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_system_url_utils.h; sourceTree = "<group>"; };
 		B6652B4021833E6300A3A41C /* yas_playing_url_utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_url_utils.cpp; sourceTree = "<group>"; };
 		B6652B4121833E6300A3A41C /* yas_playing_url_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_url_utils.h; sourceTree = "<group>"; };
-		B6652B432183F15800A3A41C /* yas_playing_url_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_url_tests.mm; sourceTree = "<group>"; };
+		B6652B432183F15800A3A41C /* yas_playing_url_utils_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_url_utils_tests.mm; sourceTree = "<group>"; };
 		B679E2AD2172BEB700859687 /* yas_objc_unowned.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = yas_objc_unowned.m; sourceTree = "<group>"; };
 		B679E2AE2172BEB700859687 /* yas_objc_macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_objc_macros.h; sourceTree = "<group>"; };
 		B679E2AF2172BEB700859687 /* yas_objc_unowned.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_objc_unowned.h; sourceTree = "<group>"; };
@@ -204,7 +204,7 @@
 		B685EDDD2171ABE9002EDC9B /* MultiChannelAudioPlayerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MultiChannelAudioPlayerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B685EDE12171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultiChannelAudioPlayerTests.m; sourceTree = "<group>"; };
 		B685EDE32171ABE9002EDC9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B6D2D4DC217E05190036AE6D /* yas_system_url_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_system_url_tests.mm; sourceTree = "<group>"; };
+		B6D2D4DC217E05190036AE6D /* yas_system_url_utils_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_system_url_utils_tests.mm; sourceTree = "<group>"; };
 		B6DB824221820C4C00BBCC89 /* yas_playing_audio_player.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_audio_player.mm; sourceTree = "<group>"; };
 		B6DB824321820C4C00BBCC89 /* yas_playing_audio_player.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio_player.h; sourceTree = "<group>"; };
 		B6FDB5E62174D06C00AF4365 /* yas_processing_track.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_processing_track.h; sourceTree = "<group>"; };
@@ -550,10 +550,10 @@
 			children = (
 				B685EDE12171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m */,
 				B6FDB6E9217A12B900AF4365 /* yas_url_tests.mm */,
-				B6D2D4DC217E05190036AE6D /* yas_system_url_tests.mm */,
+				B6D2D4DC217E05190036AE6D /* yas_system_url_utils_tests.mm */,
 				B61A406D217B536200B2717C /* yas_math_tests.mm */,
 				B6821265217D550600E24A6B /* yas_playing_audio_exporter_tests.mm */,
-				B6652B432183F15800A3A41C /* yas_playing_url_tests.mm */,
+				B6652B432183F15800A3A41C /* yas_playing_url_utils_tests.mm */,
 				B685EDE32171ABE9002EDC9B /* Info.plist */,
 			);
 			path = MultiChannelAudioPlayerTests;
@@ -1054,11 +1054,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6FDB6EA217A12B900AF4365 /* yas_url_tests.mm in Sources */,
-				B6652B442183F15800A3A41C /* yas_playing_url_tests.mm in Sources */,
+				B6652B442183F15800A3A41C /* yas_playing_url_utils_tests.mm in Sources */,
 				B6821266217D550600E24A6B /* yas_playing_audio_exporter_tests.mm in Sources */,
 				B61A406E217B536200B2717C /* yas_math_tests.mm in Sources */,
 				B685EDE22171ABE9002EDC9B /* MultiChannelAudioPlayerTests.m in Sources */,
-				B6D2D4DD217E05190036AE6D /* yas_system_url_tests.mm in Sources */,
+				B6D2D4DD217E05190036AE6D /* yas_system_url_utils_tests.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

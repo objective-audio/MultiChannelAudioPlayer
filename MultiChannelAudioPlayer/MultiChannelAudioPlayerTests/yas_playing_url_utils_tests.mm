@@ -29,7 +29,15 @@ using namespace yas::playing;
     XCTAssertEqual(track_url.path(), "/root/1");
 }
 
-- (void)test_caf_url {
+- (void)test_caf_url_with_file_idx {
+    auto ch_url = url_utils::channel_url(yas::url::file_url("/root"), 1);
+
+    XCTAssertEqual(url_utils::caf_url(ch_url, 0).path(), "/root/1/0.caf");
+    XCTAssertEqual(url_utils::caf_url(ch_url, 1).path(), "/root/1/1.caf");
+    XCTAssertEqual(url_utils::caf_url(ch_url, -1).path(), "/root/1/-1.caf");
+}
+
+- (void)test_caf_url_with_file_frame {
     auto ch_url = url_utils::channel_url(yas::url::file_url("/root"), 1);
 
     XCTAssertEqual(url_utils::caf_url(ch_url, 0, 10).path(), "/root/1/0.caf");

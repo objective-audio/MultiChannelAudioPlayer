@@ -17,7 +17,7 @@ struct audio_circular_buffer::impl : base::impl {
         loaded,
     };
 
-    struct buffer {
+    struct container {
         audio::pcm_buffer buffer;
         int64_t begin_frame;
         buffer_state state = buffer_state::unloaded;
@@ -27,20 +27,26 @@ struct audio_circular_buffer::impl : base::impl {
         int64_t play_frame;
     };
 
-    std::vector<buffer> _buffers;
-
     impl(audio::format const &format, uint32_t const count) {
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
-            this->_buffers.emplace_back(buffer{.buffer = audio::pcm_buffer{format, uint32_t(format.sample_rate())}});
+            this->_containers.emplace_back(
+                container{.buffer = audio::pcm_buffer{format, uint32_t(format.sample_rate())}});
         }
     }
+
+    void read(audio::pcm_buffer &out_buffer) {
+#warning todo bufferをロックして読み出す
+    }
+
+   private:
+    std::vector<container> _containers;
 };
 
 audio_circular_buffer::audio_circular_buffer(audio::format const &format, uint32_t const count)
     : base(std::make_shared<impl>(format, count)) {
 }
 
-void read(audio::pcm_buffer &out_buffer) {
-#warning todo bufferをロックして読み出す
+void audio_circular_buffer::read(audio::pcm_buffer &out_buffer) {
+    impl_ptr<impl>()->read(out_buffer);
 }

@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_audio_circular_buffer.h"
+#include <mutex>
 #include "yas_audio_pcm_buffer.h"
 #include "yas_fast_each.h"
 
@@ -10,12 +11,28 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_circular_buffer::impl : base::impl {
-    std::vector<audio::pcm_buffer> _buffers;
+    enum buffer_state {
+        unloaded,
+        loading,
+        loaded,
+    };
+
+    struct buffer {
+        audio::pcm_buffer buffer;
+        buffer_state state = buffer_state::unloaded;
+    };
+
+    struct context {
+        int64_t play_frame;
+    };
+
+    std::vector<buffer> _buffers;
+    std::recursive_mutex _mutex;
 
     impl(audio::format const &format, uint32_t const count) {
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
-            this->_buffers.emplace_back(audio::pcm_buffer{format, uint32_t(format.sample_rate())});
+            this->_buffers.emplace_back(buffer{.buffer = audio::pcm_buffer{format, uint32_t(format.sample_rate())}});
         }
     }
 };

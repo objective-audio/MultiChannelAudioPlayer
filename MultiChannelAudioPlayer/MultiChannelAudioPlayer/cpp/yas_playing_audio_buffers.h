@@ -7,7 +7,6 @@
 #include "yas_audio.h"
 
 namespace yas::playing {
-
 struct audio_buffers : base {
     class impl;
 

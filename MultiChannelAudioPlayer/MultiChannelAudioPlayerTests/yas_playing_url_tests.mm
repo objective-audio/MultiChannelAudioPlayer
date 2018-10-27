@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_playing_url.h"
+#import "yas_playing_url_utils.h"
 
 #import <iostream>
 

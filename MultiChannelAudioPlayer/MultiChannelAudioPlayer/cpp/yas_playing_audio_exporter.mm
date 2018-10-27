@@ -7,7 +7,7 @@
 #include "yas_file_manager.h"
 #include "yas_math.h"
 #include "yas_operation.h"
-#include "yas_playing_url.h"
+#include "yas_playing_url_utils.h"
 
 using namespace yas::playing;
 
@@ -32,7 +32,7 @@ struct audio_exporter::impl : base::impl {
     void export_file(uint32_t const ch_idx, proc::time::range const &range,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&proc_handler,
                      std::function<void(export_result_t const &)> &&result_handler) {
-        auto ch_url = playing::url_utils::channel_url(this->_root_url, ch_idx);
+        auto ch_url = url_utils::channel_url(this->_root_url, ch_idx);
 
         operation op([ch_idx, range, proc_handler = std::move(proc_handler), result_handler = std::move(result_handler),
                       format = this->_format, ch_url = std::move(ch_url), file_buffer = this->_file_buffer,
@@ -47,7 +47,7 @@ struct audio_exporter::impl : base::impl {
 
             if (auto result = file_manager::create_directory_if_not_exists(ch_url.path())) {
                 while (file_frame_idx < end_frame_idx) {
-                    auto const file_url = playing::url_utils::caf_url(ch_url, file_frame_idx, sample_rate);
+                    auto const file_url = url_utils::caf_url(ch_url, file_frame_idx, sample_rate);
                     proc::time::range const file_range{file_frame_idx, file_length};
 
                     // 1秒バッファをクリアする

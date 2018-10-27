@@ -3,7 +3,6 @@
 //
 
 #include "yas_math.h"
-#include <iostream>
 
 using namespace yas;
 

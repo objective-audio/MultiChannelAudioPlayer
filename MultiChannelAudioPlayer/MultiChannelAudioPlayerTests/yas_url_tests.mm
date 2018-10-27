@@ -3,7 +3,6 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <iostream>
 #import "yas_url.h"
 
 using namespace yas;

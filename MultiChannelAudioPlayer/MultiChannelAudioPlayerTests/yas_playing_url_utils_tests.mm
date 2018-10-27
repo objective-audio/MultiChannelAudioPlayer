@@ -5,8 +5,6 @@
 #import <XCTest/XCTest.h>
 #import "yas_playing_url_utils.h"
 
-#import <iostream>
-
 using namespace yas;
 using namespace yas::playing;
 

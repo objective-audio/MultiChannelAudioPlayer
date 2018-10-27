@@ -7,7 +7,15 @@
 using namespace yas;
 using namespace yas::playing;
 
-struct audio_buffers::impl : base::impl {};
+struct audio_play_buffers::impl : base::impl {
+    std::size_t const _ch_count;
 
-audio_buffers::audio_buffers() : base(std::make_shared<impl>()) {
+    impl(double const sample_rate, audio::pcm_format const pcm_format, std::size_t const ch_count)
+        : _ch_count(ch_count) {
+    }
+};
+
+audio_play_buffers::audio_play_buffers(double const sample_rate, audio::pcm_format const pcm_format,
+                                       std::size_t const ch_count)
+    : base(std::make_shared<impl>(sample_rate, pcm_format, ch_count)) {
 }

@@ -12,7 +12,7 @@
 using namespace yas::playing;
 
 struct audio_exporter::impl : base::impl {
-    audio::format _format;
+    audio::format const _format;
     url const _root_url;
     operation_queue _queue;
     audio::pcm_buffer _file_buffer;

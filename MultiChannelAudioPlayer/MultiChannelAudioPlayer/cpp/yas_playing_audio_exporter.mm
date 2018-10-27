@@ -1,15 +1,15 @@
 //
-//  yas_multi_track_audio_exporter.mm
+//  yas_playing_audio_exporter.mm
 //
 
-#include "yas_multi_track_audio_exporter.h"
+#include "yas_playing_audio_exporter.h"
 #include "yas_cf_utils.h"
 #include "yas_file_manager.h"
 #include "yas_math.h"
-#include "yas_multi_track_url.h"
 #include "yas_operation.h"
+#include "yas_playing_url.h"
 
-using namespace yas::multi_track;
+using namespace yas::playing;
 
 struct audio_exporter::impl : base::impl {
     audio::format _format;
@@ -32,7 +32,7 @@ struct audio_exporter::impl : base::impl {
     void export_file(uint32_t const trk_idx, proc::time::range const &range,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&proc_handler,
                      std::function<void(export_result_t const &)> &&result_handler) {
-        auto trk_url = multi_track::track_url(this->_root_url, trk_idx);
+        auto trk_url = playing::track_url(this->_root_url, trk_idx);
 
         operation op([trk_idx, range, proc_handler = std::move(proc_handler),
                       result_handler = std::move(result_handler), format = this->_format, trk_url = std::move(trk_url),
@@ -48,7 +48,7 @@ struct audio_exporter::impl : base::impl {
 
             if (auto result = file_manager::create_directory_if_not_exists(trk_url.path())) {
                 while (file_frame_idx < end_frame_idx) {
-                    auto const file_url = multi_track::file_url(trk_url, file_frame_idx, sample_rate);
+                    auto const file_url = playing::file_url(trk_url, file_frame_idx, sample_rate);
                     proc::time::range const file_range{file_frame_idx, file_length};
 
                     // 1秒バッファをクリアする
@@ -156,17 +156,17 @@ void audio_exporter::clear_all_files(std::function<void(clear_result_t const &)>
 
 #pragma mark -
 
-std::string yas::to_string(multi_track::audio_exporter::export_error const &error) {
+std::string yas::to_string(playing::audio_exporter::export_error const &error) {
     switch (error) {
-        case multi_track::audio_exporter::export_error::erase_file_failed:
+        case playing::audio_exporter::export_error::erase_file_failed:
             return "erase_file_failed";
-        case multi_track::audio_exporter::export_error::invalid_process_range:
+        case playing::audio_exporter::export_error::invalid_process_range:
             return "invalid_process_range";
-        case multi_track::audio_exporter::export_error::copy_buffer_failed:
+        case playing::audio_exporter::export_error::copy_buffer_failed:
             return "copy_buffer_failed";
-        case multi_track::audio_exporter::export_error::write_failed:
+        case playing::audio_exporter::export_error::write_failed:
             return "write_failed";
-        case multi_track::audio_exporter::export_error::create_file_failed:
+        case playing::audio_exporter::export_error::create_file_failed:
             return "create_file_failed";
     }
 }

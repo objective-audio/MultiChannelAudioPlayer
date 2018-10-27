@@ -1,11 +1,11 @@
 //
-//  yas_multi_track_audio_player.mm
+//  yas_playing_audio_player.mm
 //
 
-#include "yas_multi_track_audio_player.h"
+#include "yas_playing_audio_player.h"
 
 using namespace yas;
-using namespace yas::multi_track;
+using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
     audio::format _format;

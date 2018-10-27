@@ -1,5 +1,5 @@
 //
-//  yas_multi_track_audio_player.h
+//  yas_playing_audio_player.h
 //
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "yas_base.h"
 #include "yas_url.h"
 
-namespace yas::multi_track {
+namespace yas::playing {
 struct audio_player : base {
     class impl;
 
@@ -18,4 +18,4 @@ struct audio_player : base {
     void stop();
     void seek(int64_t const frame_idx);
 };
-}  // namespace yas::multi_track
+}  // namespace yas::playing

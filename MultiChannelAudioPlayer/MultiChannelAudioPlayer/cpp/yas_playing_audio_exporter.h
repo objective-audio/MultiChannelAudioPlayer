@@ -1,5 +1,5 @@
 //
-//  yas_multi_track_audio_exporter.h
+//  yas_playing_audio_exporter.h
 //
 
 #pragma once
@@ -10,7 +10,7 @@
 #include "yas_processing.h"
 #include "yas_url.h"
 
-namespace yas::multi_track {
+namespace yas::playing {
 struct audio_exporter : base {
     class impl;
 
@@ -36,8 +36,8 @@ struct audio_exporter : base {
 
     void clear_all_files(std::function<void(clear_result_t const &)> result_handler);
 };
-}  // namespace yas::multi_track
+}  // namespace yas::playing
 
 namespace yas {
-std::string to_string(multi_track::audio_exporter::export_error const &);
+std::string to_string(playing::audio_exporter::export_error const &);
 }

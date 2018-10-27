@@ -1,19 +1,19 @@
 //
-//  yas_multi_track_audio_exporter_tests.mm
+//  yas_playing_audio_exporter_tests.mm
 //
 
 #import <XCTest/XCTest.h>
 #import "yas_file_manager.h"
-#import "yas_multi_track_audio_exporter.h"
+#import "yas_playing_audio_exporter.h"
 #import "yas_system_url.h"
 
 using namespace yas;
 
-@interface yas_multi_track_audio_exporter_tests : XCTestCase
+@interface yas_playing_audio_exporter_tests : XCTestCase
 
 @end
 
-@implementation yas_multi_track_audio_exporter_tests
+@implementation yas_playing_audio_exporter_tests
 
 - (void)setUp {
     [self remove_document_files];
@@ -30,7 +30,7 @@ using namespace yas;
     audio::format format{audio::format::args{
         .sample_rate = sample_rate, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
 
-    multi_track::audio_exporter exporter{sample_rate, audio::pcm_format::int16, document_url};
+    playing::audio_exporter exporter{sample_rate, audio::pcm_format::int16, document_url};
 
     XCTestExpectation *firstExp = [self expectationWithDescription:@"export_first"];
 

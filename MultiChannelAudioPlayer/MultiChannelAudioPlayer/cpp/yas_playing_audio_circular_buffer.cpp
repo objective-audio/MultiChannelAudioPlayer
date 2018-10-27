@@ -11,16 +11,16 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_circular_buffer::impl : base::impl {
-    enum buffer_state {
-        unloaded,
-        loading,
-        loaded,
-    };
-
     struct container {
+        enum state {
+            unloaded,
+            loading,
+            loaded,
+        };
+
         audio::pcm_buffer buffer;
         int64_t begin_frame;
-        buffer_state state = buffer_state::unloaded;
+        state state = state::unloaded;
     };
 
     struct context {

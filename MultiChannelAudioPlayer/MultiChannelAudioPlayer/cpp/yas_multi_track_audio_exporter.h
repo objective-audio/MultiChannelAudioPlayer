@@ -21,14 +21,20 @@ struct audio_exporter : base {
         write_failed,
         create_file_failed,
     };
-
     using export_result_t = result<std::nullptr_t, export_error>;
+
+    enum class clear_error {
+        remove_failed,
+    };
+    using clear_result_t = result<std::nullptr_t, clear_error>;
 
     audio_exporter(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url);
 
     void export_file(uint32_t const trk_idx, proc::time::range const &,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> proc_handler,
                      std::function<void(export_result_t const &)> result_handler);
+
+    void clear_all_files(std::function<void(clear_result_t const &)> result_handler);
 };
 }  // namespace yas::multi_track
 

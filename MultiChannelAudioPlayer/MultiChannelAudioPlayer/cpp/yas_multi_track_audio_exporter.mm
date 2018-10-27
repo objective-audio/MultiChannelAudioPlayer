@@ -37,7 +37,7 @@ struct audio_exporter::impl : base::impl {
         operation op([trk_idx, range, proc_handler = std::move(proc_handler),
                       result_handler = std::move(result_handler), format = this->_format, trk_url = std::move(trk_url),
                       file_buffer = this->_file_buffer,
-                      process_buffer = this->_process_buffer](operation const &) mutable {
+                      process_buffer = this->_process_buffer](operation const &operation) mutable {
             proc::length_t const sample_rate = format.sample_rate();
             proc::length_t const file_length = sample_rate;
 
@@ -126,6 +126,18 @@ struct audio_exporter::impl : base::impl {
         });
         this->_queue.push_back(std::move(op));
     }
+
+    void clear_all_files(std::function<void(clear_result_t const &)> result_handler) {
+        this->_queue.cancel();
+
+        operation op([result_handler, root_url = this->_root_url](operation const &) {
+            if (auto result = file_manager::remove_file(root_url.path())) {
+                result_handler(clear_result_t{nullptr});
+            } else {
+                result_handler(clear_result_t{clear_error::remove_failed});
+            }
+        });
+    }
 };
 
 audio_exporter::audio_exporter(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url)
@@ -136,6 +148,10 @@ void audio_exporter::export_file(uint32_t const trk_idx, proc::time::range const
                                  std::function<void(audio::pcm_buffer &, proc::time::range const &)> proc_handler,
                                  std::function<void(export_result_t const &)> completion_handler) {
     impl_ptr<impl>()->export_file(trk_idx, range, std::move(proc_handler), std::move(completion_handler));
+}
+
+void audio_exporter::clear_all_files(std::function<void(clear_result_t const &)> result_handler) {
+    impl_ptr<impl>()->clear_all_files(result_handler);
 }
 
 #pragma mark -

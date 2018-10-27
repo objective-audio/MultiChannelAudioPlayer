@@ -36,7 +36,6 @@ using namespace yas;
     XCTAssertEqual(multi_track::file_url(track_url, 9, 10).path(), "/root/1/0.caf");
     XCTAssertEqual(multi_track::file_url(track_url, 10, 10).path(), "/root/1/1.caf");
     XCTAssertEqual(multi_track::file_url(track_url, -1, 10).path(), "/root/1/-1.caf");
-    std::cout << multi_track::file_url(track_url, -1, 10).path() << std::endl;
     XCTAssertEqual(multi_track::file_url(track_url, -10, 10).path(), "/root/1/-1.caf");
     XCTAssertEqual(multi_track::file_url(track_url, -11, 10).path(), "/root/1/-2.caf");
 }

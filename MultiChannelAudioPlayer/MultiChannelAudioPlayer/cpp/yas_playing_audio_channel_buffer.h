@@ -7,9 +7,9 @@
 #include "yas_audio_format.h"
 
 namespace yas::playing {
-struct audio_channel_buffer : base {
+struct audio_circular_buffer : base {
     class impl;
 
-    audio_channel_buffer(audio::format const &format);
+    audio_circular_buffer(audio::format const &format, uint32_t const count);
 };
 }  // namespace yas::playing

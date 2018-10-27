@@ -6,6 +6,7 @@
 #include <mutex>
 #include "yas_audio_format.h"
 #include "yas_fast_each.h"
+#include "yas_operation.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -41,6 +42,7 @@ struct audio_circular_buffer::impl : base::impl {
 
    private:
     std::vector<container> _containers;
+    operation_queue _queue;
 };
 
 audio_circular_buffer::audio_circular_buffer(audio::format const &format, uint32_t const count)

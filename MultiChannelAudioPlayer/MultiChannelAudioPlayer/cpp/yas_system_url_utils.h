@@ -1,5 +1,5 @@
 //
-//  yas_system_url.h
+//  yas_system_url_utils.h
 //
 
 #pragma once
@@ -10,7 +10,7 @@ namespace yas {
 class url;
 }
 
-namespace yas::system_url {
+namespace yas::system_url_utils {
 enum class dir {
     document,
     caches,
@@ -18,4 +18,4 @@ enum class dir {
 };
 
 url directory_url(dir const);
-}  // namespace yas::system_url
+}  // namespace yas::system_url_utils

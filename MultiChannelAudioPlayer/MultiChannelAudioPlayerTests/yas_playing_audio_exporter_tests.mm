@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import "yas_file_manager.h"
 #import "yas_playing_audio_exporter.h"
-#import "yas_system_url.h"
+#import "yas_system_url_utils.h"
 
 using namespace yas;
 
@@ -24,7 +24,7 @@ using namespace yas;
 }
 
 - (void)test_export_file {
-    auto document_url = system_url::directory_url(system_url::dir::document);
+    auto document_url = system_url_utils::directory_url(system_url_utils::dir::document);
     double const sample_rate = 3;
     uint32_t const file_length = sample_rate;
     audio::format format{audio::format::args{
@@ -155,7 +155,7 @@ using namespace yas;
 }
 
 - (void)remove_document_files {
-    auto document_url = system_url::directory_url(system_url::dir::document);
+    auto document_url = system_url_utils::directory_url(system_url_utils::dir::document);
     file_manager::remove_files_in_directory(document_url.path());
 }
 

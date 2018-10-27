@@ -34,3 +34,7 @@ void audio_player::stop() {
 void audio_player::seek(int64_t const frame_idx) {
 #warning
 }
+
+void audio_player::reload(int64_t const ch_idx, int64_t const sec_idx) {
+#warning
+}

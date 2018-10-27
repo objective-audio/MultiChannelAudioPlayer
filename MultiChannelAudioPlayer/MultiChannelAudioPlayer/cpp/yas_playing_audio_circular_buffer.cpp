@@ -2,7 +2,7 @@
 //  yas_playing_audio_channel_buffer.mm
 //
 
-#include "yas_playing_audio_channel_buffer.h"
+#include "yas_playing_audio_circular_buffer.h"
 #include "yas_audio_pcm_buffer.h"
 #include "yas_fast_each.h"
 

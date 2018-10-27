@@ -4,7 +4,7 @@
 
 #include "yas_playing_audio_buffer_manager.h"
 #include "yas_fast_each.h"
-#include "yas_playing_audio_channel_buffer.h"
+#include "yas_playing_audio_circular_buffer.h"
 
 using namespace yas;
 using namespace yas::playing;

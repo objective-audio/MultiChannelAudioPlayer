@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "yas_audio.h"
+#include "yas_audio_format.h"
 
 namespace yas::playing {
 struct audio_buffer_manager : base {

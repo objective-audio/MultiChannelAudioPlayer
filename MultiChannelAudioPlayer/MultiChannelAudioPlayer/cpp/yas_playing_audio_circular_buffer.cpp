@@ -6,6 +6,7 @@
 #include <mutex>
 #include "yas_audio_format.h"
 #include "yas_fast_each.h"
+#include "yas_math.h"
 #include "yas_operation.h"
 
 using namespace yas;
@@ -33,11 +34,11 @@ struct audio_circular_buffer::impl : base::impl {
 
     using container_ptr = std::shared_ptr<container>;
 
-    impl(audio::format const &format, uint32_t const count) {
+    impl(audio::format const &format, uint32_t const count)
+        : _file_length(static_cast<uint32_t>(format.sample_rate())) {
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
-            auto ptr =
-                std::make_shared<container>(audio::pcm_buffer{format, static_cast<uint32_t>(format.sample_rate())});
+            auto ptr = std::make_shared<container>(audio::pcm_buffer{format, this->_file_length});
             this->_containers.emplace_back(std::move(ptr));
         }
     }
@@ -48,14 +49,21 @@ struct audio_circular_buffer::impl : base::impl {
         while (remain > 0) {
 #warning todo bufferをロックして読み出す
             if (auto lock = std::unique_lock<std::recursive_mutex>(this->_read_mutex)) {
-                int64_t current_frame = this->_current_frame;
+                int64_t const current = this->_current_frame;
+                uint32_t const proc_length =
+                    std::min(static_cast<uint32_t>(current - math::floor_int(current, this->_file_length)), remain);
+                container_ptr &container = this->_container_for_frame(current);
+                if (container) {
+                }
+                int64_t const next = current + proc_length;
             }
         }
     }
 
-    container_ptr &current_container() {
+    // readをロックした状態で使う
+    container_ptr &_container_for_frame(int64_t const frame) {
         for (auto &container : this->_containers) {
-            if (container->contains(this->_current_frame)) {
+            if (container->contains(frame)) {
                 return container;
             }
         }
@@ -64,6 +72,7 @@ struct audio_circular_buffer::impl : base::impl {
     }
 
    private:
+    uint32_t const _file_length;
     std::vector<container_ptr> _containers;
     operation_queue _queue;
     int64_t _current_frame;

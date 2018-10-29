@@ -33,6 +33,10 @@ struct audio_circular_buffer::impl : base::impl {
             this->_begin_frame = frame;
         }
 
+        void clear_buffer() {
+            this->_buffer.clear();
+        }
+
         void write_from_file(audio::file &file) {
             file.read_into_buffer(this->_buffer, this->_buffer.frame_length());
             this->_state = state::loaded;
@@ -78,13 +82,13 @@ struct audio_circular_buffer::impl : base::impl {
             if (container) {
 #warning todo containerからデータを読み出す
 #warning 同じcontainerをpush_cancel_idにする
-                //                container_wptr weak_container = container;
-                //                operation op{[weak_container](operation const &) {
-                //                    if (auto container = weak_container.lock()) {
-                //                        //                    container->write_from_file(<#audio::file &file#>)
-                //                    }
-                //                }};
-                //                this->_queue.push_back(std::move(op));
+                container_wptr weak_container = container;
+                operation op{[weak_container, ch_idx = this->_ch_idx](operation const &) {
+                    if (auto container = weak_container.lock()) {
+#warning ファイルを読み込む
+                    }
+                }};
+                this->_queue.push_back(std::move(op));
             }
             int64_t const next = current + proc_length;
             if (next % this->_file_length == 0) {

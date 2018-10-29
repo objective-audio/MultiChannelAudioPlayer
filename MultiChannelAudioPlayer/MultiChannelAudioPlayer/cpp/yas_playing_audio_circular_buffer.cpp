@@ -30,6 +30,12 @@ struct audio_circular_buffer::impl : base::impl {
         bool contains(int64_t const frame) {
             return begin_frame <= frame && frame < (begin_frame + buffer.frame_length());
         }
+
+        void prepare_loading(int64_t const frame) {
+#warning 読み込み中なら待つ
+            this->state = container::state::loading;
+            this->begin_frame = frame;
+        }
     };
 
     using container_ptr = std::shared_ptr<container>;
@@ -50,14 +56,18 @@ struct audio_circular_buffer::impl : base::impl {
 #warning todo bufferをロックして読み出す
             if (auto lock = std::unique_lock<std::recursive_mutex>(this->_read_mutex)) {
                 int64_t const current = this->_current_frame;
-                uint32_t const proc_length =
-                    std::min(static_cast<uint32_t>(current - math::floor_int(current, this->_file_length)), remain);
+                int64_t const current_begin_frame = math::floor_int(current, this->_file_length);
+                uint32_t const proc_length = std::min(static_cast<uint32_t>(current - current_begin_frame), remain);
                 container_ptr &container = this->_container_for_frame(current);
                 if (container) {
+#warning todo containerからデータを読み出す
                 }
                 int64_t const next = current + proc_length;
                 if (next % this->_file_length == 0) {
-#warning todo バッファをロードする
+#warning todo バッファの最後まで行ったのでロードする
+                    if (container) {
+                        container->prepare_loading(current_begin_frame + this->_file_length * this->_containers.size());
+                    }
                 }
 
                 remain -= proc_length;

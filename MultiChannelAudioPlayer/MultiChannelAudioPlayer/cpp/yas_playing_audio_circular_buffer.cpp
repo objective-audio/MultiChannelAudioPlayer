@@ -56,6 +56,11 @@ struct audio_circular_buffer::impl : base::impl {
                 if (container) {
                 }
                 int64_t const next = current + proc_length;
+                if (next % this->_file_length == 0) {
+#warning todo バッファをロードする
+                }
+
+                remain -= proc_length;
             }
         }
     }

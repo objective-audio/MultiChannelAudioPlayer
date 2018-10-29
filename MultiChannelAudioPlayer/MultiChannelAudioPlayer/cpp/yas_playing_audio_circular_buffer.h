@@ -10,7 +10,7 @@ namespace yas::playing {
 struct audio_circular_buffer : base {
     class impl;
 
-    audio_circular_buffer(audio::format const &format, uint32_t const count);
+    audio_circular_buffer(audio::format const &format, std::size_t const count, std::size_t const ch_idx);
 
     void read(audio::pcm_buffer &out_buffer);
 };

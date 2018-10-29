@@ -17,7 +17,8 @@ struct audio_buffer_manager::impl : base::impl {
         : _format({.sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}) {
         auto each = make_fast_each(ch_count);
         while (yas_each_next(each)) {
-            this->_ch_buffers.emplace_back(audio_circular_buffer{this->_format, 3});
+            auto const &idx = yas_each_index(each);
+            this->_ch_buffers.emplace_back(audio_circular_buffer{this->_format, 3, idx});
         }
     }
 };

@@ -64,9 +64,9 @@ struct audio_circular_buffer::impl : base::impl {
                 }
                 int64_t const next = current + proc_length;
                 if (next % this->_file_length == 0) {
-#warning todo バッファの最後まで行ったのでロードする
                     if (container) {
                         container->prepare_loading(current_begin_frame + this->_file_length * this->_containers.size());
+                        this->_load_container(container);
                     }
                 }
 
@@ -92,6 +92,10 @@ struct audio_circular_buffer::impl : base::impl {
     operation_queue _queue;
     int64_t _current_frame;
     std::recursive_mutex _read_mutex;
+    
+    void _load_container(container_ptr &container) {
+#warning todo オペレーションに投げる
+    }
 };
 
 audio_circular_buffer::audio_circular_buffer(audio::format const &format, uint32_t const count)

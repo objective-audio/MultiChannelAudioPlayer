@@ -42,13 +42,13 @@ struct audio_circular_buffer::impl : base::impl {
             this->_state = state::loaded;
         }
 
-        void read_to_buffer(audio::pcm_buffer &to_buffer, int64_t const to_frame, int64_t const from_frame,
+        void read_to_buffer(audio::pcm_buffer &out_buffer, int64_t const out_frame, int64_t const from_frame,
                             uint32_t const length) {
             if (this->_state != state::loaded) {
                 return;
             }
 
-#warning
+#warning todo
         }
 
        private:
@@ -78,10 +78,14 @@ struct audio_circular_buffer::impl : base::impl {
             int64_t const current = this->_current_frame;
             int64_t const current_begin_frame = math::floor_int(current, this->_file_length);
             uint32_t const proc_length = std::min(static_cast<uint32_t>(current - current_begin_frame), remain);
+
             container_ptr &container = this->_container_for_frame(current);
             if (container) {
-#warning todo containerからデータを読み出す
+                uint32_t const to_frame = this->_file_length - remain;
+                int64_t const from_frame = current - current_begin_frame;
+                container->read_to_buffer(out_buffer, to_frame, from_frame, proc_length);
             }
+
             int64_t const next = current + proc_length;
             if (next % this->_file_length == 0) {
                 if (container) {

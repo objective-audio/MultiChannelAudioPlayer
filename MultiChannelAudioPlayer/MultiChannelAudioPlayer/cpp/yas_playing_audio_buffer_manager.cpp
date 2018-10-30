@@ -10,17 +10,19 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_buffer_manager::impl : base::impl {
-    audio::format const _format;
-    std::vector<audio_circular_buffer> _ch_buffers;
-
     impl(double const sample_rate, audio::pcm_format const pcm_format, std::size_t const ch_count)
         : _format({.sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}) {
         auto each = make_fast_each(ch_count);
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
-            this->_ch_buffers.emplace_back(audio_circular_buffer{this->_format, 3, idx});
+            this->_ch_buffers.emplace_back(audio_circular_buffer{this->_format, 3, idx, this->_queue});
         }
     }
+
+   private:
+    audio::format const _format;
+    std::vector<audio_circular_buffer> _ch_buffers;
+    operation_queue _queue;
 };
 
 audio_buffer_manager::audio_buffer_manager(double const sample_rate, audio::pcm_format const pcm_format,

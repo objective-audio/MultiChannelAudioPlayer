@@ -8,7 +8,6 @@
 #include "yas_audio_format.h"
 #include "yas_fast_each.h"
 #include "yas_math.h"
-#include "yas_operation.h"
 #include "yas_result.h"
 
 using namespace yas;
@@ -61,8 +60,8 @@ struct audio_circular_buffer::impl : base::impl {
     using container_ptr = std::shared_ptr<container>;
     using container_wptr = std::weak_ptr<container>;
 
-    impl(audio::format const &format, std::size_t const count, std::size_t const ch_idx)
-        : _file_length(static_cast<uint32_t>(format.sample_rate())), _ch_idx(ch_idx) {
+    impl(audio::format const &format, std::size_t const count, std::size_t const ch_idx, operation_queue &&queue)
+        : _file_length(static_cast<uint32_t>(format.sample_rate())), _ch_idx(ch_idx), _queue(std::move(queue)) {
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
             auto ptr = std::make_shared<container>(audio::pcm_buffer{format, this->_file_length});
@@ -133,8 +132,8 @@ struct audio_circular_buffer::impl : base::impl {
 };
 
 audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::size_t const count,
-                                             std::size_t const ch_idx)
-    : base(std::make_shared<impl>(format, count, ch_idx)) {
+                                             std::size_t const ch_idx, operation_queue queue)
+    : base(std::make_shared<impl>(format, count, ch_idx, std::move(queue))) {
 }
 
 void audio_circular_buffer::read(audio::pcm_buffer &out_buffer) {

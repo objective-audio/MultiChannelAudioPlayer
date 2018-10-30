@@ -99,6 +99,7 @@ struct audio_circular_buffer::impl : base::impl {
             }
 
             remain -= proc_length;
+            this->_current_frame += proc_length;
         }
     }
 

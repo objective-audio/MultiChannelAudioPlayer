@@ -81,14 +81,6 @@ struct audio_circular_buffer::impl : base::impl {
             container_ptr &container = this->_container_for_frame(current);
             if (container) {
 #warning todo containerからデータを読み出す
-#warning 同じcontainerをpush_cancel_idにする
-                container_wptr weak_container = container;
-                operation op{[weak_container, ch_idx = this->_ch_idx](operation const &) {
-                    if (auto container = weak_container.lock()) {
-#warning ファイルを読み込む
-                    }
-                }};
-                this->_queue.push_back(std::move(op));
             }
             int64_t const next = current + proc_length;
             if (next % this->_file_length == 0) {
@@ -124,6 +116,14 @@ struct audio_circular_buffer::impl : base::impl {
 
     void _load_container(container_ptr &container) {
 #warning todo オペレーションに投げる
+#warning 同じcontainerをpush_cancel_idにする
+        container_wptr weak_container = container;
+        operation op{[weak_container, ch_idx = this->_ch_idx](operation const &) {
+            if (auto container = weak_container.lock()) {
+#warning ファイルを読み込む
+            }
+        }};
+        this->_queue.push_back(std::move(op));
     }
 };
 

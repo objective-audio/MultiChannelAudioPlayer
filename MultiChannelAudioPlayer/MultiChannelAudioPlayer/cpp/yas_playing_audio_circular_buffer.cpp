@@ -20,6 +20,9 @@ struct audio_circular_buffer::impl : base::impl {
             loaded,
         };
 
+        using write_result_t = result<std::nullptr_t, audio::file::read_error_t>;
+        using read_result_t = result<std::nullptr_t, audio::pcm_buffer::copy_error_t>;
+
         container(audio::pcm_buffer &&buffer) : _buffer(std::move(buffer)) {
         }
 
@@ -32,19 +35,17 @@ struct audio_circular_buffer::impl : base::impl {
             this->_begin_frame = frame;
         }
 
-        void clear_buffer() {
-            this->_buffer.clear();
+        write_result_t write_from_file(audio::file &file) {
+            if (auto result = file.read_into_buffer(this->_buffer, this->_buffer.frame_length())) {
+                this->_state = state::loaded;
+                return write_result_t{nullptr};
+            } else {
+                return write_result_t{result.error()};
+            }
         }
 
-        void write_from_file(audio::file &file) {
-            file.read_into_buffer(this->_buffer, this->_buffer.frame_length());
-            this->_state = state::loaded;
-        }
-
-        using read_result_t = result<std::nullptr_t, audio::pcm_buffer::copy_error_t>;
-
-        read_result_t read_to_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, uint32_t const from_frame,
-                                     uint32_t const length) {
+        read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, uint32_t const from_frame,
+                                       uint32_t const length) {
             if (this->_state != state::loaded) {
                 return read_result_t{nullptr};
             }
@@ -88,7 +89,7 @@ struct audio_circular_buffer::impl : base::impl {
             if (container) {
                 uint32_t const to_frame = this->_file_length - remain;
                 uint32_t const from_frame = static_cast<uint32_t>(current - current_begin_frame);
-                container->read_to_buffer(out_buffer, to_frame, from_frame, proc_length);
+                container->read_into_buffer(out_buffer, to_frame, from_frame, proc_length);
             }
 
             int64_t const next = current + proc_length;

@@ -41,14 +41,19 @@ struct audio_circular_buffer::impl : base::impl {
             this->_state = state::loaded;
         }
 
-        void read_to_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, uint32_t const from_frame,
-                            uint32_t const length) {
+        using read_result_t = result<std::nullptr_t, audio::pcm_buffer::copy_error_t>;
+
+        read_result_t read_to_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, uint32_t const from_frame,
+                                     uint32_t const length) {
             if (this->_state != state::loaded) {
-                return;
+                return read_result_t{nullptr};
             }
 
-            to_buffer.copy_from(this->_buffer, from_frame, to_frame, length);
-#warning resultを返す？
+            if (auto result = to_buffer.copy_from(this->_buffer, from_frame, to_frame, length)) {
+                return read_result_t{nullptr};
+            } else {
+                return read_result_t{result.error()};
+            }
         }
 
        private:

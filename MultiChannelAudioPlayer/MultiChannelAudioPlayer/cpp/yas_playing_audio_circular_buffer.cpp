@@ -83,7 +83,7 @@ struct audio_circular_buffer::impl : base::impl {
             container_ptr &container = this->_container_for_frame(current);
             if (container) {
                 uint32_t const to_frame = this->_file_length - remain;
-                int64_t const from_frame = current - current_begin_frame;
+                uint32_t const from_frame = static_cast<uint32_t>(current - current_begin_frame);
                 container->read_to_buffer(out_buffer, to_frame, from_frame, proc_length);
             }
 

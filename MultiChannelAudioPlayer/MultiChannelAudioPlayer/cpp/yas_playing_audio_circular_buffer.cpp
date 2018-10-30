@@ -42,7 +42,7 @@ struct audio_circular_buffer::impl : base::impl {
             this->_state = state::loaded;
         }
 
-        void read_to_buffer(audio::pcm_buffer &out_buffer, int64_t const out_frame, int64_t const from_frame,
+        void read_to_buffer(audio::pcm_buffer &to_buffer, int64_t const to_frame, int64_t const from_frame,
                             uint32_t const length) {
             if (this->_state != state::loaded) {
                 return;

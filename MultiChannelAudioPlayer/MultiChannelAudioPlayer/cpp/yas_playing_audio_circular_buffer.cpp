@@ -42,13 +42,14 @@ struct audio_circular_buffer::impl : base::impl {
             this->_state = state::loaded;
         }
 
-        void read_to_buffer(audio::pcm_buffer &to_buffer, int64_t const to_frame, int64_t const from_frame,
+        void read_to_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, uint32_t const from_frame,
                             uint32_t const length) {
             if (this->_state != state::loaded) {
                 return;
             }
 
-#warning todo
+            to_buffer.copy_from(this->_buffer, from_frame, to_frame, length);
+#warning resultを返す？
         }
 
        private:

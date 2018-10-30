@@ -75,7 +75,7 @@ struct audio_circular_buffer::impl : base::impl {
         }
     }
 
-    void read(audio::pcm_buffer &out_buffer) {
+    void read_into_buffer(audio::pcm_buffer &out_buffer) {
         uint32_t remain = out_buffer.frame_length();
 
         while (remain > 0) {
@@ -89,7 +89,11 @@ struct audio_circular_buffer::impl : base::impl {
             if (container) {
                 uint32_t const to_frame = this->_file_length - remain;
                 uint32_t const from_frame = static_cast<uint32_t>(current - current_begin_frame);
-                container->read_into_buffer(out_buffer, to_frame, from_frame, proc_length);
+                if (auto result = container->read_into_buffer(out_buffer, to_frame, from_frame, proc_length);
+                    result.is_error()) {
+                    throw std::runtime_error("circular_buffer container read_info_buffer error : " +
+                                             to_string(result.error()));
+                }
             }
 
             int64_t const next = current + proc_length;
@@ -142,6 +146,6 @@ audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::s
     : base(std::make_shared<impl>(format, count, ch_idx, std::move(queue))) {
 }
 
-void audio_circular_buffer::read(audio::pcm_buffer &out_buffer) {
-    impl_ptr<impl>()->read(out_buffer);
+void audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer) {
+    impl_ptr<impl>()->read_into_buffer(out_buffer);
 }

@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_audio_circular_buffer.h"
+#include <deque>
 #include <mutex>
 #include "yas_audio_file.h"
 #include "yas_audio_format.h"
@@ -71,7 +72,7 @@ struct audio_circular_buffer::impl : base::impl {
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
             auto ptr = std::make_shared<container>(audio::pcm_buffer{format, this->_file_length});
-            this->_containers.emplace_back(std::move(ptr));
+            this->_loaded_containers.emplace_back(std::move(ptr));
         }
     }
 
@@ -79,14 +80,12 @@ struct audio_circular_buffer::impl : base::impl {
         uint32_t remain = out_buffer.frame_length();
 
         while (remain > 0) {
-            std::lock_guard<std::recursive_mutex> lock(this->_read_mutex);
-
             int64_t const current = this->_current_frame;
             int64_t const current_begin_frame = math::floor_int(current, this->_file_length);
             uint32_t const proc_length = std::min(static_cast<uint32_t>(current - current_begin_frame), remain);
 
 #warning containerを取り出すのではなく、頭のバッファを読み出せば良いのでは？
-            container_ptr &container = this->_container_for_frame(current);
+            container_ptr &container = this->_top_container_for_frame(current);
             if (container) {
                 uint32_t const to_frame = this->_file_length - remain;
                 uint32_t const from_frame = static_cast<uint32_t>(current - current_begin_frame);
@@ -100,8 +99,10 @@ struct audio_circular_buffer::impl : base::impl {
             int64_t const next = current + proc_length;
             if (next % this->_file_length == 0) {
                 if (container) {
-                    container->prepare_loading(current_begin_frame + this->_file_length * this->_containers.size());
-                    this->_load_container(container);
+                    container->prepare_loading(current_begin_frame +
+                                               this->_file_length * this->_loaded_containers.size());
+                    this->_load_top_container();
+                    this->_load_containers();
                 }
             }
 
@@ -111,12 +112,14 @@ struct audio_circular_buffer::impl : base::impl {
     }
 
     // readをロックした状態で使う
-    container_ptr &_container_for_frame(int64_t const frame) {
-        for (auto &container : this->_containers) {
+    container_ptr &_top_container_for_frame(int64_t const frame) {
+        if (this->_loaded_containers.size() > 0) {
+            container_ptr &container = this->_loaded_containers.front();
             if (container->contains(frame)) {
                 return container;
             }
         }
+
         static container_ptr null_container = nullptr;
         return null_container;
     }
@@ -124,21 +127,23 @@ struct audio_circular_buffer::impl : base::impl {
    private:
     int64_t const _ch_idx;
     uint32_t const _file_length;
-    std::vector<container_ptr> _containers;
+    std::deque<container_ptr> _loaded_containers;
+    std::deque<container_ptr> _loading_containers;
     operation_queue _queue;
     int64_t _current_frame;
-    std::recursive_mutex _read_mutex;
 
-    void _load_container(container_ptr &container) {
+    void _load_containers() {
 #warning todo オペレーションに投げる
 #warning 同じcontainerをpush_cancel_idにする
-        container_wptr weak_container = container;
-        operation op{[weak_container, ch_idx = this->_ch_idx](operation const &) {
-            if (auto container = weak_container.lock()) {
-#warning ファイルを読み込む
-            }
-        }};
+        operation op{[ch_idx = this->_ch_idx](operation const &) {}};
         this->_queue.push_back(std::move(op));
+    }
+
+    void _load_top_container() {
+        auto container = this->_loaded_containers.front();
+        this->_loading_containers.push_back(container);
+        this->_loaded_containers.pop_back();
+        this->_load_containers();
     }
 };
 

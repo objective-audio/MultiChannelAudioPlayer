@@ -85,6 +85,7 @@ struct audio_circular_buffer::impl : base::impl {
             int64_t const current_begin_frame = math::floor_int(current, this->_file_length);
             uint32_t const proc_length = std::min(static_cast<uint32_t>(current - current_begin_frame), remain);
 
+#warning containerを取り出すのではなく、頭のバッファを読み出せば良いのでは？
             container_ptr &container = this->_container_for_frame(current);
             if (container) {
                 uint32_t const to_frame = this->_file_length - remain;

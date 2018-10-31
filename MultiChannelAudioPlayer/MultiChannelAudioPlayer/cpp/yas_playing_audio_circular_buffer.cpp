@@ -21,8 +21,13 @@ struct audio_circular_buffer::impl : base::impl {
             loaded,
         };
 
+        enum class read_error {
+            out_of_range,
+            copy_failed,
+        };
+
         using write_result_t = result<std::nullptr_t, audio::file::read_error_t>;
-        using read_result_t = result<std::nullptr_t, audio::pcm_buffer::copy_error_t>;
+        using read_result_t = result<std::nullptr_t, read_error>;
 
         container(audio::pcm_buffer &&buffer) : _buffer(std::move(buffer)) {
         }
@@ -52,13 +57,15 @@ struct audio_circular_buffer::impl : base::impl {
             }
 
             int64_t const from_frame = play_frame - this->_begin_frame;
-            if (0 <= from_frame && from_frame < this->_begin_frame + this->_buffer.frame_length()) {
-                //逆？
+
+            if (from_frame < 0 || this->_begin_frame + this->_buffer.frame_length() <= from_frame) {
+                return read_result_t{read_error::out_of_range};
             }
-            if (auto result = to_buffer.copy_from(this->_buffer, from_frame, to_frame, length)) {
+
+            if (auto result = to_buffer.copy_from(this->_buffer, static_cast<uint32_t>(from_frame), to_frame, length)) {
                 return read_result_t{nullptr};
             } else {
-                return read_result_t{result.error()};
+                return read_result_t{read_error::copy_failed};
             }
         }
 
@@ -92,11 +99,10 @@ struct audio_circular_buffer::impl : base::impl {
             container_ptr &container = this->_top_container_for_frame(current);
             if (container) {
                 uint32_t const to_frame = this->_file_length - remain;
-//                uint32_t const from_frame = static_cast<uint32_t>(current - current_begin_frame);
                 if (auto result = container->read_into_buffer(out_buffer, to_frame, current, proc_length);
                     result.is_error()) {
                     throw std::runtime_error("circular_buffer container read_info_buffer error : " +
-                                             to_string(result.error()));
+                                             this->_to_string(result.error()));
                 }
             }
 
@@ -148,6 +154,15 @@ struct audio_circular_buffer::impl : base::impl {
         this->_loading_containers.push_back(container);
         this->_loaded_containers.pop_back();
         this->_load_containers();
+    }
+
+    std::string _to_string(container::read_error const &error) {
+        switch (error) {
+            case container::read_error::out_of_range:
+                return "out_of_range";
+            case container::read_error::copy_failed:
+                return "copy_failed";
+        }
     }
 };
 

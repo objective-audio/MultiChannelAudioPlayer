@@ -45,12 +45,16 @@ struct audio_circular_buffer::impl : base::impl {
             }
         }
 
-        read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, uint32_t const from_frame,
+        read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, int64_t const play_frame,
                                        uint32_t const length) {
             if (this->_state != state::loaded) {
                 return read_result_t{nullptr};
             }
 
+            int64_t const from_frame = play_frame - this->_begin_frame;
+            if (0 <= from_frame && from_frame < this->_begin_frame + this->_buffer.frame_length()) {
+                //逆？
+            }
             if (auto result = to_buffer.copy_from(this->_buffer, from_frame, to_frame, length)) {
                 return read_result_t{nullptr};
             } else {
@@ -88,8 +92,8 @@ struct audio_circular_buffer::impl : base::impl {
             container_ptr &container = this->_top_container_for_frame(current);
             if (container) {
                 uint32_t const to_frame = this->_file_length - remain;
-                uint32_t const from_frame = static_cast<uint32_t>(current - current_begin_frame);
-                if (auto result = container->read_into_buffer(out_buffer, to_frame, from_frame, proc_length);
+//                uint32_t const from_frame = static_cast<uint32_t>(current - current_begin_frame);
+                if (auto result = container->read_into_buffer(out_buffer, to_frame, current, proc_length);
                     result.is_error()) {
                     throw std::runtime_error("circular_buffer container read_info_buffer error : " +
                                              to_string(result.error()));

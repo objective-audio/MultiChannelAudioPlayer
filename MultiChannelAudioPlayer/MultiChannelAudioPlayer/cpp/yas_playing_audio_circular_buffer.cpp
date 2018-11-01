@@ -14,9 +14,6 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_circular_buffer::impl : base::impl {
-    using container_ptr = std::shared_ptr<audio_buffer_container>;
-    using container_wptr = std::weak_ptr<audio_buffer_container>;
-
     impl(audio::format const &format, std::size_t const count, url const &ch_url, operation_queue &&queue)
         : _file_length(static_cast<uint32_t>(format.sample_rate())),
           _ch_url(ch_url),
@@ -37,7 +34,7 @@ struct audio_circular_buffer::impl : base::impl {
             int64_t const current_begin_frame = math::floor_int(current, this->_file_length);
             uint32_t const proc_length = std::min(static_cast<uint32_t>(current - current_begin_frame), remain);
 
-            container_ptr &container_ptr = this->_containers.front();
+            auto &container_ptr = this->_containers.front();
             if (container_ptr) {
                 uint32_t const to_frame = this->_file_length - remain;
                 if (auto result = container_ptr->read_into_buffer(out_buffer, to_frame, current, proc_length);
@@ -64,12 +61,12 @@ struct audio_circular_buffer::impl : base::impl {
     url const _ch_url;
     uint32_t const _file_length;
     std::size_t const _container_count;
-    std::deque<container_ptr> _containers;
+    std::deque<audio_buffer_container::ptr> _containers;
     operation_queue _queue;
     int64_t _current_frame;
 
     void _rotate_buffer() {
-        container_ptr &container_ptr = this->_containers.front();
+        auto &container_ptr = this->_containers.front();
         this->_containers.push_back(container_ptr);
         this->_containers.pop_front();
     }

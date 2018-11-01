@@ -12,6 +12,9 @@
 
 namespace yas::playing {
 struct audio_buffer_container {
+    using ptr = std::shared_ptr<audio_buffer_container>;
+    using wptr = std::weak_ptr<audio_buffer_container>;
+
     enum state {
         unloaded,
         loaded,
@@ -31,8 +34,6 @@ struct audio_buffer_container {
     using write_result_t = result<std::nullptr_t, write_error>;
     using read_result_t = result<std::nullptr_t, read_error>;
 
-    audio_buffer_container(audio::pcm_buffer &&buffer);
-
     int64_t file_idx() const;
     audio::format const &format() const;
     bool contains(int64_t const frame);
@@ -42,6 +43,9 @@ struct audio_buffer_container {
     read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, int64_t const play_frame,
                                    uint32_t const length);
 
+   protected:
+    audio_buffer_container(audio::pcm_buffer &&buffer);
+
    private:
     audio::pcm_buffer _buffer;
     int64_t _begin_frame;
@@ -49,6 +53,8 @@ struct audio_buffer_container {
 
     std::recursive_mutex mutable _mutex;
 };
+
+audio_buffer_container::ptr make_audio_buffer_container_ptr(audio::pcm_buffer &&buffer);
 }  // namespace yas::playing
 
 namespace yas {

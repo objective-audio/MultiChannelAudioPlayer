@@ -21,7 +21,7 @@ struct audio_circular_buffer::impl : base::impl {
         : _file_length(static_cast<uint32_t>(format.sample_rate())), _ch_url(ch_url), _queue(std::move(queue)) {
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
-            auto ptr = std::make_shared<audio_buffer_container>(audio::pcm_buffer{format, this->_file_length});
+            auto ptr = make_audio_buffer_container_ptr(audio::pcm_buffer{format, this->_file_length});
             this->_loading_containers.emplace_back(std::move(ptr));
         }
         this->_load_containers();

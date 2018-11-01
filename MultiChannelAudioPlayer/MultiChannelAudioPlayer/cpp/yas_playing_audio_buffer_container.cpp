@@ -72,6 +72,17 @@ audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(a
 
 #pragma mark -
 
+struct audio_buffer_container_factory : audio_buffer_container {
+    audio_buffer_container_factory(audio::pcm_buffer &&buffer) : audio_buffer_container(std::move(buffer)) {
+    }
+};
+
+audio_buffer_container::ptr playing::make_audio_buffer_container_ptr(audio::pcm_buffer &&buffer) {
+    return std::make_shared<audio_buffer_container_factory>(std::move(buffer));
+}
+
+#pragma mark -
+
 std::string yas::to_string(audio_buffer_container::write_error const &error) {
     switch (error) {
         case audio_buffer_container::write_error::read_from_file_failed:

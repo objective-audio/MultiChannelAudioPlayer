@@ -57,11 +57,11 @@ audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(a
                                                                                uint32_t const length) {
     auto lock = std::unique_lock<std::recursive_mutex>(this->_mutex, std::try_to_lock);
     if (!lock.owns_lock()) {
-        return read_result_t{nullptr};
+        return read_result_t{read_error::locked};
     }
 
     if (this->_state != state::loaded) {
-        return read_result_t{nullptr};
+        return read_result_t{read_error::unloaded};
     }
 
     int64_t const begin_frame = this->begin_frame();

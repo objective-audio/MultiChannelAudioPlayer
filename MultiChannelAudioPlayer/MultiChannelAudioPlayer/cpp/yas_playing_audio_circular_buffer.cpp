@@ -46,16 +46,20 @@ struct audio_circular_buffer::impl : base::impl {
         }
 
         bool contains(int64_t const frame) {
+            std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
             return this->_begin_frame <= frame && frame < (this->_begin_frame + this->_buffer.frame_length());
         }
 
         void prepare_loading(int64_t const frame) {
+            std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
             this->_state = container::state::unloaded;
             this->_begin_frame = frame;
         }
 
         write_result_t write_from_file(audio::file &file) {
-            std::lock_guard<std::recursive_mutex> lock(this->_buffer_mutex);
+            std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
             if (auto result = file.read_into_buffer(this->_buffer, this->_buffer.frame_length())) {
                 this->_state = state::loaded;
@@ -67,6 +71,9 @@ struct audio_circular_buffer::impl : base::impl {
 
         read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, int64_t const play_frame,
                                        uint32_t const length) {
+            auto lock = std::unique_lock<std::recursive_mutex>(this->_mutex, std::try_to_lock);
+            //
+
             if (this->_state != state::loaded) {
                 return read_result_t{nullptr};
             }
@@ -76,8 +83,6 @@ struct audio_circular_buffer::impl : base::impl {
             if (from_frame < 0 || this->_begin_frame + this->_buffer.frame_length() <= from_frame) {
                 return read_result_t{read_error::out_of_range_play_frame};
             }
-
-            std::lock_guard<std::recursive_mutex> lock(this->_buffer_mutex);
 
             if (auto result = to_buffer.copy_from(this->_buffer, static_cast<uint32_t>(from_frame), to_frame, length)) {
                 return read_result_t{nullptr};
@@ -91,7 +96,7 @@ struct audio_circular_buffer::impl : base::impl {
         int64_t _begin_frame;
         state _state = state::unloaded;
 
-        std::recursive_mutex _buffer_mutex;
+        std::recursive_mutex _mutex;
     };
 
     using container_ptr = std::shared_ptr<container>;

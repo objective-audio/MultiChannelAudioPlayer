@@ -35,6 +35,7 @@ struct audio_buffer_container {
     using read_result_t = result<std::nullptr_t, read_error>;
 
     int64_t file_idx() const;
+    int64_t begin_frame() const;
     audio::format const &format() const;
     bool contains(int64_t const frame);
 

@@ -71,8 +71,11 @@ struct audio_circular_buffer::impl : base::impl {
         this->_containers.pop_front();
     }
 
-    void _load_container(audio_buffer_container::ptr container) {
+    void _load_container(audio_buffer_container::ptr container_ptr) {
 #warning todo operation_queueでファイルから読み込む
+        operation op{[container_ptr](operation const &) {
+
+        }};
     }
 };
 

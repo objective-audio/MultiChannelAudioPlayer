@@ -16,6 +16,12 @@ int64_t audio_buffer_container::file_idx() const {
     return this->_begin_frame / static_cast<int64_t>(this->_buffer.format().sample_rate());
 }
 
+int64_t audio_buffer_container::begin_frame() const {
+    std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
+    return this->_begin_frame;
+}
+
 audio::format const &audio_buffer_container::format() const {
     return this->_buffer.format();
 }

@@ -12,7 +12,7 @@ namespace yas::playing {
 struct audio_circular_buffer : base {
     class impl;
 
-    audio_circular_buffer(audio::format const &format, std::size_t const count, url const &ch_url,
+    audio_circular_buffer(audio::format const &format, std::size_t const container_count, url const &ch_url,
                           operation_queue queue);
     explicit audio_circular_buffer(std::nullptr_t);
 

@@ -18,13 +18,15 @@ struct audio_circular_buffer::impl : base::impl {
     using container_wptr = std::weak_ptr<audio_buffer_container>;
 
     impl(audio::format const &format, std::size_t const count, url const &ch_url, operation_queue &&queue)
-        : _file_length(static_cast<uint32_t>(format.sample_rate())), _ch_url(ch_url), _queue(std::move(queue)) {
+        : _file_length(static_cast<uint32_t>(format.sample_rate())),
+          _ch_url(ch_url),
+          _queue(std::move(queue)),
+          _container_count(count) {
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
             auto ptr = make_audio_buffer_container_ptr(audio::pcm_buffer{format, this->_file_length});
-            this->_loading_containers.emplace_back(std::move(ptr));
+            this->_containers.push_back(std::move(ptr));
         }
-        this->_load_containers();
     }
 
     void read_into_buffer(audio::pcm_buffer &out_buffer) {
@@ -35,10 +37,10 @@ struct audio_circular_buffer::impl : base::impl {
             int64_t const current_begin_frame = math::floor_int(current, this->_file_length);
             uint32_t const proc_length = std::min(static_cast<uint32_t>(current - current_begin_frame), remain);
 
-            container_ptr &container = this->_top_container_for_frame(current);
-            if (container) {
+            container_ptr &container_ptr = this->_containers.front();
+            if (container_ptr) {
                 uint32_t const to_frame = this->_file_length - remain;
-                if (auto result = container->read_into_buffer(out_buffer, to_frame, current, proc_length);
+                if (auto result = container_ptr->read_into_buffer(out_buffer, to_frame, current, proc_length);
                     result.is_error()) {
                     throw std::runtime_error("circular_buffer container read_info_buffer error : " +
                                              to_string(result.error()));
@@ -47,11 +49,9 @@ struct audio_circular_buffer::impl : base::impl {
 
             int64_t const next = current + proc_length;
             if (next % this->_file_length == 0) {
-                if (container) {
-                    container->prepare_loading(current_begin_frame +
-                                               this->_file_length * this->_loaded_containers.size());
-                    this->_load_top_container();
-                    this->_load_containers();
+                if (container_ptr) {
+                    container_ptr->prepare_loading(current_begin_frame + this->_file_length * this->_container_count);
+                    this->_load_container(container_ptr);
                 }
             }
 
@@ -60,58 +60,22 @@ struct audio_circular_buffer::impl : base::impl {
         }
     }
 
-    // readをロックした状態で使う
-    container_ptr &_top_container_for_frame(int64_t const frame) {
-        if (this->_loaded_containers.size() > 0) {
-            container_ptr &container = this->_loaded_containers.front();
-            if (container->contains(frame)) {
-                return container;
-            }
-        }
-
-        static container_ptr null_container = nullptr;
-        return null_container;
-    }
-
    private:
     url const _ch_url;
     uint32_t const _file_length;
-    std::deque<container_ptr> _loaded_containers;
-    std::deque<container_ptr> _loading_containers;
+    std::size_t const _container_count;
+    std::deque<container_ptr> _containers;
     operation_queue _queue;
     int64_t _current_frame;
 
-    void _load_containers() {
-#warning todo オペレーションに投げる
-#warning 同じcontainerをpush_cancel_idにする
-        auto weak_circular_buffer = to_weak(cast<audio_circular_buffer>());
-        operation op{[ch_url = this->_ch_url, weak_circular_buffer](operation const &) {
-            if (audio_circular_buffer circular_buffer = weak_circular_buffer.lock()) {
-                auto ip = circular_buffer.impl_ptr<impl>();
-                auto &containers = ip->_loading_containers;
-
-                while (containers.size() > 0) {
-                    auto &container = containers.front();
-                    auto const file_url = url_utils::caf_url(ch_url, container->file_idx());
-                    auto result = audio::make_opened_file(audio::file::open_args{
-                        .file_url = file_url.cf_url(),
-                        .pcm_format = container->format().pcm_format(),
-                        .interleaved = false,
-                    });
-
-                    ip->_loaded_containers.push_back(container);
-                    containers.pop_front();
-                }
-            }
-        }};
-        this->_queue.push_back(std::move(op));
+    void _rotate_buffer() {
+        container_ptr &container_ptr = this->_containers.front();
+        this->_containers.push_back(container_ptr);
+        this->_containers.pop_front();
     }
 
-    void _load_top_container() {
-        auto container = this->_loaded_containers.front();
-        this->_loading_containers.push_back(container);
-        this->_loaded_containers.pop_back();
-        this->_load_containers();
+    void _load_container(audio_buffer_container::ptr container) {
+#warning todo operation_queueでファイルから読み込む
     }
 };
 

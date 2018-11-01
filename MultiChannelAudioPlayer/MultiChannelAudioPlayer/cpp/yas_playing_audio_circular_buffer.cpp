@@ -55,6 +55,8 @@ struct audio_circular_buffer::impl : base::impl {
         }
 
         write_result_t write_from_file(audio::file &file) {
+            std::lock_guard<std::recursive_mutex> lock(this->_buffer_mutex);
+
             if (auto result = file.read_into_buffer(this->_buffer, this->_buffer.frame_length())) {
                 this->_state = state::loaded;
                 return write_result_t{nullptr};
@@ -75,6 +77,8 @@ struct audio_circular_buffer::impl : base::impl {
                 return read_result_t{read_error::out_of_range_play_frame};
             }
 
+            std::lock_guard<std::recursive_mutex> lock(this->_buffer_mutex);
+
             if (auto result = to_buffer.copy_from(this->_buffer, static_cast<uint32_t>(from_frame), to_frame, length)) {
                 return read_result_t{nullptr};
             } else {
@@ -86,6 +90,8 @@ struct audio_circular_buffer::impl : base::impl {
         audio::pcm_buffer _buffer;
         int64_t _begin_frame;
         state _state = state::unloaded;
+
+        std::recursive_mutex _buffer_mutex;
     };
 
     using container_ptr = std::shared_ptr<container>;

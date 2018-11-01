@@ -23,7 +23,7 @@ struct audio_circular_buffer::impl : base::impl {
         };
 
         enum class write_error {
-            read_failed,
+            read_from_file_failed,
         };
 
         enum class read_error {
@@ -69,7 +69,7 @@ struct audio_circular_buffer::impl : base::impl {
                 this->_state = state::loaded;
                 return write_result_t{nullptr};
             } else {
-                return write_result_t{write_error::read_failed};
+                return write_result_t{write_error::read_from_file_failed};
             }
         }
 
@@ -203,6 +203,13 @@ struct audio_circular_buffer::impl : base::impl {
         this->_loading_containers.push_back(container);
         this->_loaded_containers.pop_back();
         this->_load_containers();
+    }
+
+    std::string to_string(container::write_error const &error) {
+        switch (error) {
+            case container::write_error::read_from_file_failed:
+                return "read_from_file_failed";
+        }
     }
 
     std::string _to_string(container::read_error const &error) {

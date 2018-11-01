@@ -13,13 +13,13 @@ audio_buffer_container::audio_buffer_container(audio::pcm_buffer &&buffer) : _bu
 int64_t audio_buffer_container::file_idx() const {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-    return this->_begin_frame / static_cast<int64_t>(this->_buffer.format().sample_rate());
+    return this->_file_idx;
 }
 
 int64_t audio_buffer_container::begin_frame() const {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-    return this->_begin_frame;
+    return this->_file_idx * static_cast<int64_t>(this->_buffer.format().sample_rate());
 }
 
 audio::format const &audio_buffer_container::format() const {
@@ -29,14 +29,15 @@ audio::format const &audio_buffer_container::format() const {
 bool audio_buffer_container::contains(int64_t const frame) {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-    return this->_begin_frame <= frame && frame < (this->_begin_frame + this->_buffer.frame_length());
+    int64_t const begin_frame = this->begin_frame();
+    return begin_frame <= frame && frame < (begin_frame + this->_buffer.frame_length());
 }
 
-void audio_buffer_container::prepare_loading(int64_t const frame) {
+void audio_buffer_container::prepare_loading(int64_t const file_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
     this->_state = state::unloaded;
-    this->_begin_frame = frame;
+    this->_file_idx = file_idx;
 }
 
 audio_buffer_container::write_result_t audio_buffer_container::write_from_file(audio::file &file) {
@@ -63,9 +64,10 @@ audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(a
         return read_result_t{nullptr};
     }
 
-    int64_t const from_frame = play_frame - this->_begin_frame;
+    int64_t const begin_frame = this->begin_frame();
+    int64_t const from_frame = play_frame - begin_frame;
 
-    if (from_frame < 0 || this->_begin_frame + this->_buffer.frame_length() <= from_frame) {
+    if (from_frame < 0 || begin_frame + this->_buffer.frame_length() <= from_frame) {
         return read_result_t{read_error::out_of_range_play_frame};
     }
 

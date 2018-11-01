@@ -27,6 +27,8 @@ struct audio_circular_buffer::impl : base::impl {
         };
 
         enum class read_error {
+            locked,
+            unloaded,
             out_of_range_play_frame,
             copy_failed,
         };
@@ -38,6 +40,8 @@ struct audio_circular_buffer::impl : base::impl {
         }
 
         int64_t file_idx() const {
+            std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
             return this->_begin_frame / static_cast<int64_t>(this->_buffer.format().sample_rate());
         }
 
@@ -72,7 +76,9 @@ struct audio_circular_buffer::impl : base::impl {
         read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, int64_t const play_frame,
                                        uint32_t const length) {
             auto lock = std::unique_lock<std::recursive_mutex>(this->_mutex, std::try_to_lock);
-            //
+            if (!lock.owns_lock()) {
+                return read_result_t{nullptr};
+            }
 
             if (this->_state != state::loaded) {
                 return read_result_t{nullptr};
@@ -96,7 +102,7 @@ struct audio_circular_buffer::impl : base::impl {
         int64_t _begin_frame;
         state _state = state::unloaded;
 
-        std::recursive_mutex _mutex;
+        std::recursive_mutex mutable _mutex;
     };
 
     using container_ptr = std::shared_ptr<container>;
@@ -201,6 +207,10 @@ struct audio_circular_buffer::impl : base::impl {
 
     std::string _to_string(container::read_error const &error) {
         switch (error) {
+            case container::read_error::locked:
+                return "locked";
+            case container::read_error::unloaded:
+                return "unloaded";
             case container::read_error::out_of_range_play_frame:
                 return "out_of_range_play_frame";
             case container::read_error::copy_failed:

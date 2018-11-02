@@ -48,8 +48,13 @@ void audio_buffer_container::prepare_loading(int64_t const file_idx) {
     this->_file_idx = file_idx;
 }
 
-audio_buffer_container::write_result_t audio_buffer_container::write_from_file(audio::file &file) {
+audio_buffer_container::write_result_t audio_buffer_container::write_from_file(audio::file &file,
+                                                                               int64_t const file_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
+    if (this->_file_idx != file_idx) {
+        return write_result_t{write_error::invalid_file_idx};
+    }
 
     if (auto result = file.read_into_buffer(this->_buffer, this->_buffer.frame_length())) {
         this->_state = state::loaded;
@@ -106,6 +111,8 @@ audio_buffer_container::ptr playing::make_audio_buffer_container_ptr(audio::pcm_
 
 std::string yas::to_string(audio_buffer_container::write_error const &error) {
     switch (error) {
+        case audio_buffer_container::write_error::invalid_file_idx:
+            return "invalid_file_idx";
         case audio_buffer_container::write_error::read_from_file_failed:
             return "read_from_file_failed";
     }

@@ -22,6 +22,7 @@ struct audio_buffer_container {
     };
 
     enum class write_error {
+        invalid_file_idx,
         read_from_file_failed,
     };
 
@@ -42,7 +43,7 @@ struct audio_buffer_container {
     bool contains(int64_t const frame);
 
     void prepare_loading(int64_t const file_idx);
-    write_result_t write_from_file(audio::file &);
+    write_result_t write_from_file(audio::file &, int64_t const file_idx);
     read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, int64_t const play_frame,
                                    uint32_t const length);
 

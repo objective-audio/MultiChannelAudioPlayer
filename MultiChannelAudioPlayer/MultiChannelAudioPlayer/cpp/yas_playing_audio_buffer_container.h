@@ -34,7 +34,7 @@ struct audio_buffer_container {
         copy_failed,
     };
 
-    using write_result_t = result<std::nullptr_t, load_error>;
+    using load_result_t = result<std::nullptr_t, load_error>;
     using read_result_t = result<std::nullptr_t, read_error>;
 
     std::optional<int64_t> file_idx() const;
@@ -43,7 +43,7 @@ struct audio_buffer_container {
     bool contains(int64_t const frame) const;
 
     void prepare_loading(int64_t const file_idx);
-    write_result_t load_from_file(audio::file &, int64_t const file_idx);
+    load_result_t load_from_file(audio::file &, int64_t const file_idx);
     read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, uint32_t const to_frame, int64_t const play_frame,
                                    uint32_t const length);
 

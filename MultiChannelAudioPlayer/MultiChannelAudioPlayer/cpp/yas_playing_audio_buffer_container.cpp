@@ -48,19 +48,19 @@ void audio_buffer_container::prepare_loading(int64_t const file_idx) {
     this->_file_idx = file_idx;
 }
 
-audio_buffer_container::write_result_t audio_buffer_container::load_from_file(audio::file &file,
-                                                                              int64_t const file_idx) {
+audio_buffer_container::load_result_t audio_buffer_container::load_from_file(audio::file &file,
+                                                                             int64_t const file_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
     if (this->_file_idx != file_idx) {
-        return write_result_t{load_error::invalid_file_idx};
+        return load_result_t{load_error::invalid_file_idx};
     }
 
     if (auto result = file.read_into_buffer(this->_buffer, this->_buffer.frame_length())) {
         this->_state = state::loaded;
-        return write_result_t{nullptr};
+        return load_result_t{nullptr};
     } else {
-        return write_result_t{load_error::read_from_file_failed};
+        return load_result_t{load_error::read_from_file_failed};
     }
 }
 

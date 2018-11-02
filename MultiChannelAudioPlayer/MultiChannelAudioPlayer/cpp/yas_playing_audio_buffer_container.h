@@ -22,6 +22,7 @@ struct audio_buffer_container {
     };
 
     enum class load_error {
+        file_idx_is_null,
         invalid_file_idx,
         read_from_file_failed,
     };
@@ -29,7 +30,7 @@ struct audio_buffer_container {
     enum class read_error {
         locked,
         unloaded,
-        begin_frame_not_found,
+        begin_frame_is_null,
         out_of_range_play_frame,
         copy_failed,
     };

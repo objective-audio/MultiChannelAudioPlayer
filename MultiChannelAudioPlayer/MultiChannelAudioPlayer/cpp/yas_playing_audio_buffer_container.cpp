@@ -52,7 +52,11 @@ audio_buffer_container::load_result_t audio_buffer_container::load_from_file(aud
                                                                              int64_t const file_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-    if (this->_file_idx != file_idx) {
+    if (!this->_file_idx) {
+        return load_result_t{load_error::file_idx_is_null};
+    }
+
+    if (*this->_file_idx != file_idx) {
         return load_result_t{load_error::invalid_file_idx};
     }
 
@@ -79,7 +83,7 @@ audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(a
 
     auto begin_frame_opt = this->begin_frame();
     if (!begin_frame_opt.has_value()) {
-        return read_result_t{read_error::begin_frame_not_found};
+        return read_result_t{read_error::begin_frame_is_null};
     }
 
     int64_t const begin_frame = *begin_frame_opt;
@@ -111,6 +115,8 @@ audio_buffer_container::ptr playing::make_audio_buffer_container(audio::pcm_buff
 
 std::string yas::to_string(audio_buffer_container::load_error const &error) {
     switch (error) {
+        case audio_buffer_container::load_error::file_idx_is_null:
+            return "file_idx_is_null";
         case audio_buffer_container::load_error::invalid_file_idx:
             return "invalid_file_idx";
         case audio_buffer_container::load_error::read_from_file_failed:
@@ -124,7 +130,7 @@ std::string yas::to_string(audio_buffer_container::read_error const &error) {
             return "locked";
         case audio_buffer_container::read_error::unloaded:
             return "unloaded";
-        case audio_buffer_container::read_error::begin_frame_not_found:
+        case audio_buffer_container::read_error::begin_frame_is_null:
             return "begin_frame_not_found";
         case audio_buffer_container::read_error::out_of_range_play_frame:
             return "out_of_range_play_frame";

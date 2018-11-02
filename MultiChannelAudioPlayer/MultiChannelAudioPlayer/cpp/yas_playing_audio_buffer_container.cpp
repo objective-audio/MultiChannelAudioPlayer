@@ -30,7 +30,7 @@ audio::format const &audio_buffer_container::format() const {
     return this->_buffer.format();
 }
 
-bool audio_buffer_container::contains(int64_t const frame) {
+bool audio_buffer_container::contains(int64_t const frame) const {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
     if (auto begin_frame_opt = this->begin_frame()) {

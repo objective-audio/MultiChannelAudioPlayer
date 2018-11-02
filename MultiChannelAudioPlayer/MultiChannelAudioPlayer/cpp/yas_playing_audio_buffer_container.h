@@ -58,7 +58,7 @@ struct audio_buffer_container {
     std::recursive_mutex mutable _mutex;
 };
 
-audio_buffer_container::ptr make_audio_buffer_container_ptr(audio::pcm_buffer &&buffer);
+audio_buffer_container::ptr make_audio_buffer_container(audio::pcm_buffer &&buffer);
 }  // namespace yas::playing
 
 namespace yas {

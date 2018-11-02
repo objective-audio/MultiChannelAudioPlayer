@@ -103,7 +103,7 @@ struct audio_buffer_container_factory : audio_buffer_container {
     }
 };
 
-audio_buffer_container::ptr playing::make_audio_buffer_container_ptr(audio::pcm_buffer &&buffer) {
+audio_buffer_container::ptr playing::make_audio_buffer_container(audio::pcm_buffer &&buffer) {
     return std::make_shared<audio_buffer_container_factory>(std::move(buffer));
 }
 

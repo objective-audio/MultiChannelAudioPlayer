@@ -21,7 +21,7 @@ struct audio_circular_buffer::impl : base::impl {
           _container_count(count) {
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
-            auto ptr = make_audio_buffer_container_ptr(audio::pcm_buffer{format, this->_file_length});
+            auto ptr = make_audio_buffer_container(audio::pcm_buffer{format, this->_file_length});
             this->_containers.push_back(std::move(ptr));
         }
     }

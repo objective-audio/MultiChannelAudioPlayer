@@ -5,6 +5,7 @@
 #pragma once
 
 #include <mutex>
+#include <optional>
 #include "yas_audio_file.h"
 #include "yas_audio_format.h"
 #include "yas_audio_pcm_buffer.h"
@@ -27,6 +28,7 @@ struct audio_buffer_container {
     enum class read_error {
         locked,
         unloaded,
+        begin_frame_not_found,
         out_of_range_play_frame,
         copy_failed,
     };
@@ -34,8 +36,8 @@ struct audio_buffer_container {
     using write_result_t = result<std::nullptr_t, write_error>;
     using read_result_t = result<std::nullptr_t, read_error>;
 
-    int64_t file_idx() const;
-    int64_t begin_frame() const;
+    std::optional<int64_t> file_idx() const;
+    std::optional<int64_t> begin_frame() const;
     audio::format const &format() const;
     bool contains(int64_t const frame);
 
@@ -49,7 +51,7 @@ struct audio_buffer_container {
 
    private:
     audio::pcm_buffer _buffer;
-    int64_t _file_idx;
+    std::optional<int64_t> _file_idx = std::nullopt;
     state _state = state::unloaded;
 
     std::recursive_mutex mutable _mutex;

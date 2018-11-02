@@ -10,16 +10,20 @@ using namespace yas::playing;
 audio_buffer_container::audio_buffer_container(audio::pcm_buffer &&buffer) : _buffer(std::move(buffer)) {
 }
 
-int64_t audio_buffer_container::file_idx() const {
+std::optional<int64_t> audio_buffer_container::file_idx() const {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
     return this->_file_idx;
 }
 
-int64_t audio_buffer_container::begin_frame() const {
+std::optional<int64_t> audio_buffer_container::begin_frame() const {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-    return this->_file_idx * static_cast<int64_t>(this->_buffer.frame_length());
+    if (auto const &file_idx = this->_file_idx) {
+        return *file_idx * static_cast<int64_t>(this->_buffer.frame_length());
+    } else {
+        return std::nullopt;
+    }
 }
 
 audio::format const &audio_buffer_container::format() const {
@@ -29,8 +33,12 @@ audio::format const &audio_buffer_container::format() const {
 bool audio_buffer_container::contains(int64_t const frame) {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-    int64_t const begin_frame = this->begin_frame();
-    return begin_frame <= frame && frame < (begin_frame + this->_buffer.frame_length());
+    if (auto begin_frame_opt = this->begin_frame()) {
+        int64_t const &begin_frame = *begin_frame_opt;
+        return begin_frame <= frame && frame < (begin_frame + this->_buffer.frame_length());
+    } else {
+        return false;
+    }
 }
 
 void audio_buffer_container::prepare_loading(int64_t const file_idx) {
@@ -64,7 +72,12 @@ audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(a
         return read_result_t{read_error::unloaded};
     }
 
-    int64_t const begin_frame = this->begin_frame();
+    auto begin_frame_opt = this->begin_frame();
+    if (!begin_frame_opt.has_value()) {
+        return read_result_t{read_error::begin_frame_not_found};
+    }
+
+    int64_t const begin_frame = *begin_frame_opt;
     int64_t const from_frame = play_frame - begin_frame;
 
     if (from_frame < 0 || begin_frame + this->_buffer.frame_length() <= from_frame) {
@@ -104,6 +117,8 @@ std::string yas::to_string(audio_buffer_container::read_error const &error) {
             return "locked";
         case audio_buffer_container::read_error::unloaded:
             return "unloaded";
+        case audio_buffer_container::read_error::begin_frame_not_found:
+            return "begin_frame_not_found";
         case audio_buffer_container::read_error::out_of_range_play_frame:
             return "out_of_range_play_frame";
         case audio_buffer_container::read_error::copy_failed:

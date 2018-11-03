@@ -13,80 +13,23 @@
 using namespace yas;
 using namespace yas::playing;
 
-@interface yas_audio_buffer_container_tests : XCTestCase
-
-@end
-
-@implementation yas_audio_buffer_container_tests
-
-- (void)setUp {
-    playing_test_utils::remove_all_document_files();
-}
-
-- (void)tearDown {
-    playing_test_utils::remove_all_document_files();
-}
-
-- (void)test_initial {
-    uint32_t const file_length = 3;
-    auto format = [self make_format_with_sample_rate:file_length];
-    auto const container = [self make_container_with_format:format file_length:file_length];
-
-    XCTAssertTrue(container);
-    XCTAssertFalse(container->file_idx());
-    XCTAssertFalse(container->begin_frame());
-    XCTAssertEqual(container->format(), format);
-    XCTAssertFalse(container->contains(0));
-
-    audio::pcm_buffer reading_buffer{format, file_length};
-    XCTAssertEqual(container->read_into_buffer(reading_buffer, 0, 0, 1).error(),
-                   audio_buffer_container::read_error::unloaded);
-}
-
-- (void)test_prepare_loading {
-    auto const container = [self make_container_with_file_length:3];
-
-    XCTAssertFalse(container->file_idx());
-
-    container->prepare_loading(0);
-
-    XCTAssertEqual(*container->file_idx(), 0);
-
-    container->prepare_loading(1);
-
-    XCTAssertEqual(*container->file_idx(), 1);
-}
-
-- (void)test_load_from_file {
-    uint32_t const file_length = 3;
-    auto container = [self make_container_with_file_length:file_length];
-
-#warning todo
-}
-
-- (void)test_read_into_buffer {
-#warning todo
-}
-
-#pragma mark -
-
-- (audio::format)make_format_with_sample_rate:(double)sample_rate {
+namespace yas::playing_test_utils {
+audio::format make_format(double sample_rate) {
     return audio::format{audio::format::args{
         .sample_rate = sample_rate, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
 }
 
-- (audio_buffer_container::ptr)make_container_with_format:(audio::format)format
-                                              file_length:(uint32_t const)file_length {
+audio_buffer_container::ptr make_container(audio::format format, uint32_t const file_length) {
     audio::pcm_buffer container_buffer{format, file_length};
     return make_audio_buffer_container(std::move(container_buffer));
 }
 
-- (audio_buffer_container::ptr)make_container_with_file_length:(uint32_t const)file_length {
-    auto format = [self make_format_with_sample_rate:file_length];
-    return [self make_container_with_format:format file_length:file_length];
+audio_buffer_container::ptr make_container(uint32_t const file_length) {
+    auto format = make_format(file_length);
+    return make_container(format, file_length);
 }
 
-- (audio::file)make_file_with_length:(uint32_t const)file_length {
+audio::file make_file(uint32_t const file_length) {
     auto const doc_url = system_url_utils::directory_url(system_url_utils::dir::document);
     std::string const file_name = "test.caf";
     auto const file_url = doc_url.appending(file_name);
@@ -123,5 +66,63 @@ using namespace yas::playing;
 
     return file;
 }
+}
+
+@interface yas_audio_buffer_container_tests : XCTestCase
+
+@end
+
+@implementation yas_audio_buffer_container_tests
+
+- (void)setUp {
+    playing_test_utils::remove_all_document_files();
+}
+
+- (void)tearDown {
+    playing_test_utils::remove_all_document_files();
+}
+
+- (void)test_initial {
+    uint32_t const file_length = 3;
+    auto format = playing_test_utils::make_format(file_length);
+    auto const container = playing_test_utils::make_container(format, file_length);
+
+    XCTAssertTrue(container);
+    XCTAssertFalse(container->file_idx());
+    XCTAssertFalse(container->begin_frame());
+    XCTAssertEqual(container->format(), format);
+    XCTAssertFalse(container->contains(0));
+
+    audio::pcm_buffer reading_buffer{format, file_length};
+    XCTAssertEqual(container->read_into_buffer(reading_buffer, 0, 0, 1).error(),
+                   audio_buffer_container::read_error::unloaded);
+}
+
+- (void)test_prepare_loading {
+    auto const container = playing_test_utils::make_container(3);
+
+    XCTAssertFalse(container->file_idx());
+
+    container->prepare_loading(0);
+
+    XCTAssertEqual(*container->file_idx(), 0);
+
+    container->prepare_loading(1);
+
+    XCTAssertEqual(*container->file_idx(), 1);
+}
+
+- (void)test_load_from_file {
+    uint32_t const file_length = 3;
+    auto container = playing_test_utils::make_container(file_length);
+
+#warning todo
+}
+
+- (void)test_read_into_buffer {
+#warning todo
+}
+
+#pragma mark -
 
 @end

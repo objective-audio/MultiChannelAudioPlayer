@@ -22,10 +22,8 @@ using namespace yas::playing;
 
 - (void)test_initial {
     uint32_t const file_length = 3;
-    audio::format format{audio::format::args{
-        .sample_rate = file_length, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
-    audio::pcm_buffer container_buffer{format, file_length};
-    auto const container = make_audio_buffer_container(std::move(container_buffer));
+    auto format = [self make_format_with_sample_rate:file_length];
+    auto const container = [self make_container_with_format:format file_length:file_length];
 
     XCTAssertTrue(container);
     XCTAssertFalse(container->file_idx());
@@ -39,11 +37,7 @@ using namespace yas::playing;
 }
 
 - (void)test_prepare_loading {
-    uint32_t const file_length = 3;
-    audio::format format{audio::format::args{
-        .sample_rate = file_length, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
-    audio::pcm_buffer container_buffer{format, file_length};
-    auto const container = make_audio_buffer_container(std::move(container_buffer));
+    auto const container = [self make_container_with_file_length:3];
 
     XCTAssertFalse(container->file_idx());
 
@@ -62,6 +56,24 @@ using namespace yas::playing;
 
 - (void)test_read_into_buffer {
 #warning todo
+}
+
+#pragma mark -
+
+- (audio::format)make_format_with_sample_rate:(double)sample_rate {
+    return audio::format{audio::format::args{
+        .sample_rate = sample_rate, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
+}
+
+- (audio_buffer_container::ptr)make_container_with_format:(audio::format)format
+                                              file_length:(uint32_t const)file_length {
+    audio::pcm_buffer container_buffer{format, file_length};
+    return make_audio_buffer_container(std::move(container_buffer));
+}
+
+- (audio_buffer_container::ptr)make_container_with_file_length:(uint32_t const)file_length {
+    auto format = [self make_format_with_sample_rate:file_length];
+    return [self make_container_with_format:format file_length:file_length];
 }
 
 @end

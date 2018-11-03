@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import "yas_audio_file_utils.h"
+#import "yas_fast_each.h"
 #import "yas_playing_audio_buffer_container.h"
 #import "yas_system_url_utils.h"
 #import "yas_url.h"
@@ -87,18 +88,37 @@ using namespace yas::playing;
     std::string const file_name = "test.caf";
     auto const file_url = doc_url.appending(file_name);
 
-    auto created_file = audio::make_created_file(
-                            audio::file::create_args{.file_url = file_url.cf_url(),
-                                                     .file_type = audio::file_type::wave,
-                                                     .settings = audio::wave_file_settings(double(file_length), 1, 16),
-                                                     .pcm_format = audio::pcm_format::int16,
-                                                     .interleaved = false})
-                            .value();
+    auto file_result = audio::make_created_file(
+        audio::file::create_args{.file_url = file_url.cf_url(),
+                                 .file_type = audio::file_type::wave,
+                                 .settings = audio::wave_file_settings(double(file_length), 1, 16),
+                                 .pcm_format = audio::pcm_format::int16,
+                                 .interleaved = false});
 
-    return audio::make_opened_file(audio::file::open_args{.file_url = file_url.cf_url(),
-                                                          .pcm_format = audio::pcm_format::int16,
-                                                          .interleaved = false})
-        .value();
+    if (file_result.is_error()) {
+        throw std::runtime_error("make_created_file failed");
+    }
+
+    auto &file = file_result.value();
+
+    audio::format format{audio::format::args{.sample_rate = double(file_length),
+                                             .channel_count = 1,
+                                             .pcm_format = audio::pcm_format::int16,
+                                             .interleaved = false}};
+    audio::pcm_buffer buffer{format, file_length};
+
+    int16_t *data_ptr = buffer.data_ptr_at_index<int16_t>(0);
+    auto each = make_fast_each(file_length);
+    while (yas_each_next(each)) {
+        int16_t const &idx = yas_each_index(each);
+        data_ptr[idx] = idx;
+    }
+
+    if (auto write_result = file.write_from_buffer(buffer); write_result.is_error()) {
+        throw std::runtime_error("write_from_buffer failed");
+    }
+
+    return file;
 }
 
 @end

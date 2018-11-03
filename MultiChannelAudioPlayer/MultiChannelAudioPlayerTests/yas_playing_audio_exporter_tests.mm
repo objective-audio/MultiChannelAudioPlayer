@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 #import "yas_file_manager.h"
 #import "yas_playing_audio_exporter.h"
+#import "yas_playing_test_utils.h"
 #import "yas_system_url_utils.h"
 
 using namespace yas;
@@ -16,11 +17,11 @@ using namespace yas;
 @implementation yas_playing_audio_exporter_tests
 
 - (void)setUp {
-    [self remove_document_files];
+    playing_test_utils::remove_all_document_files();
 }
 
 - (void)tearDown {
-    [self remove_document_files];
+    playing_test_utils::remove_all_document_files();
 }
 
 - (void)test_export_file {
@@ -164,11 +165,6 @@ using namespace yas;
     [self waitForExpectations:@[clearExp] timeout:10.0];
 
     XCTAssertFalse(file_manager::file_exists(root_url.path()));
-}
-
-- (void)remove_document_files {
-    auto document_url = system_url_utils::directory_url(system_url_utils::dir::document);
-    file_manager::remove_files_in_directory(document_url.path());
 }
 
 @end

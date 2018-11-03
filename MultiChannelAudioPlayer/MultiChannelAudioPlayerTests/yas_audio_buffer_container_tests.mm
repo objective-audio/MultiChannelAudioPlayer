@@ -83,17 +83,22 @@ using namespace yas::playing;
 }
 
 - (audio::file)make_file_with_length:(uint32_t const)file_length {
-    system_url_utils::directory_url(system_url_utils::dir::document);
-    /*
-     CFURLRef file_url = nullptr;
-     CFStringRef file_type = nullptr;
-     CFDictionaryRef settings = nullptr;
-     audio::pcm_format pcm_format = pcm_format::float32;
-     bool interleaved = false;
-     */
-    auto created_file = audio::make_created_file(audio::file::create_args{.file_type = audio::file_type::wave}).value();
+    auto const doc_url = system_url_utils::directory_url(system_url_utils::dir::document);
+    std::string const file_name = "test.caf";
+    auto const file_url = doc_url.appending(file_name);
 
-    return audio::make_opened_file(audio::file::open_args{}).value();
+    auto created_file = audio::make_created_file(
+                            audio::file::create_args{.file_url = file_url.cf_url(),
+                                                     .file_type = audio::file_type::wave,
+                                                     .settings = audio::wave_file_settings(double(file_length), 1, 16),
+                                                     .pcm_format = audio::pcm_format::int16,
+                                                     .interleaved = false})
+                            .value();
+
+    return audio::make_opened_file(audio::file::open_args{.file_url = file_url.cf_url(),
+                                                          .pcm_format = audio::pcm_format::int16,
+                                                          .interleaved = false})
+        .value();
 }
 
 @end

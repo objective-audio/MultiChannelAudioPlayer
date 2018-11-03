@@ -5,10 +5,7 @@
 #pragma once
 
 #include <string>
-
-namespace yas {
-class url;
-}
+#include "yas_url.h"
 
 namespace yas::system_url_utils {
 enum class dir {

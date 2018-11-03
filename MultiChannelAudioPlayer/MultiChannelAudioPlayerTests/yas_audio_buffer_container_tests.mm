@@ -6,6 +6,7 @@
 #import "yas_audio_file_utils.h"
 #import "yas_fast_each.h"
 #import "yas_playing_audio_buffer_container.h"
+#import "yas_playing_test_utils.h"
 #import "yas_system_url_utils.h"
 #import "yas_url.h"
 
@@ -19,9 +20,11 @@ using namespace yas::playing;
 @implementation yas_audio_buffer_container_tests
 
 - (void)setUp {
+    playing_test_utils::remove_all_document_files();
 }
 
 - (void)tearDown {
+    playing_test_utils::remove_all_document_files();
 }
 
 - (void)test_initial {

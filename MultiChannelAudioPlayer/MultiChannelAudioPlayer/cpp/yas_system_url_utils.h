@@ -17,5 +17,5 @@ enum class dir {
     temporary,
 };
 
-url directory_url(dir const);
+[[nodiscard]] url directory_url(dir const);
 }  // namespace yas::system_url_utils

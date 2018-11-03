@@ -38,10 +38,10 @@ struct audio_buffer_container {
     using load_result_t = result<std::nullptr_t, load_error>;
     using read_result_t = result<std::nullptr_t, read_error>;
 
-    std::optional<int64_t> file_idx() const;
-    std::optional<int64_t> begin_frame() const;
-    audio::format const &format() const;
-    bool contains(int64_t const frame) const;
+    [[nodiscard]] std::optional<int64_t> file_idx() const;
+    [[nodiscard]] std::optional<int64_t> begin_frame() const;
+    [[nodiscard]] audio::format const &format() const;
+    [[nodiscard]] bool contains(int64_t const frame) const;
 
     void prepare_loading(int64_t const file_idx);
     load_result_t load_from_file(audio::file &, int64_t const file_idx);

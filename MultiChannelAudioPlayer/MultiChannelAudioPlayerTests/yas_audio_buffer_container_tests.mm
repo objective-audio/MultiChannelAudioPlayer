@@ -3,7 +3,10 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "yas_audio_file_utils.h"
 #import "yas_playing_audio_buffer_container.h"
+#import "yas_system_url_utils.h"
+#import "yas_url.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -51,6 +54,9 @@ using namespace yas::playing;
 }
 
 - (void)test_load_from_file {
+    uint32_t const file_length = 3;
+    auto container = [self make_container_with_file_length:file_length];
+
 #warning todo
 }
 
@@ -74,6 +80,20 @@ using namespace yas::playing;
 - (audio_buffer_container::ptr)make_container_with_file_length:(uint32_t const)file_length {
     auto format = [self make_format_with_sample_rate:file_length];
     return [self make_container_with_format:format file_length:file_length];
+}
+
+- (audio::file)make_file_with_length:(uint32_t const)file_length {
+    system_url_utils::directory_url(system_url_utils::dir::document);
+    /*
+     CFURLRef file_url = nullptr;
+     CFStringRef file_type = nullptr;
+     CFDictionaryRef settings = nullptr;
+     audio::pcm_format pcm_format = pcm_format::float32;
+     bool interleaved = false;
+     */
+    auto created_file = audio::make_created_file(audio::file::create_args{.file_type = audio::file_type::wave}).value();
+
+    return audio::make_opened_file(audio::file::open_args{}).value();
 }
 
 @end

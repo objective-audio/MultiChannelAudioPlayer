@@ -156,4 +156,33 @@ audio::file make_file(uint32_t const file_length) {
     XCTAssertEqual(data_ptr[2], 2);
 }
 
+- (void)test_contains {
+    uint32_t const file_length = 3;
+    auto const container = playing_test_utils::make_container(file_length);
+    auto file = playing_test_utils::make_file(file_length);
+
+    container->prepare_loading(0);
+    container->load_from_file(file, 0);
+
+    XCTAssertTrue(container->contains(0));
+    XCTAssertTrue(container->contains(1));
+    XCTAssertTrue(container->contains(2));
+
+    XCTAssertFalse(container->contains(-1));
+    XCTAssertFalse(container->contains(3));
+
+    file = playing_test_utils::make_file(file_length);
+
+    container->prepare_loading(1);
+    auto result = container->load_from_file(file, 1);
+    XCTAssertTrue(result);
+
+    XCTAssertTrue(container->contains(3));
+    XCTAssertTrue(container->contains(4));
+    XCTAssertTrue(container->contains(5));
+
+    XCTAssertFalse(container->contains(2));
+    XCTAssertFalse(container->contains(6));
+}
+
 @end

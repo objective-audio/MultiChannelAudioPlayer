@@ -30,12 +30,16 @@ enum class dir {
     printer_description,
     shared_public,
     preference_panes,
+#if (TARGET_OS_MAC && !TARGET_OS_IPHONE)
     application_scripts,
+#endif
     item_replacement,
     all_applications,
     all_libraries,
 
     temporary,
+    home,
+    open_step_root,
 };
 
 [[nodiscard]] url directory_url(dir const);

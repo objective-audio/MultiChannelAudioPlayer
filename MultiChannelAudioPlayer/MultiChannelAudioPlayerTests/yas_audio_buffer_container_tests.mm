@@ -117,10 +117,17 @@ audio::file make_file(uint32_t const file_length) {
     container->prepare_loading(0);
 
     XCTAssertEqual(*container->file_idx(), 0);
+    XCTAssertEqual(*container->begin_frame(), 0);
 
     container->prepare_loading(1);
 
     XCTAssertEqual(*container->file_idx(), 1);
+    XCTAssertEqual(*container->begin_frame(), 3);
+
+    container->prepare_loading(-1);
+
+    XCTAssertEqual(*container->file_idx(), -1);
+    XCTAssertEqual(*container->begin_frame(), -3);
 }
 
 - (void)test_load_from_file_and_read_into_buffer {

@@ -123,7 +123,7 @@ audio::file make_file(uint32_t const file_length) {
     XCTAssertEqual(*container->file_idx(), 1);
 }
 
-- (void)test_load_from_file {
+- (void)test_load_from_file_and_read_into_buffer {
     uint32_t const file_length = 3;
     auto format = playing_test_utils::make_format(file_length);
     auto container = playing_test_utils::make_container(format, file_length);
@@ -135,24 +135,18 @@ audio::file make_file(uint32_t const file_length) {
     auto load_result = container->load_from_file(file, 0);
 
     XCTAssertTrue(load_result);
-    
+
     audio::pcm_buffer reading_buffer{format, file_length};
-    
+
     auto read_result = container->read_into_buffer(reading_buffer, 0, 0, file_length);
-    
+
     XCTAssertTrue(read_result);
-    
+
     int16_t const *data_ptr = reading_buffer.data_ptr_at_index<int16_t>(0);
-    
+
     XCTAssertEqual(data_ptr[0], 0);
     XCTAssertEqual(data_ptr[1], 1);
     XCTAssertEqual(data_ptr[2], 2);
 }
-
-- (void)test_read_into_buffer {
-#warning todo
-}
-
-#pragma mark -
 
 @end

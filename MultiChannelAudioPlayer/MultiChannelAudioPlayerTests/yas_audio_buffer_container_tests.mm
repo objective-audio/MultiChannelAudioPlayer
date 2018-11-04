@@ -64,6 +64,17 @@ audio::file make_file(uint32_t const file_length) {
         throw std::runtime_error("write_from_buffer failed");
     }
 
+    file.close();
+
+    if (auto open_result = file.open(audio::file::open_args{
+            .file_url = file_url.cf_url(),
+            .pcm_format = audio::pcm_format::int16,
+            .interleaved = false,
+        });
+        open_result.is_error()) {
+        throw std::runtime_error("file open failed");
+    }
+
     return file;
 }
 }

@@ -89,7 +89,7 @@ audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(a
     int64_t const begin_frame = *begin_frame_opt;
     int64_t const from_frame = play_frame - begin_frame;
 
-    if (from_frame < 0 || begin_frame + this->_buffer.frame_length() <= from_frame) {
+    if (from_frame < 0 || this->_buffer.frame_length() <= from_frame) {
         return read_result_t{read_error::out_of_range_play_frame};
     }
 

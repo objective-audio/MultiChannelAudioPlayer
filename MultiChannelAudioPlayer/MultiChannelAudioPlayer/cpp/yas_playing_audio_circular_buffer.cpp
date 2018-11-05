@@ -35,21 +35,20 @@ struct audio_circular_buffer::impl : base::impl {
             uint32_t const proc_length = std::min(static_cast<uint32_t>(current - current_begin_frame), remain);
 
             auto &container_ptr = this->_containers.front();
-            if (container_ptr) {
-                uint32_t const to_frame = this->_file_length - remain;
-                if (auto result = container_ptr->read_into_buffer(out_buffer, to_frame, current, proc_length);
-                    result.is_error()) {
-                    throw std::runtime_error("circular_buffer container read_info_buffer error : " +
-                                             to_string(result.error()));
-                }
+
+            uint32_t const to_frame = this->_file_length - remain;
+            if (auto result = container_ptr->read_into_buffer(out_buffer, to_frame, current, proc_length);
+                result.is_error()) {
+                throw std::runtime_error("circular_buffer container read_info_buffer error : " +
+                                         to_string(result.error()));
             }
 
             int64_t const next = current + proc_length;
             if (next % this->_file_length == 0) {
-                if (container_ptr) {
-                    container_ptr->prepare_loading(current_begin_frame + this->_file_length * this->_container_count);
-                    this->_load_container(container_ptr);
-                }
+                int64_t const loading_file_idx =
+                    (current_begin_frame + this->_file_length * this->_container_count) / this->_file_length;
+                container_ptr->prepare_loading(loading_file_idx);
+                this->_load_container(container_ptr, loading_file_idx);
             }
 
             remain -= proc_length;
@@ -71,7 +70,7 @@ struct audio_circular_buffer::impl : base::impl {
         this->_containers.pop_front();
     }
 
-    void _load_container(audio_buffer_container::ptr container_ptr) {
+    void _load_container(audio_buffer_container::ptr container_ptr, int64_t const file_idx) {
 #warning todo operation_queueでファイルから読み込む
         operation op{[container_ptr](operation const &) {
 

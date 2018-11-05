@@ -14,7 +14,7 @@ struct file_manager {
         file_exists,
     };
 
-    enum class file_kind {
+    enum class content_kind {
         file,
         directory,
     };
@@ -30,7 +30,7 @@ struct file_manager {
     };
 
     using create_dir_result_t = result<std::nullptr_t, create_dir_error>;
-    using exists_result_t = result<file_kind, std::nullptr_t>;
+    using exists_result_t = result<content_kind, std::nullptr_t>;
     using remove_result_t = result<std::nullptr_t, remove_file_error>;
     using remove_files_result_t = result<std::nullptr_t, remove_files_error>;
 

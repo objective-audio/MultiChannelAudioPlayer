@@ -20,7 +20,7 @@ file_manager::create_dir_result_t file_manager::create_directory_if_not_exists(s
                                            error:&error]) {
             return create_dir_result_t{create_dir_error::create_failed};
         }
-    } else if (exists_result.value() == file_kind::file) {
+    } else if (exists_result.value() == content_kind::file) {
         return create_dir_result_t{create_dir_error::file_exists};
     }
 
@@ -34,9 +34,9 @@ file_manager::exists_result_t file_manager::file_exists(std::string const &path)
 
     if ([file_manager fileExistsAtPath:(__bridge NSString *)cf_path isDirectory:&is_directory]) {
         if (is_directory) {
-            return exists_result_t{file_kind::directory};
+            return exists_result_t{content_kind::directory};
         } else {
-            return exists_result_t{file_kind::file};
+            return exists_result_t{content_kind::file};
         }
     } else {
         return exists_result_t{nullptr};
@@ -57,7 +57,7 @@ file_manager::remove_result_t file_manager::remove_file(std::string const &path)
 
 file_manager::remove_files_result_t file_manager::remove_files_in_directory(std::string const &path) {
     if (auto const result = file_manager::file_exists(path)) {
-        if (result.value() != file_kind::directory) {
+        if (result.value() != content_kind::directory) {
             return remove_files_result_t{remove_files_error::not_directory};
         }
     } else {

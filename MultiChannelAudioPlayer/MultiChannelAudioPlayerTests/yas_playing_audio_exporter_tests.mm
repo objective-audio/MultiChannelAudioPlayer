@@ -83,7 +83,7 @@ using namespace yas;
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
-        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
+        XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
         assert_file(format, url, {0, 0, -1});
     }
@@ -93,7 +93,7 @@ using namespace yas;
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
-        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
+        XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
         assert_file(format, url, {0, 1, 2});
     }
@@ -103,7 +103,7 @@ using namespace yas;
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
-        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
+        XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
         assert_file(format, url, {3, 0, 0});
     }
@@ -130,7 +130,7 @@ using namespace yas;
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
-        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
+        XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
         assert_file(format, url, {0, 0, -1});
     }
@@ -140,7 +140,7 @@ using namespace yas;
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
-        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
+        XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
         assert_file(format, url, {0, 100, 2});
     }
@@ -150,7 +150,7 @@ using namespace yas;
 
         auto const exists_result = file_manager::file_exists(url.path());
         XCTAssertTrue(exists_result);
-        XCTAssertEqual(exists_result.value(), file_manager::file_kind::file);
+        XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
         assert_file(format, url, {3, 0, 0});
     }

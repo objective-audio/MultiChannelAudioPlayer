@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B61A406C217B51BB00B2717C /* yas_math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61A406A217B51BB00B2717C /* yas_math.cpp */; };
 		B61A406E217B536200B2717C /* yas_math_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61A406D217B536200B2717C /* yas_math_tests.mm */; };
+		B62589032191CA5E0071A05F /* yas_file_manager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B62589022191CA5E0071A05F /* yas_file_manager.mm */; };
 		B65740FC218BD7D4008FFBF9 /* yas_audio_buffer_container_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65740FB218BD7D4008FFBF9 /* yas_audio_buffer_container_tests.mm */; };
 		B65740FF218D6742008FFBF9 /* yas_playing_test_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B65740FE218D6742008FFBF9 /* yas_playing_test_utils.cpp */; };
 		B6652B4221833E6300A3A41C /* yas_playing_url_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6652B4021833E6300A3A41C /* yas_playing_url_utils.cpp */; };
@@ -108,7 +109,6 @@
 		B6FDB6DE2177622400AF4365 /* yas_chaining_any_observer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6DC2177622400AF4365 /* yas_chaining_any_observer.cpp */; };
 		B6FDB6E02177629000AF4365 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FDB6DF2177629000AF4365 /* AudioToolbox.framework */; };
 		B6FDB6E22177629500AF4365 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FDB6E12177629500AF4365 /* AVFoundation.framework */; };
-		B6FDB6E52178C41300AF4365 /* yas_file_manager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,6 +125,8 @@
 		B61A406A217B51BB00B2717C /* yas_math.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_math.cpp; sourceTree = "<group>"; };
 		B61A406B217B51BB00B2717C /* yas_math.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_math.h; sourceTree = "<group>"; };
 		B61A406D217B536200B2717C /* yas_math_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_math_tests.mm; sourceTree = "<group>"; };
+		B62589012191CA5E0071A05F /* yas_file_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_file_manager.h; sourceTree = "<group>"; };
+		B62589022191CA5E0071A05F /* yas_file_manager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_file_manager.mm; sourceTree = "<group>"; };
 		B65740FB218BD7D4008FFBF9 /* yas_audio_buffer_container_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_audio_buffer_container_tests.mm; sourceTree = "<group>"; };
 		B65740FD218D5A97008FFBF9 /* yas_playing_test_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_test_utils.h; sourceTree = "<group>"; };
 		B65740FE218D6742008FFBF9 /* yas_playing_test_utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_test_utils.cpp; sourceTree = "<group>"; };
@@ -391,8 +393,6 @@
 		B6FDB6DC2177622400AF4365 /* yas_chaining_any_observer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_chaining_any_observer.cpp; sourceTree = "<group>"; };
 		B6FDB6DF2177629000AF4365 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		B6FDB6E12177629500AF4365 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_file_manager.mm; sourceTree = "<group>"; };
-		B6FDB6E42178C41300AF4365 /* yas_file_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_file_manager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -469,6 +469,8 @@
 				B679E2EA2172BF3700859687 /* yas_exception.h */,
 				B679E2DC2172BF3700859687 /* yas_fast_each_private.h */,
 				B679E2CA2172BF3600859687 /* yas_fast_each.h */,
+				B62589012191CA5E0071A05F /* yas_file_manager.h */,
+				B62589022191CA5E0071A05F /* yas_file_manager.mm */,
 				B679E2BD2172BF3600859687 /* yas_flagset_private.h */,
 				B679E2C82172BF3600859687 /* yas_flagset.h */,
 				B679E2CC2172BF3600859687 /* yas_flex_ptr.cpp */,
@@ -680,8 +682,6 @@
 		B6FDB6492177562300AF4365 /* cpp */ = {
 			isa = PBXGroup;
 			children = (
-				B6FDB6E42178C41300AF4365 /* yas_file_manager.h */,
-				B6FDB6E32178C41300AF4365 /* yas_file_manager.mm */,
 				B61A406A217B51BB00B2717C /* yas_math.cpp */,
 				B61A406B217B51BB00B2717C /* yas_math.h */,
 				B6777DF2218B1DD000A7358D /* yas_playing_audio_buffer_container.cpp */,
@@ -989,6 +989,7 @@
 				B6FDB6422174D06C00AF4365 /* yas_processing_event.cpp in Sources */,
 				B6FDB6BB2177618E00AF4365 /* yas_audio_device.cpp in Sources */,
 				B6FDB63A2174D06C00AF4365 /* yas_processing_receive_number_processor.cpp in Sources */,
+				B62589032191CA5E0071A05F /* yas_file_manager.mm in Sources */,
 				B6FDB6452174D06C00AF4365 /* yas_processing_number_event.cpp in Sources */,
 				B6FDB63C2174D06C00AF4365 /* yas_processing_remove_number_processor.cpp in Sources */,
 				B679E2F22172BF3700859687 /* yas_flex_ptr.cpp in Sources */,
@@ -1011,7 +1012,6 @@
 				B6FDB6B12177618E00AF4365 /* yas_audio_engine_node.cpp in Sources */,
 				B6FDB6362174D06C00AF4365 /* yas_processing_cast_module.cpp in Sources */,
 				B6FDB6AE2177618E00AF4365 /* yas_audio_engine_node_protocol.cpp in Sources */,
-				B6FDB6E52178C41300AF4365 /* yas_file_manager.mm in Sources */,
 				B6FDB6402174D06C00AF4365 /* yas_processing_stream.cpp in Sources */,
 				B685EDD82171ABE9002EDC9B /* main.m in Sources */,
 				B6FDB6BA2177618E00AF4365 /* yas_audio_device_io.mm in Sources */,

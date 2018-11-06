@@ -49,6 +49,7 @@ struct audio_circular_buffer::impl : base::impl {
                     (current_begin_frame + this->_file_length * this->_container_count) / this->_file_length;
                 container_ptr->prepare_loading(loading_file_idx);
                 this->_load_container(container_ptr, loading_file_idx);
+                this->_rotate_buffer();
             }
 
             remain -= proc_length;

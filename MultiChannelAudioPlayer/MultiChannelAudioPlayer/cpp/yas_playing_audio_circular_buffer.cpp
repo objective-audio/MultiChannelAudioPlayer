@@ -72,9 +72,18 @@ struct audio_circular_buffer::impl : base::impl {
     }
 
     void _load_container(audio_buffer_container::ptr container_ptr, int64_t const file_idx) {
-#warning todo operation_queueでファイルから読み込む
-        operation op{[container_ptr](operation const &) {
+        auto file_url = playing::url_utils::caf_url(this->_ch_url, file_idx);
 
+        operation op{[container_ptr, file_url = std::move(file_url), file_idx](operation const &) {
+            auto file_result = audio::make_opened_file(audio::file::open_args{
+                .file_url = file_url,
+                .pcm_format = container_ptr->format().pcm_format(),
+                .interleaved = false,
+            });
+
+            auto &file = file_result.value();
+
+            auto load_result = container_ptr->load_from_file(file, file_idx);
         }};
     }
 };

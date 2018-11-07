@@ -35,7 +35,7 @@ audio::file make_file(uint32_t const file_length) {
     auto const file_url = doc_url.appending(file_name);
 
     auto file_result = audio::make_created_file(
-        audio::file::create_args{.file_url = file_url.cf_url(),
+        audio::file::create_args{.file_url = file_url,
                                  .file_type = audio::file_type::wave,
                                  .settings = audio::wave_file_settings(double(file_length), 1, 16),
                                  .pcm_format = audio::pcm_format::int16,
@@ -67,7 +67,7 @@ audio::file make_file(uint32_t const file_length) {
     file.close();
 
     if (auto open_result = file.open(audio::file::open_args{
-            .file_url = file_url.cf_url(),
+            .file_url = file_url,
             .pcm_format = audio::pcm_format::int16,
             .interleaved = false,
         });

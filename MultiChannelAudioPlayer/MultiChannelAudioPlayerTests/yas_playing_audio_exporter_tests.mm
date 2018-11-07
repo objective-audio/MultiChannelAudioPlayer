@@ -56,7 +56,7 @@ using namespace yas;
         uint32_t const expected_length = static_cast<uint32_t>(expected.size());
 
         auto file_result = audio::make_opened_file(audio::file::open_args{
-            .file_url = url.cf_url(),
+            .file_url = url,
             .pcm_format = audio::pcm_format::int16,
             .interleaved = false,
         });

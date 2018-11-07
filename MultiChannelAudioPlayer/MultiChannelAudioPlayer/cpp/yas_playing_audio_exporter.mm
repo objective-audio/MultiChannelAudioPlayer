@@ -62,7 +62,7 @@ struct audio_exporter::impl : base::impl {
 
                     // ファイルがあれば1秒バッファへの読み込み
                     if (auto result = audio::make_opened_file(
-                            {.file_url = file_url.cf_url(), .pcm_format = format.pcm_format(), .interleaved = false});
+                            {.file_url = file_url, .pcm_format = format.pcm_format(), .interleaved = false});
                         result.is_success()) {
                         audio::file &file = result.value();
                         if (file.processing_format() == format && file.file_length() == file_length) {
@@ -119,7 +119,7 @@ struct audio_exporter::impl : base::impl {
 
                     // 1秒バッファからファイルへの書き込み
                     if (auto result =
-                            audio::make_created_file({.file_url = file_url.cf_url(),
+                            audio::make_created_file({.file_url = file_url,
                                                       .file_type = audio::file_type::core_audio_format,
                                                       .pcm_format = format.pcm_format(),
                                                       .interleaved = false,

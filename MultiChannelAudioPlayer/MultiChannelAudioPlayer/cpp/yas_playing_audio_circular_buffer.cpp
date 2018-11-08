@@ -58,11 +58,11 @@ struct audio_circular_buffer::impl : base::impl {
         auto &container_ptr = this->_containers.front();
 
         if (container_ptr->file_idx() == next_file_idx - 1) {
-            // 想定通り
-#warning
+            this->_containers.push_back(container_ptr);
+            this->_containers.pop_front();
+            this->_load_container(container_ptr, next_file_idx);
         } else {
-            // おかしいので丸っとリロード
-#warning
+            this->reload(next_file_idx);
         }
     }
 
@@ -74,25 +74,6 @@ struct audio_circular_buffer::impl : base::impl {
     operation_queue _queue;
     std::recursive_mutex _container_mutex;
 
-    /*
-    void _rotate_buffer() {
-        std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
-
-        auto &container_ptr = this->_containers.front();
-
-        auto file_idx_opt = container_ptr->file_idx();
-        if (!file_idx_opt) {
-            return;
-        }
-        auto const load_file_idx = *file_idx_opt + 1;
-
-        this->_containers.push_back(container_ptr);
-        this->_containers.pop_front();
-
-        container_ptr->prepare_loading(load_file_idx);
-        this->_load_container(container_ptr, load_file_idx);
-    }
-*/
     void _load_container(audio_buffer_container::ptr container_ptr, int64_t const file_idx) {
         std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 

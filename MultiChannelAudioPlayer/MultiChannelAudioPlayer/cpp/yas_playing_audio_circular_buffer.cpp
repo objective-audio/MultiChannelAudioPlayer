@@ -45,11 +45,11 @@ struct audio_circular_buffer::impl : base::impl {
 
             int64_t const next = current + proc_length;
             if (next % this->_file_length == 0) {
+#warning 読み込むfile_idxはrotate_bufferの中で算出すれば良い？
                 int64_t const loading_file_idx =
                     (current_begin_frame + this->_file_length * this->_container_count) / this->_file_length;
                 container_ptr->prepare_loading(loading_file_idx);
-                this->_load_container(container_ptr, loading_file_idx);
-                this->_rotate_buffer();
+                this->_rotate_buffer(loading_file_idx);
             }
 
             remain -= proc_length;
@@ -60,8 +60,15 @@ struct audio_circular_buffer::impl : base::impl {
     void seek(int64_t const seek_frame) {
         this->_queue.cancel();
 
+        int64_t const seek_begin_frame = math::floor_int(seek_frame, this->_file_length);
+        int64_t load_file_idx = seek_begin_frame / this->_file_length;
+
         std::lock_guard<std::recursive_mutex> lock(this->_rotate_mutex);
-#warning 全containerをリロードする
+
+        for (auto &container_ptr : this->_containers) {
+            this->_load_container(container_ptr, load_file_idx);
+            ++load_file_idx;
+        }
     }
 
    private:
@@ -73,12 +80,14 @@ struct audio_circular_buffer::impl : base::impl {
     int64_t _current_frame;
     std::recursive_mutex _rotate_mutex;
 
-    void _rotate_buffer() {
+    void _rotate_buffer(int64_t const file_idx) {
         std::lock_guard<std::recursive_mutex> lock(this->_rotate_mutex);
 
         auto &container_ptr = this->_containers.front();
         this->_containers.push_back(container_ptr);
         this->_containers.pop_front();
+
+        this->_load_container(container_ptr, file_idx);
     }
 
     void _load_container(audio_buffer_container::ptr container_ptr, int64_t const file_idx) {

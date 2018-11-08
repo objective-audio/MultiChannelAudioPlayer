@@ -32,6 +32,7 @@ struct audio_buffer_container {
         unloaded,
         begin_frame_is_null,
         out_of_range_play_frame,
+        out_of_range_length,
         copy_failed,
     };
 

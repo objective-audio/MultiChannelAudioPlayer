@@ -45,11 +45,7 @@ struct audio_circular_buffer::impl : base::impl {
 
             int64_t const next = current + proc_length;
             if (next % this->_file_length == 0) {
-#warning 読み込むfile_idxはrotate_bufferの中で算出すれば良い？
-                int64_t const loading_file_idx =
-                    (current_begin_frame + this->_file_length * this->_container_count) / this->_file_length;
-                container_ptr->prepare_loading(loading_file_idx);
-                this->_rotate_buffer(loading_file_idx);
+                this->_rotate_buffer();
             }
 
             remain -= proc_length;
@@ -66,6 +62,7 @@ struct audio_circular_buffer::impl : base::impl {
         std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
         for (auto &container_ptr : this->_containers) {
+            container_ptr->prepare_loading(load_file_idx);
             this->_load_container(container_ptr, load_file_idx);
             ++load_file_idx;
         }
@@ -80,17 +77,27 @@ struct audio_circular_buffer::impl : base::impl {
     int64_t _current_frame;
     std::recursive_mutex _container_mutex;
 
-    void _rotate_buffer(int64_t const file_idx) {
+    void _rotate_buffer() {
         std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
         auto &container_ptr = this->_containers.front();
+
+        auto file_idx_opt = container_ptr->file_idx();
+        if (!file_idx_opt) {
+            return;
+        }
+        auto const load_file_idx = *file_idx_opt + 1;
+
         this->_containers.push_back(container_ptr);
         this->_containers.pop_front();
 
-        this->_load_container(container_ptr, file_idx);
+        container_ptr->prepare_loading(load_file_idx);
+        this->_load_container(container_ptr, load_file_idx);
     }
 
     void _load_container(audio_buffer_container::ptr container_ptr, int64_t const file_idx) {
+        std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
+
         auto file_url = playing::url_utils::caf_url(this->_ch_url, file_idx);
 
         operation op{[container_ptr, file_url = std::move(file_url), file_idx](operation const &) {

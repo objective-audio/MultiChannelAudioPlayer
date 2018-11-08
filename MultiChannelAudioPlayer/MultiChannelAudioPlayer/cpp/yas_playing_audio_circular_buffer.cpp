@@ -38,11 +38,10 @@ struct audio_circular_buffer::impl : base::impl {
         container_ptr->read_into_buffer(out_buffer, 0, play_frame, out_buffer.frame_length());
     }
 
-    void seek(int64_t const seek_frame) {
+    void reload(int64_t const top_file_idx) {
         this->_queue.cancel();
 
-        int64_t const seek_begin_frame = math::floor_int(seek_frame, this->_file_length);
-        int64_t load_file_idx = seek_begin_frame / this->_file_length;
+        int64_t load_file_idx = top_file_idx;
 
         std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
@@ -50,6 +49,20 @@ struct audio_circular_buffer::impl : base::impl {
             container_ptr->prepare_loading(load_file_idx);
             this->_load_container(container_ptr, load_file_idx);
             ++load_file_idx;
+        }
+    }
+
+    void rotate_buffer(int64_t const next_file_idx) {
+        std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
+
+        auto &container_ptr = this->_containers.front();
+
+        if (container_ptr->file_idx() == next_file_idx - 1) {
+            // 想定通り
+#warning
+        } else {
+            // おかしいので丸っとリロード
+#warning
         }
     }
 
@@ -61,6 +74,7 @@ struct audio_circular_buffer::impl : base::impl {
     operation_queue _queue;
     std::recursive_mutex _container_mutex;
 
+    /*
     void _rotate_buffer() {
         std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
@@ -78,7 +92,7 @@ struct audio_circular_buffer::impl : base::impl {
         container_ptr->prepare_loading(load_file_idx);
         this->_load_container(container_ptr, load_file_idx);
     }
-
+*/
     void _load_container(audio_buffer_container::ptr container_ptr, int64_t const file_idx) {
         std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
@@ -113,6 +127,10 @@ void audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer, int6
     impl_ptr<impl>()->read_into_buffer(out_buffer, play_frame);
 }
 
-void audio_circular_buffer::seek(int64_t const seek_frame) {
-    impl_ptr<impl>()->seek(seek_frame);
+void audio_circular_buffer::rotate_buffer(int64_t const next_file_idx) {
+    impl_ptr<impl>()->rotate_buffer(next_file_idx);
+}
+
+void audio_circular_buffer::reload(int64_t const top_file_idx) {
+    impl_ptr<impl>()->reload(top_file_idx);
 }

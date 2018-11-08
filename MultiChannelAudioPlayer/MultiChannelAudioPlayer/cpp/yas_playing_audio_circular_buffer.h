@@ -17,5 +17,6 @@ struct audio_circular_buffer : base {
     explicit audio_circular_buffer(std::nullptr_t);
 
     void read_into_buffer(audio::pcm_buffer &out_buffer);
+    void seek(int64_t const frame);
 };
 }  // namespace yas::playing

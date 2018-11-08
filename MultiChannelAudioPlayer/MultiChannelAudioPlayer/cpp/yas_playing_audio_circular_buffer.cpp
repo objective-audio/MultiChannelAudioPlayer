@@ -57,6 +57,13 @@ struct audio_circular_buffer::impl : base::impl {
         }
     }
 
+    void seek(int64_t const seek_frame) {
+        this->_queue.cancel();
+
+        std::lock_guard<std::recursive_mutex> lock(this->_rotate_mutex);
+#warning 全containerをリロードする
+    }
+
    private:
     url const _ch_url;
     uint32_t const _file_length;
@@ -64,8 +71,11 @@ struct audio_circular_buffer::impl : base::impl {
     std::deque<audio_buffer_container::ptr> _containers;
     operation_queue _queue;
     int64_t _current_frame;
+    std::recursive_mutex _rotate_mutex;
 
     void _rotate_buffer() {
+        std::lock_guard<std::recursive_mutex> lock(this->_rotate_mutex);
+
         auto &container_ptr = this->_containers.front();
         this->_containers.push_back(container_ptr);
         this->_containers.pop_front();
@@ -98,4 +108,8 @@ audio_circular_buffer::audio_circular_buffer(std::nullptr_t) : base(nullptr) {
 
 void audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer) {
     impl_ptr<impl>()->read_into_buffer(out_buffer);
+}
+
+void audio_circular_buffer::seek(int64_t const seek_frame) {
+    impl_ptr<impl>()->seek(seek_frame);
 }

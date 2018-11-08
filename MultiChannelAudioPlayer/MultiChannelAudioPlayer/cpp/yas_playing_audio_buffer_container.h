@@ -38,6 +38,14 @@ struct audio_buffer_container {
     using load_result_t = result<std::nullptr_t, load_error>;
     using read_result_t = result<std::nullptr_t, read_error>;
 
+    struct identifier : base {
+        struct impl : base::impl {};
+        identifier() : base(std::make_shared<impl>()) {
+        }
+    };
+
+    identifier const identifier;
+
     [[nodiscard]] std::optional<int64_t> file_idx() const;
     [[nodiscard]] std::optional<int64_t> begin_frame() const;
     [[nodiscard]] audio::format const &format() const;

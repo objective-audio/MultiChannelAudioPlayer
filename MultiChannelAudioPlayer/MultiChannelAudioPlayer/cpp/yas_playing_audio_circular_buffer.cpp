@@ -63,7 +63,7 @@ struct audio_circular_buffer::impl : base::impl {
         int64_t const seek_begin_frame = math::floor_int(seek_frame, this->_file_length);
         int64_t load_file_idx = seek_begin_frame / this->_file_length;
 
-        std::lock_guard<std::recursive_mutex> lock(this->_rotate_mutex);
+        std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
         for (auto &container_ptr : this->_containers) {
             this->_load_container(container_ptr, load_file_idx);
@@ -78,10 +78,10 @@ struct audio_circular_buffer::impl : base::impl {
     std::deque<audio_buffer_container::ptr> _containers;
     operation_queue _queue;
     int64_t _current_frame;
-    std::recursive_mutex _rotate_mutex;
+    std::recursive_mutex _container_mutex;
 
     void _rotate_buffer(int64_t const file_idx) {
-        std::lock_guard<std::recursive_mutex> lock(this->_rotate_mutex);
+        std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
         auto &container_ptr = this->_containers.front();
         this->_containers.push_back(container_ptr);
@@ -94,16 +94,19 @@ struct audio_circular_buffer::impl : base::impl {
         auto file_url = playing::url_utils::caf_url(this->_ch_url, file_idx);
 
         operation op{[container_ptr, file_url = std::move(file_url), file_idx](operation const &) {
-            auto file_result = audio::make_opened_file(audio::file::open_args{
-                .file_url = file_url,
-                .pcm_format = container_ptr->format().pcm_format(),
-                .interleaved = false,
-            });
+                         auto file_result = audio::make_opened_file(audio::file::open_args{
+                             .file_url = file_url,
+                             .pcm_format = container_ptr->format().pcm_format(),
+                             .interleaved = false,
+                         });
 
-            auto &file = file_result.value();
+                         auto &file = file_result.value();
 
-            auto load_result = container_ptr->load_from_file(file, file_idx);
-        }};
+                         auto load_result = container_ptr->load_from_file(file, file_idx);
+                     },
+                     operation_option_t{.push_cancel_id = container_ptr->identifier}};
+
+        this->_queue.push_back(std::move(op));
     }
 };
 

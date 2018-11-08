@@ -30,6 +30,11 @@ struct audio_circular_buffer::impl : base::impl {
         uint32_t remain = out_buffer.frame_length();
 
         while (remain > 0) {
+            auto lock = std::unique_lock<std::recursive_mutex>(this->_current_frame_mutex, std::try_to_lock);
+            if (!lock.owns_lock()) {
+                break;
+            }
+
             int64_t const current = this->_current_frame;
             int64_t const current_begin_frame = math::floor_int(current, this->_file_length);
             uint32_t const proc_length = std::min(static_cast<uint32_t>(current - current_begin_frame), remain);
@@ -76,6 +81,7 @@ struct audio_circular_buffer::impl : base::impl {
     operation_queue _queue;
     int64_t _current_frame;
     std::recursive_mutex _container_mutex;
+    std::recursive_mutex _current_frame_mutex;
 
     void _rotate_buffer() {
         std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);

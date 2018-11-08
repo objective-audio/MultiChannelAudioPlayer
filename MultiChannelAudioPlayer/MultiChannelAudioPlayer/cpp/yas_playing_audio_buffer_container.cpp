@@ -69,8 +69,7 @@ audio_buffer_container::load_result_t audio_buffer_container::load_from_file(aud
 }
 
 audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(audio::pcm_buffer &to_buffer,
-                                                                               int64_t const play_frame,
-                                                                               uint32_t const length) const {
+                                                                               int64_t const play_frame) const {
     auto lock = std::unique_lock<std::recursive_mutex>(this->_mutex, std::try_to_lock);
     if (!lock.owns_lock()) {
         return read_result_t{read_error::locked};
@@ -96,7 +95,8 @@ audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(a
         return read_result_t{read_error::out_of_range_length};
     }
 
-    if (auto result = to_buffer.copy_from(this->_buffer, static_cast<uint32_t>(from_frame), 0, length)) {
+    if (auto result =
+            to_buffer.copy_from(this->_buffer, static_cast<uint32_t>(from_frame), 0, to_buffer.frame_length())) {
         return read_result_t{nullptr};
     } else {
         return read_result_t{read_error::copy_failed};

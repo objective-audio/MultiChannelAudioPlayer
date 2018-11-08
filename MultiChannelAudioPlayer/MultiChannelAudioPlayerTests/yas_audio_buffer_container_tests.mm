@@ -105,7 +105,7 @@ audio::file make_file(uint32_t const file_length) {
     XCTAssertFalse(container->contains(0));
 
     audio::pcm_buffer reading_buffer{format, file_length};
-    XCTAssertEqual(container->read_into_buffer(reading_buffer, 0, 1).error(),
+    XCTAssertEqual(container->read_into_buffer(reading_buffer, 0).error(),
                    audio_buffer_container::read_error::unloaded);
 }
 
@@ -145,7 +145,7 @@ audio::file make_file(uint32_t const file_length) {
 
     audio::pcm_buffer reading_buffer{format, file_length};
 
-    auto read_result = container->read_into_buffer(reading_buffer, 0, file_length);
+    auto read_result = container->read_into_buffer(reading_buffer, 0);
 
     XCTAssertTrue(read_result);
 

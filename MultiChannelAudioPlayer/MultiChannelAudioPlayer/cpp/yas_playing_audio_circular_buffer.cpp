@@ -35,7 +35,7 @@ struct audio_circular_buffer::impl : base::impl {
 
         auto &container_ptr = this->_containers.front();
 
-        container_ptr->read_into_buffer(out_buffer, play_frame, out_buffer.frame_length());
+        container_ptr->read_into_buffer(out_buffer, play_frame);
     }
 
     void reload(int64_t const top_file_idx) {

@@ -7,7 +7,7 @@
 
 using namespace yas::playing;
 
-yas::url url_utils::channel_url(yas::url const &root_url, uint32_t const ch_idx) {
+yas::url url_utils::channel_url(yas::url const &root_url, int64_t const ch_idx) {
     return root_url.appending(std::to_string(ch_idx));
 }
 

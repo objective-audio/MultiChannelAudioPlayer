@@ -5,6 +5,10 @@
 #import <XCTest/XCTest.h>
 #import "yas_audio_format.h"
 #import "yas_playing_audio_circular_buffer.h"
+#import "yas_playing_audio_exporter.h"
+#import "yas_playing_test_utils.h"
+#import "yas_playing_url_utils.h"
+#import "yas_system_url_utils.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -13,19 +17,58 @@ using namespace yas::playing;
 
 @end
 
-@implementation yas_audio_circuler_buffer_tests
+@implementation yas_audio_circuler_buffer_tests {
+    double _sample_rate;
+    int64_t _ch_idx;
+    operation_queue _queue;
+    std::shared_ptr<yas::url> _root_url;
+    std::shared_ptr<audio::format> _format;
+    std::shared_ptr<playing::audio_exporter> _exporter;
+}
 
 - (void)setUp {
+    playing_test_utils::remove_all_document_files();
+
+    self->_ch_idx = 0;
+
+    auto const doc_url = system_url_utils::directory_url(system_url_utils::dir::document);
+    self->_root_url = std::make_shared<yas::url>(doc_url.appending("root"));
+
+    self->_sample_rate = 3;
+
+    self->_format = std::make_shared<audio::format>(audio::format::args{.sample_rate = self->_sample_rate,
+                                                                        .channel_count = 1,
+                                                                        .pcm_format = audio::pcm_format::int16,
+                                                                        .interleaved = false});
+
+    self->_exporter =
+        std::make_shared<playing::audio_exporter>(self->_sample_rate, audio::pcm_format::int16, *self->_root_url);
 }
 
 - (void)tearDown {
+    playing_test_utils::remove_all_document_files();
 }
 
 - (void)test_make {
-    operation_queue queue;
+    auto setup_exp = [self expectationWithDescription:@"setup"];
+    [self setup_files_with_completion:[setup_exp](auto const &result) { [setup_exp fulfill]; }];
+    [self waitForExpectations:@[setup_exp] timeout:10.0];
 
-    audio::format format{audio::format::args{
-        .sample_rate = 48000.0, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
+    auto const ch_url = url_utils::channel_url(*self->_root_url, self->_ch_idx);
+    audio_circular_buffer buffer{*self->_format, 2, ch_url, self->_queue};
+}
+
+- (void)setup_files_with_completion:(std::function<void(audio_exporter::export_result_t const &)> &&)completion {
+    self->_exporter->export_file(0, proc::time::range{-3, 18},
+                                 [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                                     int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
+                                     auto each = make_fast_each(range.length);
+                                     while (yas_each_next(each)) {
+                                         auto const &idx = yas_each_index(each);
+                                         data[idx] = int16_t(range.frame + idx);
+                                     }
+                                 },
+                                 std::move(completion));
 }
 
 @end

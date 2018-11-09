@@ -26,8 +26,24 @@ struct audio_player::impl : base::impl {
         }
     }
 
+    void set_playing(bool is_playing) {
+    }
+
+    void seek(int64_t const play_frame) {
+    }
+
+    void reload(int64_t const ch_idx, int64_t const file_idx) {
+        if (this->_buffers.size() <= ch_idx) {
+            return;
+        }
+
+        auto &buffer = this->_buffers.at(ch_idx);
+        buffer.reload(file_idx);
+    }
+
    private:
     int64_t _current_frame = 0;
+    bool _is_playing = false;
     operation_queue _queue;
     std::vector<audio_circular_buffer> _buffers;
 
@@ -39,18 +55,14 @@ audio_player::audio_player(double const sample_rate, audio::pcm_format const pcm
     : base(std::make_shared<impl>(sample_rate, pcm_format, root_url, ch_count)) {
 }
 
-void audio_player::play() {
-#warning
+void audio_player::set_playing(bool const is_playing) {
+    impl_ptr<impl>()->set_playing(is_playing);
 }
 
-void audio_player::stop() {
-#warning
-}
-
-void audio_player::seek(int64_t const frame_idx) {
-#warning
+void audio_player::seek(int64_t const play_frame) {
+    impl_ptr<impl>()->seek(play_frame);
 }
 
 void audio_player::reload(int64_t const ch_idx, int64_t const file_idx) {
-#warning
+    impl_ptr<impl>()->reload(ch_idx, file_idx);
 }

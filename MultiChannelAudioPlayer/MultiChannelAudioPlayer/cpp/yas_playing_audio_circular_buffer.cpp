@@ -38,7 +38,7 @@ struct audio_circular_buffer::impl : base::impl {
         container_ptr->read_into_buffer(out_buffer, play_frame);
     }
 
-    void reload(int64_t const top_file_idx) {
+    void reload_all(int64_t const top_file_idx) {
         this->_queue.cancel();
 
         int64_t load_file_idx = top_file_idx;
@@ -52,6 +52,10 @@ struct audio_circular_buffer::impl : base::impl {
         }
     }
 
+    void reload(int64_t const file_idx) {
+#warning todo file_idxが一致する単独のcontainerをリロードする
+    }
+
     void rotate_buffer(int64_t const next_file_idx) {
         std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
@@ -62,7 +66,7 @@ struct audio_circular_buffer::impl : base::impl {
             this->_containers.pop_front();
             this->_load_container(container_ptr, next_file_idx);
         } else {
-            this->reload(next_file_idx);
+            this->reload_all(next_file_idx);
         }
     }
 
@@ -112,6 +116,10 @@ void audio_circular_buffer::rotate_buffer(int64_t const next_file_idx) {
     impl_ptr<impl>()->rotate_buffer(next_file_idx);
 }
 
-void audio_circular_buffer::reload(int64_t const top_file_idx) {
-    impl_ptr<impl>()->reload(top_file_idx);
+void audio_circular_buffer::reload_all(int64_t const top_file_idx) {
+    impl_ptr<impl>()->reload_all(top_file_idx);
+}
+
+void audio_circular_buffer::reload(int64_t const file_idx) {
+    impl_ptr<impl>()->reload(file_idx);
 }

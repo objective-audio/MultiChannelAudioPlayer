@@ -27,9 +27,13 @@ struct audio_player::impl : base::impl {
     }
 
     void set_playing(bool is_playing) {
+        std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+#warning todo
     }
 
     void seek(int64_t const play_frame) {
+        std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+#warning todo
     }
 
     void reload(int64_t const ch_idx, int64_t const file_idx) {

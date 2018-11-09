@@ -28,12 +28,16 @@ struct audio_player::impl : base::impl {
 
     void set_playing(bool is_playing) {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
-#warning todo
+
+        this->_is_playing = is_playing;
+#warning todo engineの再生停止をする？
     }
 
     void seek(int64_t const play_frame) {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
-#warning todo
+
+        this->_play_frame = play_frame;
+#warning todo バッファのリロード
     }
 
     void reload(int64_t const ch_idx, int64_t const file_idx) {
@@ -46,7 +50,7 @@ struct audio_player::impl : base::impl {
     }
 
    private:
-    int64_t _current_frame = 0;
+    int64_t _play_frame = 0;
     bool _is_playing = false;
     operation_queue _queue;
     std::vector<audio_circular_buffer> _buffers;

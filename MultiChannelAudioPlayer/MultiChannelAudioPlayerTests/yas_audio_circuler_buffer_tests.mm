@@ -80,6 +80,8 @@ using namespace yas::playing;
 
     circular_buffer.rotate_buffer(1);
 
+    self->_queue.wait_until_all_operations_are_finished();
+
     read_buffer.clear();
     read_buffer.set_frame_length(1);
 

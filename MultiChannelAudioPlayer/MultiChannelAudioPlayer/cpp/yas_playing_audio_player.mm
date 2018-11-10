@@ -25,7 +25,7 @@ struct audio_player::impl : base::impl {
         while (yas_each_next(each)) {
             auto const ch_url = url_utils::channel_url(this->_root_url, yas_each_index(each));
             auto buffer = make_audio_circular_buffer(this->_format, 3, ch_url, this->_queue);
-            this->_buffers.push_back(std::move(buffer));
+            this->_circular_buffers.push_back(std::move(buffer));
         }
     }
 
@@ -43,17 +43,17 @@ struct audio_player::impl : base::impl {
 
         this->_play_frame = play_frame;
 
-        for (auto &buffer : this->_buffers) {
+        for (auto &buffer : this->_circular_buffers) {
             buffer->reload_all(top_file_idx);
         }
     }
 
     void reload(int64_t const ch_idx, int64_t const file_idx) {
-        if (this->_buffers.size() <= ch_idx) {
+        if (this->_circular_buffers.size() <= ch_idx) {
             return;
         }
 
-        auto &buffer = this->_buffers.at(ch_idx);
+        auto &buffer = this->_circular_buffers.at(ch_idx);
         buffer->reload(file_idx);
     }
 
@@ -61,7 +61,7 @@ struct audio_player::impl : base::impl {
     int64_t _play_frame = 0;
     bool _is_playing = false;
     operation_queue _queue;
-    std::vector<audio_circular_buffer::ptr> _buffers;
+    std::vector<audio_circular_buffer::ptr> _circular_buffers;
 
     std::recursive_mutex _mutex;
 };

@@ -63,22 +63,29 @@ using namespace yas::playing;
 
     self->_queue.wait_until_all_operations_are_finished();
 
-    audio::pcm_buffer read_buffer{*self->_format, self->_file_length};
-
-    auto read_exp = [self expectationWithDescription:@"read"];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [read_exp, circular_buffer, read_buffer]() mutable {
-                       circular_buffer.read_into_buffer(read_buffer, 0);
-                       [read_exp fulfill];
-                   });
-
-    [self waitForExpectations:@[read_exp] timeout:1.0];
-
+    audio::pcm_buffer read_buffer{*self->_format, 2};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
+
+    circular_buffer.read_into_buffer(read_buffer, 0);
+
     XCTAssertEqual(data_ptr[0], 0);
     XCTAssertEqual(data_ptr[1], 1);
-    XCTAssertEqual(data_ptr[2], 2);
+
+    read_buffer.clear();
+    read_buffer.set_frame_length(1);
+
+    circular_buffer.read_into_buffer(read_buffer, 2);
+
+    XCTAssertEqual(data_ptr[0], 2);
+
+    circular_buffer.rotate_buffer(1);
+
+    read_buffer.clear();
+    read_buffer.set_frame_length(1);
+
+    circular_buffer.read_into_buffer(read_buffer, 3);
+
+    XCTAssertEqual(data_ptr[0], 3);
 }
 
 - (void)setup_files_with_completion:(std::function<void(audio_exporter::export_result_t const &)> &&)completion {

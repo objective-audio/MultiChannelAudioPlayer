@@ -22,7 +22,7 @@ struct audio_circular_buffer {
 
    protected:
     audio_circular_buffer(audio::format const &format, std::size_t const container_count, url const &ch_url,
-                          operation_queue queue);
+                          operation_queue &&queue);
 
    private:
     url const _ch_url;

@@ -57,37 +57,37 @@ using namespace yas::playing;
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = url_utils::channel_url(*self->_root_url, self->_ch_idx);
-    audio_circular_buffer circular_buffer{*self->_format, 2, ch_url, self->_queue};
+    auto circular_buffer = make_audio_circular_buffer(*self->_format, 2, ch_url, self->_queue);
 
-    circular_buffer.reload_all(-1);
+    circular_buffer->reload_all(-1);
     self->_queue.wait_until_all_operations_are_finished();
 
     audio::pcm_buffer read_buffer{*self->_format, 3};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
 
-    circular_buffer.read_into_buffer(read_buffer, -3);
+    circular_buffer->read_into_buffer(read_buffer, -3);
 
     XCTAssertEqual(data_ptr[0], -3);
     XCTAssertEqual(data_ptr[1], -2);
     XCTAssertEqual(data_ptr[2], -1);
 
-    circular_buffer.rotate_buffer(0);
+    circular_buffer->rotate_buffer(0);
     self->_queue.wait_until_all_operations_are_finished();
 
     read_buffer.clear();
 
-    circular_buffer.read_into_buffer(read_buffer, 0);
+    circular_buffer->read_into_buffer(read_buffer, 0);
 
     XCTAssertEqual(data_ptr[0], 0);
     XCTAssertEqual(data_ptr[1], 1);
     XCTAssertEqual(data_ptr[2], 2);
 
-    circular_buffer.rotate_buffer(1);
+    circular_buffer->rotate_buffer(1);
     self->_queue.wait_until_all_operations_are_finished();
 
     read_buffer.clear();
 
-    circular_buffer.read_into_buffer(read_buffer, 3);
+    circular_buffer->read_into_buffer(read_buffer, 3);
 
     XCTAssertEqual(data_ptr[0], 3);
     XCTAssertEqual(data_ptr[1], 4);
@@ -100,44 +100,44 @@ using namespace yas::playing;
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = url_utils::channel_url(*self->_root_url, self->_ch_idx);
-    audio_circular_buffer circular_buffer{*self->_format, 3, ch_url, self->_queue};
+    auto circular_buffer = make_audio_circular_buffer(*self->_format, 3, ch_url, self->_queue);
 
-    circular_buffer.reload_all(-1);
+    circular_buffer->reload_all(-1);
     self->_queue.wait_until_all_operations_are_finished();
 
     auto overwrite_exp = [self expectationWithDescription:@"overwrite"];
     [self overwrite_file_with_completion:[overwrite_exp](auto const &result) { [overwrite_exp fulfill]; }];
     [self waitForExpectations:@[overwrite_exp] timeout:10.0];
 
-    circular_buffer.reload(0);
+    circular_buffer->reload(0);
     self->_queue.wait_until_all_operations_are_finished();
 
     audio::pcm_buffer read_buffer{*self->_format, 3};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
 
-    circular_buffer.read_into_buffer(read_buffer, -3);
+    circular_buffer->read_into_buffer(read_buffer, -3);
 
     XCTAssertEqual(data_ptr[0], -3);
     XCTAssertEqual(data_ptr[1], -2);
     XCTAssertEqual(data_ptr[2], -1);
 
-    circular_buffer.rotate_buffer(0);
+    circular_buffer->rotate_buffer(0);
     self->_queue.wait_until_all_operations_are_finished();
 
     read_buffer.clear();
 
-    circular_buffer.read_into_buffer(read_buffer, 0);
+    circular_buffer->read_into_buffer(read_buffer, 0);
 
     XCTAssertEqual(data_ptr[0], 100);
     XCTAssertEqual(data_ptr[1], 101);
     XCTAssertEqual(data_ptr[2], 102);
 
-    circular_buffer.rotate_buffer(1);
+    circular_buffer->rotate_buffer(1);
     self->_queue.wait_until_all_operations_are_finished();
 
     read_buffer.clear();
 
-    circular_buffer.read_into_buffer(read_buffer, 3);
+    circular_buffer->read_into_buffer(read_buffer, 3);
 
     XCTAssertEqual(data_ptr[0], 3);
     XCTAssertEqual(data_ptr[1], 4);

@@ -12,7 +12,7 @@ using namespace yas;
 using namespace yas::playing;
 
 audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::size_t const count, url const &ch_url,
-                                             operation_queue queue)
+                                             operation_queue &&queue)
     : _file_length(static_cast<uint32_t>(format.sample_rate())),
       _ch_url(ch_url),
       _queue(std::move(queue)),
@@ -98,8 +98,17 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 
 #pragma mark -
 
+namespace yas::playing {
+struct audio_circular_buffer_factory : audio_circular_buffer {
+    audio_circular_buffer_factory(audio::format const &format, std::size_t const container_count, url const &ch_url,
+                                  operation_queue &&queue)
+        : audio_circular_buffer(format, container_count, ch_url, std::move(queue)) {
+    }
+};
+}  // namespace yas::playing
+
 audio_circular_buffer::ptr playing::make_audio_circular_buffer(audio::format const &format,
                                                                std::size_t const container_count, url const &ch_url,
                                                                operation_queue queue) {
-    return std::make_shared<audio_circular_buffer>(format, container_count, ch_url, std::move(queue));
+    return std::make_shared<audio_circular_buffer_factory>(format, container_count, ch_url, std::move(queue));
 }

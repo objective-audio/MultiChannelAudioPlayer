@@ -53,7 +53,14 @@ struct audio_circular_buffer::impl : base::impl {
     }
 
     void reload(int64_t const file_idx) {
-#warning todo file_idxが一致する単独のcontainerをリロードする
+        std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
+
+        for (auto &container_ptr : this->_containers) {
+            if (auto const file_idx_opt = container_ptr->file_idx(); *file_idx_opt == file_idx) {
+                container_ptr->prepare_loading(file_idx);
+                this->_load_container(container_ptr, file_idx);
+            }
+        }
     }
 
     void rotate_buffer(int64_t const next_file_idx) {

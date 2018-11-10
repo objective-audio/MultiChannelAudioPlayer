@@ -19,6 +19,7 @@ using namespace yas::playing;
 
 @implementation yas_audio_circuler_buffer_tests {
     double _sample_rate;
+    uint32_t _file_length;
     int64_t _ch_idx;
     operation_queue _queue;
     std::shared_ptr<yas::url> _root_url;
@@ -35,6 +36,7 @@ using namespace yas::playing;
     self->_root_url = std::make_shared<yas::url>(doc_url.appending("root"));
 
     self->_sample_rate = 3;
+    self->_file_length = 3;
 
     self->_format = std::make_shared<audio::format>(audio::format::args{.sample_rate = self->_sample_rate,
                                                                         .channel_count = 1,
@@ -49,13 +51,34 @@ using namespace yas::playing;
     playing_test_utils::remove_all_document_files();
 }
 
-- (void)test_make {
+- (void)test_read_into_buffer {
     auto setup_exp = [self expectationWithDescription:@"setup"];
     [self setup_files_with_completion:[setup_exp](auto const &result) { [setup_exp fulfill]; }];
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = url_utils::channel_url(*self->_root_url, self->_ch_idx);
-    audio_circular_buffer buffer{*self->_format, 2, ch_url, self->_queue};
+    audio_circular_buffer circular_buffer{*self->_format, 2, ch_url, self->_queue};
+
+    circular_buffer.reload_all(0);
+
+    [NSThread sleepForTimeInterval:1.0];
+
+    audio::pcm_buffer read_buffer{*self->_format, self->_file_length};
+
+    auto read_exp = [self expectationWithDescription:@"read"];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   [read_exp, circular_buffer, read_buffer]() mutable {
+                       circular_buffer.read_into_buffer(read_buffer, 0);
+                       [read_exp fulfill];
+                   });
+
+    [self waitForExpectations:@[read_exp] timeout:1.0];
+
+    int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
+    XCTAssertEqual(data_ptr[0], 0);
+    XCTAssertEqual(data_ptr[1], 1);
+    XCTAssertEqual(data_ptr[2], 2);
 }
 
 - (void)setup_files_with_completion:(std::function<void(audio_exporter::export_result_t const &)> &&)completion {

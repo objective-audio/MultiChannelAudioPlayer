@@ -46,7 +46,6 @@ struct audio_player::impl : base::impl {
         for (auto &buffer : this->_buffers) {
             buffer.reload_all(top_file_idx);
         }
-#warning todo バッファのリロード
     }
 
     void reload(int64_t const ch_idx, int64_t const file_idx) {

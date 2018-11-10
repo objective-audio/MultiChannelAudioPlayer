@@ -59,43 +59,41 @@ using namespace yas::playing;
     auto const ch_url = url_utils::channel_url(*self->_root_url, self->_ch_idx);
     audio_circular_buffer circular_buffer{*self->_format, 2, ch_url, self->_queue};
 
-    circular_buffer.reload_all(0);
-
+    circular_buffer.reload_all(-1);
     self->_queue.wait_until_all_operations_are_finished();
 
     audio::pcm_buffer read_buffer{*self->_format, 2};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
 
-    circular_buffer.read_into_buffer(read_buffer, 0);
+    circular_buffer.read_into_buffer(read_buffer, -3);
 
-    XCTAssertEqual(data_ptr[0], 0);
-    XCTAssertEqual(data_ptr[1], 1);
+    XCTAssertEqual(data_ptr[0], -3);
+    XCTAssertEqual(data_ptr[1], -2);
 
     read_buffer.clear();
     read_buffer.set_frame_length(1);
 
-    circular_buffer.read_into_buffer(read_buffer, 2);
+    circular_buffer.read_into_buffer(read_buffer, -1);
 
-    XCTAssertEqual(data_ptr[0], 2);
+    XCTAssertEqual(data_ptr[0], -1);
 
-    circular_buffer.rotate_buffer(1);
-
+    circular_buffer.rotate_buffer(0);
     self->_queue.wait_until_all_operations_are_finished();
 
     read_buffer.clear();
     read_buffer.set_frame_length(1);
 
-    circular_buffer.read_into_buffer(read_buffer, 3);
+    circular_buffer.read_into_buffer(read_buffer, 0);
 
-    XCTAssertEqual(data_ptr[0], 3);
+    XCTAssertEqual(data_ptr[0], 0);
 
     read_buffer.clear();
     read_buffer.set_frame_length(2);
 
-    circular_buffer.read_into_buffer(read_buffer, 4);
+    circular_buffer.read_into_buffer(read_buffer, 1);
 
-    XCTAssertEqual(data_ptr[0], 4);
-    XCTAssertEqual(data_ptr[1], 5);
+    XCTAssertEqual(data_ptr[0], 1);
+    XCTAssertEqual(data_ptr[1], 2);
 }
 
 - (void)setup_files_with_completion:(std::function<void(audio_exporter::export_result_t const &)> &&)completion {

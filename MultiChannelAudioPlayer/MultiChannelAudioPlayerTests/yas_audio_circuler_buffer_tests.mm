@@ -86,6 +86,14 @@ using namespace yas::playing;
     circular_buffer.read_into_buffer(read_buffer, 3);
 
     XCTAssertEqual(data_ptr[0], 3);
+
+    read_buffer.clear();
+    read_buffer.set_frame_length(2);
+
+    circular_buffer.read_into_buffer(read_buffer, 4);
+
+    XCTAssertEqual(data_ptr[0], 4);
+    XCTAssertEqual(data_ptr[1], 5);
 }
 
 - (void)setup_files_with_completion:(std::function<void(audio_exporter::export_result_t const &)> &&)completion {

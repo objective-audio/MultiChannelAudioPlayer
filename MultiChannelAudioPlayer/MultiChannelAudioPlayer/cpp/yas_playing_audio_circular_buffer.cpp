@@ -61,9 +61,10 @@ struct audio_circular_buffer::impl : base::impl {
 
         auto &container_ptr = this->_containers.front();
 
-        if (container_ptr->file_idx() == next_file_idx - 1) {
+        if (container_ptr->file_idx() == next_file_idx - this->_container_count) {
             this->_containers.push_back(container_ptr);
             this->_containers.pop_front();
+            container_ptr->prepare_loading(next_file_idx);
             this->_load_container(container_ptr, next_file_idx);
         } else {
             this->reload_all(next_file_idx);

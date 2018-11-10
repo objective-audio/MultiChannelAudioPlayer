@@ -61,7 +61,7 @@ using namespace yas::playing;
 
     circular_buffer.reload_all(0);
 
-    [NSThread sleepForTimeInterval:1.0];
+    self->_queue.wait_until_all_operations_are_finished();
 
     audio::pcm_buffer read_buffer{*self->_format, self->_file_length};
 

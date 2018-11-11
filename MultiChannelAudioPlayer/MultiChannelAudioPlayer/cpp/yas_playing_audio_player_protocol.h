@@ -16,6 +16,8 @@ struct audio_renderable : protocol {
     struct impl : protocol::impl {
         virtual void set_rendering_handler(rendering_f &&) = 0;
         virtual chaining::chain_sync_t<double> chain_sample_rate() = 0;
+        virtual chaining::chain_sync_t<audio::pcm_format> chain_pcm_format() = 0;
+        virtual chaining::chain_sync_t<uint32_t> chain_channel_count() = 0;
     };
 
     explicit audio_renderable(std::shared_ptr<impl> impl);

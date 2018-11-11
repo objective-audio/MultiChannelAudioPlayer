@@ -8,6 +8,8 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_renderer::impl : base::impl, audio_renderable::impl {
+    chaining::holder<double> _sample_rate{0.0};
+
     void set_rendering_handler(std::function<void(void)> &&) override {
     }
 };

@@ -10,7 +10,7 @@
 namespace yas::playing {
 struct audio_renderable : protocol {
     struct impl : protocol::impl {
-        virtual void set_rendering_handler(std::function<void(void)> &&);
+        virtual void set_rendering_handler(std::function<void(void)> &&) = 0;
     };
 
     explicit audio_renderable(std::shared_ptr<impl> impl);

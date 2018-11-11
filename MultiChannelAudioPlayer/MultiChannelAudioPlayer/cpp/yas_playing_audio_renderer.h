@@ -5,6 +5,7 @@
 #pragma once
 
 #include "yas_base.h"
+#include "yas_playing_audio_player_protocol.h"
 
 namespace yas::playing {
 struct audio_renderer : base {

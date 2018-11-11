@@ -7,7 +7,10 @@
 using namespace yas;
 using namespace yas::playing;
 
-struct audio_renderer::impl : base::impl {};
+struct audio_renderer::impl : base::impl, audio_renderable::impl {
+    void set_rendering_handler(std::function<void(void)> &&) override {
+    }
+};
 
 audio_renderer::audio_renderer() : base(std::make_shared<impl>()) {
 }

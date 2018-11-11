@@ -77,8 +77,9 @@ struct audio_player::impl : base::impl {
                                                                                     .channel_count = 1,
                                                                                     .pcm_format = pair.second,
                                                                                     .interleaved = false}});
+                    } else {
+                        return std::optional<audio::format>{std::nullopt};
                     }
-                    return std::optional<audio::format>{std::nullopt};
                 })
                 .receive(this->_format.receiver())
                 .sync();

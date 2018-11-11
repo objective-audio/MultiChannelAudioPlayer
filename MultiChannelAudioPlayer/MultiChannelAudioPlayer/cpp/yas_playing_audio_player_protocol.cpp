@@ -13,6 +13,6 @@ audio_renderable::audio_renderable(std::shared_ptr<impl> impl) : protocol(std::m
 audio_renderable::audio_renderable(std::nullptr_t) : protocol(nullptr) {
 }
 
-void audio_renderable::set_rendering_handler(std::function<void(void)> handler) {
+void audio_renderable::set_rendering_handler(audio_renderable::rendering_f handler) {
     impl_ptr<impl>()->set_rendering_handler(std::move(handler));
 }

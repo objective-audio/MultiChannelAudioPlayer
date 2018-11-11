@@ -14,6 +14,7 @@ struct audio_player : base {
 
     audio_player(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url,
                  uint32_t const ch_count);
+    audio_player(std::nullptr_t);
 
     void set_playing(bool const);
     void seek(int64_t const play_frame);

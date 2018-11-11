@@ -27,6 +27,16 @@ test_audio_renderer::test_audio_renderer() : base(std::make_shared<impl>()) {
 test_audio_renderer::test_audio_renderer(std::nullptr_t) : base(nullptr) {
 }
 
+void test_audio_renderer::render(audio::pcm_buffer &buffer) {
+    if (auto handler = impl_ptr<impl>()->_rendering_handler) {
+        handler(buffer);
+    }
+}
+
+void test_audio_renderer::set_sample_rate(double const sample_rate) {
+    impl_ptr<impl>()->_sample_rate.set_value(sample_rate);
+}
+
 audio_renderable &test_audio_renderer::renderable() {
     if (!this->_renderable) {
         this->_renderable = audio_renderable{impl_ptr<impl>()};

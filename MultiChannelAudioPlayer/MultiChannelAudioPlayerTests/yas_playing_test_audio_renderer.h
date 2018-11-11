@@ -15,6 +15,9 @@ struct test_audio_renderer : base {
     test_audio_renderer();
     test_audio_renderer(std::nullptr_t);
 
+    void render(audio::pcm_buffer &buffer);
+    void set_sample_rate(double const);
+
     audio_renderable &renderable();
 
    private:

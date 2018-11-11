@@ -14,6 +14,10 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     void set_rendering_handler(audio_renderable::rendering_f &&handler) override {
         this->_rendering_handler = std::move(handler);
     }
+
+    chaining::chain_sync_t<double> chain_sample_rate() override {
+        return this->_sample_rate.chain();
+    }
 };
 
 audio_renderer::audio_renderer() : base(std::make_shared<impl>()) {

@@ -43,6 +43,14 @@ void test_audio_renderer::render(audio::pcm_buffer &buffer) {
     }
 }
 
+void test_audio_renderer::set_pcm_format(audio::pcm_format const pcm_fomat) {
+    impl_ptr<impl>()->_pcm_format.set_value(pcm_fomat);
+}
+
+void test_audio_renderer::set_channel_count(uint32_t const ch_count) {
+    impl_ptr<impl>()->_channel_count.set_value(ch_count);
+}
+
 void test_audio_renderer::set_sample_rate(double const sample_rate) {
     impl_ptr<impl>()->_sample_rate.set_value(sample_rate);
 }

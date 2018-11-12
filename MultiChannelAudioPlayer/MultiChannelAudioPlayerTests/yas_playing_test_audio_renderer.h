@@ -16,6 +16,8 @@ struct test_audio_renderer : base {
     test_audio_renderer(std::nullptr_t);
 
     void render(audio::pcm_buffer &buffer);
+    void set_pcm_format(audio::pcm_format const);
+    void set_channel_count(uint32_t const);
     void set_sample_rate(double const);
 
     audio_renderable &renderable();

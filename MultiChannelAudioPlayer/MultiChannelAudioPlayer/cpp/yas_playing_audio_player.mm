@@ -13,13 +13,7 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
-    impl(audio_renderable &&renderable, double const sample_rate, audio::pcm_format const pcm_format,
-         url const &root_url, uint32_t const ch_count)
-        : _root_url(root_url),
-          _sample_rate(sample_rate),
-          _pcm_format(pcm_format),
-          _ch_count(ch_count),
-          _renderable(std::move(renderable)) {
+    impl(audio_renderable &&renderable, url const &root_url) : _root_url(root_url), _renderable(std::move(renderable)) {
         this->_setup_chaining();
     }
 
@@ -55,9 +49,6 @@ struct audio_player::impl : base::impl {
    private:
     url const _root_url;
 
-    chaining::holder<double> _sample_rate{0.0};
-    chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::int16};
-    chaining::holder<uint32_t> _ch_count{uint32_t(0)};
     chaining::holder<std::optional<audio::format>> _format{nullptr};
     chaining::observer_pool _pool;
 
@@ -74,13 +65,9 @@ struct audio_player::impl : base::impl {
     void _setup_chaining() {
         auto weak_player = to_weak(cast<audio_player>());
 
-        this->_pool += this->_renderable.chain_sample_rate().receive(this->_sample_rate.receiver()).sync();
-        this->_pool += this->_renderable.chain_pcm_format().receive(this->_pcm_format.receiver()).sync();
-        this->_pool += this->_renderable.chain_channel_count().receive(this->_ch_count.receiver()).sync();
-
         this->_pool +=
-            this->_sample_rate.chain()
-                .combine(this->_pcm_format.chain())
+            this->_renderable.chain_sample_rate()
+                .combine(this->_renderable.chain_pcm_format())
                 .to([](std::pair<double, audio::pcm_format> const &pair) {
                     if (pair.first > 0.0) {
                         return std::make_optional(audio::format{audio::format::args{.sample_rate = pair.first,
@@ -95,7 +82,7 @@ struct audio_player::impl : base::impl {
                 .sync();
 
         this->_pool += this->_format.chain()
-                           .combine(this->_ch_count.chain())
+                           .combine(this->_renderable.chain_channel_count())
                            .perform([weak_player](auto const &pair) {
                                if (auto player = weak_player.lock()) {
                                    player.impl_ptr<impl>()->_update_circular_buffers(pair);
@@ -109,19 +96,6 @@ struct audio_player::impl : base::impl {
             return static_cast<uint32_t>(format->sample_rate());
         } else {
             return 0;
-        }
-    }
-
-    std::optional<audio::format> _to_format() {
-        double const sample_rate = this->_sample_rate.value();
-        audio::pcm_format const pcm_format = this->_pcm_format.value();
-        uint32_t const ch_count = this->_ch_count.value();
-
-        if (sample_rate > 0.0 && ch_count > 0) {
-            return audio::format{audio::format::args{
-                .sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}};
-        } else {
-            return std::nullopt;
         }
     }
 
@@ -145,9 +119,8 @@ struct audio_player::impl : base::impl {
     }
 };
 
-audio_player::audio_player(audio_renderable renderable, double const sample_rate, audio::pcm_format const pcm_format,
-                           url const &root_url, uint32_t const ch_count)
-    : base(std::make_shared<impl>(std::move(renderable), sample_rate, pcm_format, root_url, ch_count)) {
+audio_player::audio_player(audio_renderable renderable, url const &root_url)
+    : base(std::make_shared<impl>(std::move(renderable), root_url)) {
 }
 
 audio_player::audio_player(std::nullptr_t) : base(nullptr) {

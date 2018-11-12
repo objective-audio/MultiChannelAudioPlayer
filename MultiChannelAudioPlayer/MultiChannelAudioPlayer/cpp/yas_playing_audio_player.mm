@@ -27,8 +27,7 @@ struct audio_player::impl : base::impl {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
         this->_is_playing = is_playing;
-
-#warning todo engineの再生停止をする？
+        this->_renderable.set_is_rendering(is_playing);
     }
 
     void seek(int64_t const play_frame) {
@@ -74,6 +73,10 @@ struct audio_player::impl : base::impl {
 
     void _setup_chaining() {
         auto weak_player = to_weak(cast<audio_player>());
+
+        this->_pool += this->_renderable.chain_sample_rate().receive(this->_sample_rate.receiver()).sync();
+        this->_pool += this->_renderable.chain_pcm_format().receive(this->_pcm_format.receiver()).sync();
+        this->_pool += this->_renderable.chain_channel_count().receive(this->_ch_count.receiver()).sync();
 
         this->_pool +=
             this->_sample_rate.chain()

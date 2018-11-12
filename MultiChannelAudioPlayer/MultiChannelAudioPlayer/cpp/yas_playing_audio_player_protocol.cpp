@@ -16,3 +16,18 @@ audio_renderable::audio_renderable(std::nullptr_t) : protocol(nullptr) {
 void audio_renderable::set_rendering_handler(audio_renderable::rendering_f handler) {
     impl_ptr<impl>()->set_rendering_handler(std::move(handler));
 }
+
+chaining::chain_sync_t<double> audio_renderable::chain_sample_rate() {
+    return impl_ptr<impl>()->chain_sample_rate();
+}
+
+chaining::chain_sync_t<audio::pcm_format> audio_renderable::chain_pcm_format() {
+    return impl_ptr<impl>()->chain_pcm_format();
+}
+
+chaining::chain_sync_t<uint32_t> audio_renderable::chain_channel_count() {
+    return impl_ptr<impl>()->chain_channel_count();
+}
+
+void audio_renderable::set_is_rendering(bool const) {
+}

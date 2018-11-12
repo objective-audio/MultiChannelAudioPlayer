@@ -13,8 +13,13 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
-    impl(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url, uint32_t const ch_count)
-        : _root_url(root_url), _sample_rate(sample_rate), _pcm_format(pcm_format), _ch_count(ch_count) {
+    impl(audio_renderable &&renderable, double const sample_rate, audio::pcm_format const pcm_format,
+         url const &root_url, uint32_t const ch_count)
+        : _root_url(root_url),
+          _sample_rate(sample_rate),
+          _pcm_format(pcm_format),
+          _ch_count(ch_count),
+          _renderable(std::move(renderable)) {
         this->_setup_chaining();
     }
 
@@ -22,6 +27,7 @@ struct audio_player::impl : base::impl {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
         this->_is_playing = is_playing;
+
 #warning todo engineの再生停止をする？
     }
 
@@ -57,6 +63,7 @@ struct audio_player::impl : base::impl {
     chaining::observer_pool _pool;
 
     operation_queue _queue;
+    audio_renderable _renderable;
 
     // ロックここから
     int64_t _play_frame = 0;
@@ -135,9 +142,9 @@ struct audio_player::impl : base::impl {
     }
 };
 
-audio_player::audio_player(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url,
-                           uint32_t const ch_count)
-    : base(std::make_shared<impl>(sample_rate, pcm_format, root_url, ch_count)) {
+audio_player::audio_player(audio_renderable renderable, double const sample_rate, audio::pcm_format const pcm_format,
+                           url const &root_url, uint32_t const ch_count)
+    : base(std::make_shared<impl>(std::move(renderable), sample_rate, pcm_format, root_url, ch_count)) {
 }
 
 audio_player::audio_player(std::nullptr_t) : base(nullptr) {

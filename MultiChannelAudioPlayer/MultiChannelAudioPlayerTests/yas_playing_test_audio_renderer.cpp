@@ -30,6 +30,10 @@ struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
     chaining::chain_sync_t<uint32_t> chain_channel_count() override {
         return this->_channel_count.chain();
     }
+
+    void set_is_rendering(bool const is_rendering) override {
+        this->_is_rendering = is_rendering;
+    }
 };
 
 test_audio_renderer::test_audio_renderer() : base(std::make_shared<impl>()) {
@@ -48,10 +52,6 @@ void test_audio_renderer::set_channel_count(uint32_t const ch_count) {
 
 void test_audio_renderer::set_sample_rate(double const sample_rate) {
     impl_ptr<impl>()->_sample_rate.set_value(sample_rate);
-}
-
-void test_audio_renderer::set_is_rendering(bool const is_rendering) {
-    impl_ptr<impl>()->_is_rendering = is_rendering;
 }
 
 void test_audio_renderer::render(audio::pcm_buffer &buffer) {

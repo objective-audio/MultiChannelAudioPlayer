@@ -15,6 +15,7 @@ using namespace yas::playing;
 struct audio_player::impl : base::impl {
     impl(audio_renderable &&renderable, url const &root_url) : _root_url(root_url), _renderable(std::move(renderable)) {
         this->_setup_chaining();
+        this->_setup_rendering_handler();
     }
 
     void set_playing(bool is_playing) {
@@ -89,6 +90,12 @@ struct audio_player::impl : base::impl {
                                }
                            })
                            .sync();
+    }
+
+    void _setup_rendering_handler() {
+        this->_renderable.set_rendering_handler([](audio::pcm_buffer &out_buffer, uint32_t const ch_idx) {
+
+        });
     }
 
     uint32_t _file_length() {

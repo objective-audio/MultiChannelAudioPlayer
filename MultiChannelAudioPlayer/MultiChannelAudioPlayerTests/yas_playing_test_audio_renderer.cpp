@@ -54,9 +54,9 @@ void test_audio_renderer::set_sample_rate(double const sample_rate) {
     impl_ptr<impl>()->_sample_rate.set_value(sample_rate);
 }
 
-void test_audio_renderer::render(audio::pcm_buffer &buffer) {
+void test_audio_renderer::render(audio::pcm_buffer &buffer, uint32_t const ch_idx) {
     if (auto handler = impl_ptr<impl>()->_rendering_handler) {
-        handler(buffer);
+        handler(buffer, ch_idx);
     }
 }
 

@@ -50,7 +50,6 @@ struct audio_player::impl : base::impl {
    private:
     url const _root_url;
 
-    chaining::holder<std::optional<audio::format>> _format{nullptr};
     chaining::observer_pool _pool;
 
     operation_queue _queue;
@@ -60,6 +59,7 @@ struct audio_player::impl : base::impl {
     int64_t _play_frame = 0;
     bool _is_playing = false;
     std::vector<audio_circular_buffer::ptr> _circular_buffers;
+    chaining::holder<std::optional<audio::format>> _format{nullptr};
     // ロックここまで
     std::recursive_mutex _mutex;
 
@@ -107,12 +107,46 @@ struct audio_player::impl : base::impl {
 
             auto player_impl = player.impl_ptr<impl>();
 
-            std::lock_guard<std::recursive_mutex> lock(player_impl->_mutex);
+            auto lock = std::unique_lock<std::recursive_mutex>(player_impl->_mutex, std::try_to_lock);
 
             if (!player_impl->_is_playing) {
                 return;
             }
 
+            int64_t const begin_play_frame = player_impl->_play_frame;
+            int64_t play_frame = begin_play_frame;
+            uint32_t const out_length = out_buffers.at(0).frame_length();
+            int64_t const next_frame = play_frame + out_length;
+            player_impl->_play_frame = next_frame;
+            uint32_t const file_length = player_impl->_file_length();
+#warning todo 使いまわしたい。formatとlengthを渡して、使えるなら使い、作るなら作る
+            audio::pcm_buffer copy_buffer{out_buffers.at(0).format(), out_length};
+
+            while (play_frame < next_frame) {
+#warning todo fileの切れ間を考慮して長さをkimeru
+                uint32_t const proc_length = 0;
+
+                auto each = make_fast_each(out_buffers.size());
+                while (yas_each_next(each)) {
+                    auto const &idx = yas_each_index(each);
+
+                    if (player_impl->_circular_buffers.size() <= idx) {
+                        break;
+                    }
+
+                    copy_buffer.clear();
+                    copy_buffer.set_frame_length(proc_length);
+
+                    auto &circular_buffer = player_impl->_circular_buffers.at(idx);
+                    circular_buffer->read_into_buffer(copy_buffer, play_frame);
+
+#warning fileの切れ間ならrotate_bufferを呼ぶ
+#warning copy_bufferからout_bufferへコピー
+                }
+
+                play_frame += proc_length;
+            }
+            /*
             int64_t const play_frame = player_impl->_play_frame;
 
             auto each = make_fast_each(out_buffers.size());
@@ -131,7 +165,7 @@ struct audio_player::impl : base::impl {
                 auto &circular_buffer = player_impl->_circular_buffers.at(idx);
 
                 circular_buffer->read_into_buffer(out_buffer, play_frame);
-            }
+            }*/
         });
     }
 

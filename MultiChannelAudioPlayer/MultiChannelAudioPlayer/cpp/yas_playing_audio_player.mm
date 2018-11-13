@@ -127,6 +127,10 @@ struct audio_player::impl : base::impl {
             while (play_frame < next_frame) {
 #warning todo fileの切れ間を考慮して長さを決める
                 uint32_t const proc_length = 0;
+#warning todo fileの切れ間ならフラグをtrueにする
+                bool const is_rotate = false;
+                int64_t const next_file_idx = 0;
+                uint32_t const to_frame = uint32_t(play_frame - begin_play_frame);
 
                 auto each = make_fast_each(out_buffers.size());
                 while (yas_each_next(each)) {
@@ -143,9 +147,11 @@ struct audio_player::impl : base::impl {
                     circular_buffer->read_into_buffer(read_buffer, play_frame);
 
 #warning resultを見る？
-                    out_buffers.at(idx).copy_from(read_buffer, 0, uint32_t(next_frame - play_frame), proc_length);
+                    out_buffers.at(idx).copy_from(read_buffer, 0, to_frame, proc_length);
 
-#warning fileの切れ間ならrotate_bufferを呼ぶ
+                    if (is_rotate) {
+                        circular_buffer->rotate_buffer(next_file_idx);
+                    }
                 }
 
                 play_frame += proc_length;

@@ -93,8 +93,25 @@ struct audio_player::impl : base::impl {
     }
 
     void _setup_rendering_handler() {
-        this->_renderable.set_rendering_handler([](audio::pcm_buffer &out_buffer, uint32_t const ch_idx) {
+        auto weak_player = to_weak(cast<audio_player>());
 
+        this->_renderable.set_rendering_handler([weak_player](audio::pcm_buffer &out_buffer, uint32_t const ch_idx) {
+            auto player = weak_player.lock();
+            if (!player) {
+                return;
+            }
+
+            auto player_impl = player.impl_ptr<impl>();
+
+            std::lock_guard<std::recursive_mutex> lock(player_impl->_mutex);
+
+            if (player_impl->_circular_buffers.size() <= ch_idx) {
+                return;
+            }
+
+            auto &circular_buffer = player_impl->_circular_buffers.at(ch_idx);
+
+            circular_buffer->read_into_buffer(out_buffer, player_impl->_play_frame);
         });
     }
 

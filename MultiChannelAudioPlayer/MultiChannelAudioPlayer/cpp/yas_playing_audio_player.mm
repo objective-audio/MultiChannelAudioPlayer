@@ -95,7 +95,11 @@ struct audio_player::impl : base::impl {
     void _setup_rendering_handler() {
         auto weak_player = to_weak(cast<audio_player>());
 
-        this->_renderable.set_rendering_handler([weak_player](audio::pcm_buffer &out_buffer, uint32_t const ch_idx) {
+        this->_renderable.set_rendering_handler([weak_player](std::vector<audio::pcm_buffer> &out_buffers) {
+            if (out_buffers.size() == 0) {
+                return;
+            }
+
             auto player = weak_player.lock();
             if (!player) {
                 return;
@@ -105,13 +109,25 @@ struct audio_player::impl : base::impl {
 
             std::lock_guard<std::recursive_mutex> lock(player_impl->_mutex);
 
-            if (player_impl->_circular_buffers.size() <= ch_idx) {
-                return;
+            int64_t const play_frame = player_impl->_play_frame;
+
+            auto each = make_fast_each(out_buffers.size());
+            while (yas_each_next(each)) {
+                auto const &idx = yas_each_index(each);
+                auto &out_buffer = out_buffers.at(0);
+
+                if (idx == 0) {
+                    player_impl->_play_frame += out_buffer.frame_length();
+                }
+
+                if (player_impl->_circular_buffers.size() <= idx) {
+                    break;
+                }
+
+                auto &circular_buffer = player_impl->_circular_buffers.at(idx);
+
+                circular_buffer->read_into_buffer(out_buffer, play_frame);
             }
-
-            auto &circular_buffer = player_impl->_circular_buffers.at(ch_idx);
-
-            circular_buffer->read_into_buffer(out_buffer, player_impl->_play_frame);
         });
     }
 

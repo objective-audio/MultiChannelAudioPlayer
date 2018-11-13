@@ -11,7 +11,7 @@
 
 namespace yas::playing {
 struct audio_renderable : protocol {
-    using rendering_f = std::function<void(audio::pcm_buffer &, uint32_t const)>;
+    using rendering_f = std::function<void(std::vector<audio::pcm_buffer> &)>;
 
     struct impl : protocol::impl {
         virtual void set_rendering_handler(rendering_f &&) = 0;

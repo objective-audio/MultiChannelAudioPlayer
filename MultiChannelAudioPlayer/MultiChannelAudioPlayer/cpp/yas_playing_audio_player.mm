@@ -64,7 +64,7 @@ struct audio_player::impl : base::impl {
     std::recursive_mutex _mutex;
 
     // render only
-    audio::pcm_buffer _copy_buffer{nullptr};
+    audio::pcm_buffer _read_buffer{nullptr};
 
     void _setup_chaining() {
         auto weak_player = to_weak(cast<audio_player>());
@@ -122,7 +122,7 @@ struct audio_player::impl : base::impl {
             int64_t const next_frame = play_frame + out_length;
             player_impl->_play_frame = next_frame;
             uint32_t const file_length = player_impl->_file_length();
-            auto copy_buffer = player_impl->_get_or_create_copy_buffer(out_buffers.at(0).format(), out_length);
+            auto copy_buffer = player_impl->_get_or_create_read_buffer(out_buffers.at(0).format(), out_length);
 
             while (play_frame < next_frame) {
 #warning todo fileの切れ間を考慮して長さを決める
@@ -177,20 +177,20 @@ struct audio_player::impl : base::impl {
         }
     }
 
-    audio::pcm_buffer _get_or_create_copy_buffer(audio::format const &format, uint32_t const length) {
-        if (this->_copy_buffer) {
-            if (this->_copy_buffer.format() != format) {
-                this->_copy_buffer = nullptr;
-            } else if (this->_copy_buffer.frame_capacity() < length) {
-                this->_copy_buffer = nullptr;
+    audio::pcm_buffer _get_or_create_read_buffer(audio::format const &format, uint32_t const length) {
+        if (this->_read_buffer) {
+            if (this->_read_buffer.format() != format) {
+                this->_read_buffer = nullptr;
+            } else if (this->_read_buffer.frame_capacity() < length) {
+                this->_read_buffer = nullptr;
             }
         }
 
-        if (!this->_copy_buffer) {
-            this->_copy_buffer = audio::pcm_buffer{format, length};
+        if (!this->_read_buffer) {
+            this->_read_buffer = audio::pcm_buffer{format, length};
         }
 
-        return this->_copy_buffer;
+        return this->_read_buffer;
     }
 };
 

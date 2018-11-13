@@ -109,19 +109,18 @@ struct audio_player::impl : base::impl {
     void _update_circular_buffers(std::pair<std::optional<audio::format>, uint32_t> const &pair) {
         auto const &[format, ch_count] = pair;
 
-        if (format && ch_count > 0) {
-            std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+        std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
+        this->_circular_buffers.clear();
+
+        if (format && ch_count > 0) {
             auto each = make_fast_each(ch_count);
             while (yas_each_next(each)) {
                 auto const ch_url = url_utils::channel_url(this->_root_url, yas_each_index(each));
                 auto buffer = make_audio_circular_buffer(*format, 3, ch_url, this->_queue);
+
                 this->_circular_buffers.push_back(std::move(buffer));
             }
-        } else {
-            std::lock_guard<std::recursive_mutex> lock(this->_mutex);
-
-            this->_circular_buffers.clear();
         }
     }
 };

@@ -122,7 +122,7 @@ struct audio_player::impl : base::impl {
             int64_t const next_frame = play_frame + out_length;
             player_impl->_play_frame = next_frame;
             uint32_t const file_length = player_impl->_file_length();
-            auto copy_buffer = player_impl->_get_or_create_read_buffer(out_buffers.at(0).format(), out_length);
+            auto read_buffer = player_impl->_get_or_create_read_buffer(out_buffers.at(0).format(), out_length);
 
             while (play_frame < next_frame) {
 #warning todo fileの切れ間を考慮して長さを決める
@@ -136,13 +136,15 @@ struct audio_player::impl : base::impl {
                         break;
                     }
 
-                    copy_buffer.clear();
-                    copy_buffer.set_frame_length(proc_length);
+                    read_buffer.clear();
+                    read_buffer.set_frame_length(proc_length);
 
                     auto &circular_buffer = player_impl->_circular_buffers.at(idx);
-                    circular_buffer->read_into_buffer(copy_buffer, play_frame);
+                    circular_buffer->read_into_buffer(read_buffer, play_frame);
 
-#warning copy_bufferからout_bufferへコピー
+#warning resultを見る？
+                    out_buffers.at(idx).copy_from(read_buffer, 0, uint32_t(next_frame - play_frame), proc_length);
+
 #warning fileの切れ間ならrotate_bufferを呼ぶ
                 }
 

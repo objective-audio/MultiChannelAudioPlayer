@@ -109,6 +109,10 @@ struct audio_player::impl : base::impl {
 
             std::lock_guard<std::recursive_mutex> lock(player_impl->_mutex);
 
+            if (!player_impl->_is_playing) {
+                return;
+            }
+
             int64_t const play_frame = player_impl->_play_frame;
 
             auto each = make_fast_each(out_buffers.size());

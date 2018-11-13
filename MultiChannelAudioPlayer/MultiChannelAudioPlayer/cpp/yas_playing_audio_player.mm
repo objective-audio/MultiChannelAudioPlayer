@@ -127,8 +127,7 @@ struct audio_player::impl : base::impl {
             while (play_frame < next_frame) {
 #warning todo fileの切れ間を考慮して長さを決める
                 uint32_t const proc_length = 0;
-#warning todo fileの切れ間ならフラグをtrueにする
-                bool const is_rotate = false;
+                bool const is_rotate = (play_frame + proc_length) % file_length == 0;
                 int64_t const next_file_idx = 0;
                 uint32_t const to_frame = uint32_t(play_frame - begin_play_frame);
 

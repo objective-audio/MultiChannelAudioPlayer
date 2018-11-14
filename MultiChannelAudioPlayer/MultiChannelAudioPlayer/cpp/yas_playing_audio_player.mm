@@ -7,6 +7,7 @@
 #include "yas_fast_each.h"
 #include "yas_math.h"
 #include "yas_playing_audio_circular_buffer.h"
+#include "yas_playing_audio_utils.h"
 #include "yas_playing_url_utils.h"
 
 using namespace yas;
@@ -125,10 +126,7 @@ struct audio_player::impl : base::impl {
             auto read_buffer = player_impl->_get_or_create_read_buffer(out_buffers.at(0).format(), out_length);
 
             while (play_frame < next_frame) {
-#warning todo fileの切れ間を考慮して長さを決める
-                uint32_t const proc_length = 0;
-                bool const is_rotate = (play_frame + proc_length) % file_length == 0;
-                int64_t const next_file_idx = 0;
+                auto const info = audio_utils::processing_info{play_frame, next_frame, file_length};
                 uint32_t const to_frame = uint32_t(play_frame - begin_play_frame);
 
                 auto each = make_fast_each(out_buffers.size());
@@ -140,20 +138,20 @@ struct audio_player::impl : base::impl {
                     }
 
                     read_buffer.clear();
-                    read_buffer.set_frame_length(proc_length);
+                    read_buffer.set_frame_length(info.length);
 
                     auto &circular_buffer = player_impl->_circular_buffers.at(idx);
                     circular_buffer->read_into_buffer(read_buffer, play_frame);
 
 #warning resultを見る？
-                    out_buffers.at(idx).copy_from(read_buffer, 0, to_frame, proc_length);
+                    out_buffers.at(idx).copy_from(read_buffer, 0, to_frame, info.length);
 
-                    if (is_rotate) {
-                        circular_buffer->rotate_buffer(next_file_idx);
+                    if (info.next_file_idx.has_value()) {
+                        circular_buffer->rotate_buffer(*info.next_file_idx);
                     }
                 }
 
-                play_frame += proc_length;
+                play_frame += info.length;
             }
         });
     }

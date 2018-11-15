@@ -20,6 +20,7 @@ struct audio_player : base {
     void seek(int64_t const play_frame);
     void reload(int64_t const ch_idx, int64_t const file_idx);
 
+    url root_url() const;
     bool is_playing() const;
     int64_t play_frame() const;
 };

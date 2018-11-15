@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 #import "yas_playing_audio_player.h"
 #import "yas_playing_test_audio_renderer.h"
+#import "yas_system_url_utils.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -22,6 +23,10 @@ using namespace yas::playing;
 }
 
 - (void)test_initial {
+    auto root_url = system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
+    test_utils::test_audio_renderer renderer{};
+
+    audio_player player{renderer.renderable(), root_url};
 }
 
 @end

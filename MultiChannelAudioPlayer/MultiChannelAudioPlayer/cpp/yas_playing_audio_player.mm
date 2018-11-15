@@ -15,6 +15,7 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
+    url const _root_url;
     // ロックここから
     std::atomic<int64_t> _play_frame = 0;
     std::atomic<bool> _is_playing = false;
@@ -54,17 +55,7 @@ struct audio_player::impl : base::impl {
         buffer->reload(file_idx);
     }
 
-    bool is_playing() {
-        return this->_is_playing;
-    }
-
-    int64_t play_frame() {
-        return this->_play_frame;
-    }
-
    private:
-    url const _root_url;
-
     chaining::observer_pool _pool;
 
     operation_queue _queue;
@@ -230,10 +221,14 @@ void audio_player::reload(int64_t const ch_idx, int64_t const file_idx) {
     impl_ptr<impl>()->reload(ch_idx, file_idx);
 }
 
+url audio_player::root_url() const {
+    return impl_ptr<impl>()->_root_url;
+}
+
 bool audio_player::is_playing() const {
-    return impl_ptr<impl>()->is_playing();
+    return impl_ptr<impl>()->_is_playing;
 }
 
 int64_t audio_player::play_frame() const {
-    return impl_ptr<impl>()->play_frame();
+    return impl_ptr<impl>()->_play_frame;
 }

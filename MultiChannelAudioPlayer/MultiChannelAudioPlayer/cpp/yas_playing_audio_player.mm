@@ -22,8 +22,11 @@ struct audio_player::impl : base::impl {
     // ロックここまで
 
     impl(audio_renderable &&renderable, url const &root_url) : _root_url(root_url), _renderable(std::move(renderable)) {
-        this->_setup_chaining();
-        this->_setup_rendering_handler();
+    }
+
+    void prepare(audio_player &player) {
+        this->_setup_chaining(player);
+        this->_setup_rendering_handler(player);
     }
 
     void set_playing(bool is_playing) {
@@ -63,15 +66,15 @@ struct audio_player::impl : base::impl {
 
     // ロックここから
     std::vector<audio_circular_buffer::ptr> _circular_buffers;
-    chaining::holder<std::optional<audio::format>> _format{nullptr};
+    chaining::holder<std::optional<audio::format>> _format{std::nullopt};
     // ロックここまで
     std::recursive_mutex _mutex;
 
     // render only
     audio::pcm_buffer _read_buffer{nullptr};
 
-    void _setup_chaining() {
-        auto weak_player = to_weak(cast<audio_player>());
+    void _setup_chaining(audio_player &player) {
+        auto weak_player = to_weak(player);
 
         this->_pool +=
             this->_renderable.chain_sample_rate()
@@ -99,8 +102,8 @@ struct audio_player::impl : base::impl {
                            .sync();
     }
 
-    void _setup_rendering_handler() {
-        auto weak_player = to_weak(cast<audio_player>());
+    void _setup_rendering_handler(audio_player &player) {
+        auto weak_player = to_weak(player);
 
         this->_renderable.set_rendering_handler([weak_player](std::vector<audio::pcm_buffer> &out_buffers) {
             if (out_buffers.size() == 0) {
@@ -204,6 +207,7 @@ struct audio_player::impl : base::impl {
 
 audio_player::audio_player(audio_renderable renderable, url const &root_url)
     : base(std::make_shared<impl>(std::move(renderable), root_url)) {
+    impl_ptr<impl>()->prepare(*this);
 }
 
 audio_player::audio_player(std::nullptr_t) : base(nullptr) {

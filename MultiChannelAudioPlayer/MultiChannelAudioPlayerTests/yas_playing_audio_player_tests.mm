@@ -27,6 +27,10 @@ using namespace yas::playing;
     test_utils::test_audio_renderer renderer{};
 
     audio_player player{renderer.renderable(), root_url};
+
+    XCTAssertFalse(player.is_playing());
+    XCTAssertEqual(player.play_frame(), 0);
+    XCTAssertEqual(player.root_url(), root_url);
 }
 
 @end

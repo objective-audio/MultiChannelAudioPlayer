@@ -48,6 +48,26 @@ using namespace yas::playing;
     XCTAssertFalse(player.is_playing());
 }
 
+- (void)test_seek {
+    auto root_url = [self root_url];
+    test_utils::test_audio_renderer renderer{};
+    audio_player player{renderer.renderable(), root_url};
+
+    XCTAssertEqual(player.play_frame(), 0);
+
+    player.seek(1);
+
+    XCTAssertEqual(player.play_frame(), 1);
+
+    player.seek(10);
+
+    XCTAssertEqual(player.play_frame(), 10);
+
+    player.seek(-1);
+
+    XCTAssertEqual(player.play_frame(), -1);
+}
+
 #pragma mark -
 
 - (url)root_url {

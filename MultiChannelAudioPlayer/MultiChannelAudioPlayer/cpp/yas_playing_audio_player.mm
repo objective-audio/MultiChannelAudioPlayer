@@ -38,11 +38,16 @@ struct audio_player::impl : base::impl {
 
     void seek(int64_t const play_frame) {
         uint32_t const file_length = this->_file_length();
-        int64_t const top_file_idx = math::floor_int(play_frame, file_length) / file_length;
 
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
         this->_play_frame = play_frame;
+
+        if (file_length == 0) {
+            return;
+        }
+
+        int64_t const top_file_idx = math::floor_int(play_frame, file_length) / file_length;
 
         for (auto &buffer : this->_circular_buffers) {
             buffer->reload_all(top_file_idx);

@@ -47,10 +47,10 @@ struct audio_player::impl : base::impl {
             return;
         }
 
-        int64_t const top_file_idx = math::floor_int(play_frame, file_length) / file_length;
-
-        for (auto &buffer : this->_circular_buffers) {
-            buffer->reload_all(top_file_idx);
+        if (auto const top_file_idx = this->_top_file_idx()) {
+            for (auto &buffer : this->_circular_buffers) {
+                buffer->reload_all(*top_file_idx);
+            }
         }
     }
 
@@ -168,6 +168,8 @@ struct audio_player::impl : base::impl {
     }
 
     uint32_t _file_length() {
+        std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
         if (auto const &format = this->_format.value(); format) {
             return static_cast<uint32_t>(format->sample_rate());
         } else {
@@ -182,12 +184,12 @@ struct audio_player::impl : base::impl {
 
         this->_circular_buffers.clear();
 
-        if (format && ch_count > 0) {
+        if (auto top_file_idx = this->_top_file_idx(); top_file_idx && ch_count > 0) {
             auto each = make_fast_each(ch_count);
             while (yas_each_next(each)) {
                 auto const ch_url = url_utils::channel_url(this->_root_url, yas_each_index(each));
                 auto buffer = make_audio_circular_buffer(*format, 3, ch_url, this->_queue);
-
+                buffer->reload_all(*top_file_idx);
                 this->_circular_buffers.push_back(std::move(buffer));
             }
         }
@@ -207,6 +209,17 @@ struct audio_player::impl : base::impl {
         }
 
         return this->_read_buffer;
+    }
+
+    std::optional<int64_t> _top_file_idx() {
+        std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
+        uint32_t const file_length = this->_file_length();
+        if (file_length > 0) {
+            return math::floor_int(this->_play_frame, file_length) / file_length;
+        } else {
+            return std::nullopt;
+        }
     }
 };
 

@@ -86,11 +86,11 @@ audio::file make_file(uint32_t const file_length) {
 @implementation yas_audio_buffer_container_tests
 
 - (void)setUp {
-    playing_test_utils::remove_all_document_files();
+    test_utils::remove_all_document_files();
 }
 
 - (void)tearDown {
-    playing_test_utils::remove_all_document_files();
+    test_utils::remove_all_document_files();
 }
 
 - (void)test_initial {

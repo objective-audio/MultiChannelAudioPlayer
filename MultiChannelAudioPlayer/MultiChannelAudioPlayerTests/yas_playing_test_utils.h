@@ -4,6 +4,6 @@
 
 #pragma once
 
-namespace yas::playing_test_utils {
+namespace yas::playing::test_utils {
 void remove_all_document_files();
-}  // namespace yas::playing_test_utils
+}  // namespace yas::playing::test_utils

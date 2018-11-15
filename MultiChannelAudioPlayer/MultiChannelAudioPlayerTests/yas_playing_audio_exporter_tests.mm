@@ -9,6 +9,7 @@
 #import "yas_system_url_utils.h"
 
 using namespace yas;
+using namespace yas::playing;
 
 @interface yas_playing_audio_exporter_tests : XCTestCase
 
@@ -17,11 +18,11 @@ using namespace yas;
 @implementation yas_playing_audio_exporter_tests
 
 - (void)setUp {
-    playing_test_utils::remove_all_document_files();
+    test_utils::remove_all_document_files();
 }
 
 - (void)tearDown {
-    playing_test_utils::remove_all_document_files();
+    test_utils::remove_all_document_files();
 }
 
 - (void)test_export_file {

@@ -28,7 +28,7 @@ using namespace yas::playing;
 }
 
 - (void)setUp {
-    playing_test_utils::remove_all_document_files();
+    test_utils::remove_all_document_files();
 
     self->_ch_idx = 0;
 
@@ -48,7 +48,7 @@ using namespace yas::playing;
 }
 
 - (void)tearDown {
-    playing_test_utils::remove_all_document_files();
+    test_utils::remove_all_document_files();
 }
 
 - (void)test_read_into_buffer {

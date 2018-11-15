@@ -48,7 +48,7 @@ using namespace yas::playing;
     XCTAssertFalse(player.is_playing());
 }
 
-- (void)test_seek {
+- (void)test_seek_without_format {
     auto root_url = [self root_url];
     test_utils::test_audio_renderer renderer{};
     audio_player player{renderer.renderable(), root_url};

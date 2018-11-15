@@ -23,7 +23,7 @@ using namespace yas::playing;
 }
 
 - (void)test_initial {
-    auto root_url = system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
+    auto root_url = [self root_url];
     test_utils::test_audio_renderer renderer{};
     audio_player player{renderer.renderable(), root_url};
 
@@ -33,7 +33,7 @@ using namespace yas::playing;
 }
 
 - (void)test_is_playing {
-    auto root_url = system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
+    auto root_url = [self root_url];
     test_utils::test_audio_renderer renderer{};
     audio_player player{renderer.renderable(), root_url};
 
@@ -46,6 +46,12 @@ using namespace yas::playing;
     player.set_playing(false);
 
     XCTAssertFalse(player.is_playing());
+}
+
+#pragma mark -
+
+- (url)root_url {
+    return system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
 }
 
 @end

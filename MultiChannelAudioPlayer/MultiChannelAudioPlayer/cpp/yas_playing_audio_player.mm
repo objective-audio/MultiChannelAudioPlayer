@@ -55,6 +55,8 @@ struct audio_player::impl : base::impl {
     }
 
     void reload(int64_t const ch_idx, int64_t const file_idx) {
+        std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
         if (this->_circular_buffers.size() <= ch_idx) {
             return;
         }

@@ -26,8 +26,7 @@ using namespace yas::playing;
 }
 
 - (void)test_export_file {
-    auto doc_url = system_url_utils::directory_url(system_url_utils::dir::document);
-    auto root_url = doc_url.appending("root");
+    auto root_url = system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
     double const sample_rate = 3;
     uint32_t const file_length = sample_rate;
     audio::format format{audio::format::args{

@@ -19,5 +19,8 @@ struct audio_player : base {
     void set_playing(bool const);
     void seek(int64_t const play_frame);
     void reload(int64_t const ch_idx, int64_t const file_idx);
+
+    bool is_playing() const;
+    int64_t play_frame() const;
 };
 }  // namespace yas::playing

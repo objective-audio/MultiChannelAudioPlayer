@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_audio_player.h"
+#include <atomic>
 #include "yas_chaining.h"
 #include "yas_fast_each.h"
 #include "yas_math.h"
@@ -14,6 +15,11 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
+    // ロックここから
+    std::atomic<int64_t> _play_frame = 0;
+    std::atomic<bool> _is_playing = false;
+    // ロックここまで
+
     impl(audio_renderable &&renderable, url const &root_url) : _root_url(root_url), _renderable(std::move(renderable)) {
         this->_setup_chaining();
         this->_setup_rendering_handler();
@@ -48,6 +54,14 @@ struct audio_player::impl : base::impl {
         buffer->reload(file_idx);
     }
 
+    bool is_playing() {
+        return this->_is_playing;
+    }
+
+    int64_t play_frame() {
+        return this->_play_frame;
+    }
+
    private:
     url const _root_url;
 
@@ -57,8 +71,6 @@ struct audio_player::impl : base::impl {
     audio_renderable _renderable;
 
     // ロックここから
-    int64_t _play_frame = 0;
-    bool _is_playing = false;
     std::vector<audio_circular_buffer::ptr> _circular_buffers;
     chaining::holder<std::optional<audio::format>> _format{nullptr};
     // ロックここまで
@@ -216,4 +228,12 @@ void audio_player::seek(int64_t const play_frame) {
 
 void audio_player::reload(int64_t const ch_idx, int64_t const file_idx) {
     impl_ptr<impl>()->reload(ch_idx, file_idx);
+}
+
+bool audio_player::is_playing() const {
+    return impl_ptr<impl>()->is_playing();
+}
+
+int64_t audio_player::play_frame() const {
+    return impl_ptr<impl>()->play_frame();
 }

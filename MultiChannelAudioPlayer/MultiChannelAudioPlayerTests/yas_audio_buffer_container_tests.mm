@@ -13,7 +13,7 @@
 using namespace yas;
 using namespace yas::playing;
 
-namespace yas::playing_test_utils {
+namespace yas::playing::test_utils {
 audio::format make_format(double sample_rate) {
     return audio::format{audio::format::args{
         .sample_rate = sample_rate, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
@@ -96,7 +96,7 @@ audio::file make_file(uint32_t const file_length) {
 - (void)test_initial {
     uint32_t const file_length = 3;
     auto format = playing_test_utils::make_format(file_length);
-    auto const container = playing_test_utils::make_container(format, file_length);
+    auto const container = playing::test_utils::make_container(format, file_length);
 
     XCTAssertTrue(container);
     XCTAssertFalse(container->file_idx());
@@ -110,7 +110,7 @@ audio::file make_file(uint32_t const file_length) {
 }
 
 - (void)test_prepare_loading {
-    auto const container = playing_test_utils::make_container(3);
+    auto const container = test_utils::make_container(3);
 
     XCTAssertFalse(container->file_idx());
 
@@ -132,12 +132,12 @@ audio::file make_file(uint32_t const file_length) {
 
 - (void)test_load_from_file_and_read_into_buffer {
     uint32_t const file_length = 3;
-    auto format = playing_test_utils::make_format(file_length);
-    auto container = playing_test_utils::make_container(format, file_length);
+    auto format = test_utils::make_format(file_length);
+    auto container = test_utils::make_container(format, file_length);
 
     container->prepare_loading(0);
 
-    auto file = playing_test_utils::make_file(file_length);
+    auto file = test_utils::make_file(file_length);
 
     auto load_result = container->load_from_file(file, 0);
 
@@ -158,8 +158,8 @@ audio::file make_file(uint32_t const file_length) {
 
 - (void)test_contains {
     uint32_t const file_length = 3;
-    auto const container = playing_test_utils::make_container(file_length);
-    auto file = playing_test_utils::make_file(file_length);
+    auto const container = test_utils::make_container(file_length);
+    auto file = test_utils::make_file(file_length);
 
     container->prepare_loading(0);
     container->load_from_file(file, 0);
@@ -171,7 +171,7 @@ audio::file make_file(uint32_t const file_length) {
     XCTAssertFalse(container->contains(-1));
     XCTAssertFalse(container->contains(3));
 
-    file = playing_test_utils::make_file(file_length);
+    file = test_utils::make_file(file_length);
 
     container->prepare_loading(1);
     auto result = container->load_from_file(file, 1);

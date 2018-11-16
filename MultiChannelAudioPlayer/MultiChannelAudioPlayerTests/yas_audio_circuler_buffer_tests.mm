@@ -43,8 +43,8 @@ using namespace yas::playing;
                                                                         .pcm_format = audio::pcm_format::int16,
                                                                         .interleaved = false});
 
-    self->_exporter =
-        std::make_shared<playing::audio_exporter>(self->_sample_rate, audio::pcm_format::int16, *self->_root_url);
+    self->_exporter = std::make_shared<playing::audio_exporter>(self->_sample_rate, audio::pcm_format::int16,
+                                                                *self->_root_url, self->_queue);
 
     self->_queue = operation_queue{};
 }

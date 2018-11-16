@@ -18,7 +18,7 @@ struct audio_exporter::impl : base::impl {
     audio::pcm_buffer _file_buffer;
     audio::pcm_buffer _process_buffer;
 
-    impl(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url)
+    impl(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url, operation_queue &&queue)
         : _format({.sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}),
           _root_url(root_url),
           _file_buffer(this->_format, static_cast<uint32_t>(sample_rate)),
@@ -165,8 +165,9 @@ struct audio_exporter::impl : base::impl {
     }
 };
 
-audio_exporter::audio_exporter(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url)
-    : base(std::make_shared<impl>(sample_rate, pcm_format, root_url)) {
+audio_exporter::audio_exporter(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url,
+                               operation_queue queue)
+    : base(std::make_shared<impl>(sample_rate, pcm_format, root_url, std::move(queue))) {
 }
 
 void audio_exporter::export_file(uint32_t const ch_idx, proc::time::range const &range,

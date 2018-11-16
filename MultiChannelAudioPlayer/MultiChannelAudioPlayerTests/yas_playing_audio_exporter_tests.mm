@@ -15,10 +15,14 @@ using namespace yas::playing;
 
 @end
 
-@implementation yas_playing_audio_exporter_tests
+@implementation yas_playing_audio_exporter_tests {
+    operation_queue _queue;
+}
 
 - (void)setUp {
     test_utils::remove_all_document_files();
+
+    self->_queue = operation_queue{};
 }
 
 - (void)tearDown {
@@ -32,7 +36,7 @@ using namespace yas::playing;
     audio::format format{audio::format::args{
         .sample_rate = sample_rate, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
 
-    playing::audio_exporter exporter{sample_rate, audio::pcm_format::int16, root_url};
+    playing::audio_exporter exporter{sample_rate, audio::pcm_format::int16, root_url, self->_queue};
 
     XCTestExpectation *firstExp = [self expectationWithDescription:@"export_first"];
 

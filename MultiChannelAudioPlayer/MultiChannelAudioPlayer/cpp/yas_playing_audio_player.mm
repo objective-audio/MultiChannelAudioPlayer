@@ -21,7 +21,8 @@ struct audio_player::impl : base::impl {
     std::atomic<bool> _is_playing = false;
     // ロックここまで
 
-    impl(audio_renderable &&renderable, url const &root_url) : _root_url(root_url), _renderable(std::move(renderable)) {
+    impl(audio_renderable &&renderable, url const &root_url, operation_queue &&queue)
+        : _root_url(root_url), _renderable(std::move(renderable)), _queue(std::move(queue)) {
     }
 
     void prepare(audio_player &player) {
@@ -225,8 +226,8 @@ struct audio_player::impl : base::impl {
     }
 };
 
-audio_player::audio_player(audio_renderable renderable, url const &root_url)
-    : base(std::make_shared<impl>(std::move(renderable), root_url)) {
+audio_player::audio_player(audio_renderable renderable, url const &root_url, operation_queue queue)
+    : base(std::make_shared<impl>(std::move(renderable), root_url, std::move(queue))) {
     impl_ptr<impl>()->prepare(*this);
 }
 

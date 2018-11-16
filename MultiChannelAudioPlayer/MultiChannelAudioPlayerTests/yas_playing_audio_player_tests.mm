@@ -14,9 +14,12 @@ using namespace yas::playing;
 
 @end
 
-@implementation yas_playing_audio_player_tests
+@implementation yas_playing_audio_player_tests {
+    operation_queue _queue;
+}
 
 - (void)setUp {
+    self->_queue = operation_queue{};
 }
 
 - (void)tearDown {
@@ -25,7 +28,7 @@ using namespace yas::playing;
 - (void)test_initial {
     auto root_url = [self root_url];
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), root_url};
+    audio_player player{renderer.renderable(), root_url, self->_queue};
 
     XCTAssertFalse(player.is_playing());
     XCTAssertEqual(player.play_frame(), 0);
@@ -35,7 +38,7 @@ using namespace yas::playing;
 - (void)test_is_playing {
     auto root_url = [self root_url];
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), root_url};
+    audio_player player{renderer.renderable(), root_url, self->_queue};
 
     XCTAssertFalse(player.is_playing());
 
@@ -51,7 +54,7 @@ using namespace yas::playing;
 - (void)test_seek_without_format {
     auto root_url = [self root_url];
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), root_url};
+    audio_player player{renderer.renderable(), root_url, self->_queue};
 
     XCTAssertEqual(player.play_frame(), 0);
 

@@ -6,6 +6,7 @@
 
 #include "yas_audio.h"
 #include "yas_base.h"
+#include "yas_operation.h"
 #include "yas_playing_audio_player_protocol.h"
 #include "yas_url.h"
 
@@ -13,7 +14,7 @@ namespace yas::playing {
 struct audio_player : base {
     class impl;
 
-    audio_player(audio_renderable renderable, url const &root_url);
+    audio_player(audio_renderable renderable, url const &root_url, operation_queue queue);
     audio_player(std::nullptr_t);
 
     void set_playing(bool const);

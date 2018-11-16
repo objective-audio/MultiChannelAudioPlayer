@@ -45,6 +45,8 @@ using namespace yas::playing;
 
     self->_exporter =
         std::make_shared<playing::audio_exporter>(self->_sample_rate, audio::pcm_format::int16, *self->_root_url);
+
+    self->_queue = operation_queue{};
 }
 
 - (void)tearDown {

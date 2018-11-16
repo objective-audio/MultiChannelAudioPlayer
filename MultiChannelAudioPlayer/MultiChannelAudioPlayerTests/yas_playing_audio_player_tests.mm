@@ -71,6 +71,18 @@ using namespace yas::playing;
     XCTAssertEqual(player.play_frame(), -1);
 }
 
+- (void)test_render {
+    auto root_url = [self root_url];
+    test_utils::test_audio_renderer renderer{};
+    audio_player player{renderer.renderable(), root_url, self->_queue};
+
+    renderer.set_pcm_format(audio::pcm_format::int16);
+    renderer.set_sample_rate(3);
+    renderer.set_channel_count(2);
+
+    self->_queue.wait_until_all_operations_are_finished();
+}
+
 #pragma mark -
 
 - (url)root_url {

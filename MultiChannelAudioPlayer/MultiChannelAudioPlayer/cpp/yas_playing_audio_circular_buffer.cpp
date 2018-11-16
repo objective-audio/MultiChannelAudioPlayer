@@ -87,6 +87,10 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
                          .interleaved = false,
                      });
 
+                     if (file_result.is_error()) {
+                         return;
+                     }
+
                      auto &file = file_result.value();
 
                      auto load_result = container_ptr->load_from_file(file, file_idx);

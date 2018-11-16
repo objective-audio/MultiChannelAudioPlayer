@@ -13,6 +13,35 @@
 using namespace yas;
 using namespace yas::playing;
 
+namespace yas::playing::test_utils {
+void setup_files(audio_exporter &exporter, std::function<void(audio_exporter::export_result_t const &)> &&completion) {
+    exporter.export_file(0, proc::time::range{-3, 18},
+                         [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                             int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
+                             auto each = make_fast_each(range.length);
+                             while (yas_each_next(each)) {
+                                 auto const &idx = yas_each_index(each);
+                                 data[idx] = int16_t(range.frame + idx);
+                             }
+                         },
+                         std::move(completion));
+}
+
+void overwrite_file(audio_exporter &exporter,
+                    std::function<void(audio_exporter::export_result_t const &)> &&completion) {
+    exporter.export_file(0, proc::time::range{0, 3},
+                         [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                             int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
+                             auto each = make_fast_each(range.length);
+                             while (yas_each_next(each)) {
+                                 auto const &idx = yas_each_index(each);
+                                 data[idx] = int16_t(range.frame + idx + 100);
+                             }
+                         },
+                         std::move(completion));
+}
+}
+
 @interface yas_audio_circuler_buffer_tests : XCTestCase
 
 @end
@@ -55,7 +84,7 @@ using namespace yas::playing;
 
 - (void)test_read_into_buffer {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    [self setup_files_with_completion:[setup_exp](auto const &result) { [setup_exp fulfill]; }];
+    test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = url_utils::channel_url(*self->_root_url, self->_ch_idx);
@@ -98,7 +127,7 @@ using namespace yas::playing;
 
 - (void)test_reload {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    [self setup_files_with_completion:[setup_exp](auto const &result) { [setup_exp fulfill]; }];
+    test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = url_utils::channel_url(*self->_root_url, self->_ch_idx);
@@ -108,7 +137,7 @@ using namespace yas::playing;
     self->_queue.wait_until_all_operations_are_finished();
 
     auto overwrite_exp = [self expectationWithDescription:@"overwrite"];
-    [self overwrite_file_with_completion:[overwrite_exp](auto const &result) { [overwrite_exp fulfill]; }];
+    test_utils::overwrite_file(*self->_exporter, [overwrite_exp](auto const &result) { [overwrite_exp fulfill]; });
     [self waitForExpectations:@[overwrite_exp] timeout:10.0];
 
     circular_buffer->reload(0);
@@ -144,34 +173,6 @@ using namespace yas::playing;
     XCTAssertEqual(data_ptr[0], 3);
     XCTAssertEqual(data_ptr[1], 4);
     XCTAssertEqual(data_ptr[2], 5);
-}
-
-#pragma mark -
-
-- (void)setup_files_with_completion:(std::function<void(audio_exporter::export_result_t const &)> &&)completion {
-    self->_exporter->export_file(0, proc::time::range{-3, 18},
-                                 [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
-                                     int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
-                                     auto each = make_fast_each(range.length);
-                                     while (yas_each_next(each)) {
-                                         auto const &idx = yas_each_index(each);
-                                         data[idx] = int16_t(range.frame + idx);
-                                     }
-                                 },
-                                 std::move(completion));
-}
-
-- (void)overwrite_file_with_completion:(std::function<void(audio_exporter::export_result_t const &)> &&)completion {
-    self->_exporter->export_file(0, proc::time::range{0, 3},
-                                 [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
-                                     int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
-                                     auto each = make_fast_each(range.length);
-                                     while (yas_each_next(each)) {
-                                         auto const &idx = yas_each_index(each);
-                                         data[idx] = int16_t(range.frame + idx + 100);
-                                     }
-                                 },
-                                 std::move(completion));
 }
 
 @end

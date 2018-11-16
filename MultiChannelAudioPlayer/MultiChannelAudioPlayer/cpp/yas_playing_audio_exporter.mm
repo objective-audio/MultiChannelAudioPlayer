@@ -170,6 +170,9 @@ audio_exporter::audio_exporter(double const sample_rate, audio::pcm_format const
     : base(std::make_shared<impl>(sample_rate, pcm_format, root_url, std::move(queue))) {
 }
 
+audio_exporter::audio_exporter(std::nullptr_t) : base(nullptr) {
+}
+
 void audio_exporter::export_file(uint32_t const ch_idx, proc::time::range const &range,
                                  std::function<void(audio::pcm_buffer &, proc::time::range const &)> proc_handler,
                                  std::function<void(export_result_t const &)> completion_handler) {

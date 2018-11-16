@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 #import "yas_playing_audio_player.h"
 #import "yas_playing_test_audio_renderer.h"
+#import "yas_playing_test_utils.h"
 #import "yas_system_url_utils.h"
 
 using namespace yas;
@@ -16,6 +17,7 @@ using namespace yas::playing;
 
 @implementation yas_playing_audio_player_tests {
     operation_queue _queue;
+    std::shared_ptr<audio_exporter> _exporter;
 }
 
 - (void)setUp {
@@ -23,6 +25,7 @@ using namespace yas::playing;
 }
 
 - (void)tearDown {
+    self->_queue = nullptr;
 }
 
 - (void)test_initial {
@@ -72,6 +75,10 @@ using namespace yas::playing;
 }
 
 - (void)test_render {
+    auto setup_exp = [self expectationWithDescription:@"setup"];
+    test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
+    [self waitForExpectations:@[setup_exp] timeout:10.0];
+
     auto root_url = [self root_url];
     test_utils::test_audio_renderer renderer{};
     audio_player player{renderer.renderable(), root_url, self->_queue};

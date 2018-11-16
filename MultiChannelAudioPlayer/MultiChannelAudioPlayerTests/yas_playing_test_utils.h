@@ -4,6 +4,11 @@
 
 #pragma once
 
+#include "yas_playing_audio_exporter.h"
+
 namespace yas::playing::test_utils {
 void remove_all_document_files();
+void setup_files(audio_exporter &exporter, std::function<void(audio_exporter::export_result_t const &)> &&completion);
+void overwrite_file(audio_exporter &exporter,
+                    std::function<void(audio_exporter::export_result_t const &)> &&completion);
 }  // namespace yas::playing::test_utils

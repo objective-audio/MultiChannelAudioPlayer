@@ -95,7 +95,7 @@ audio::file make_file(uint32_t const file_length) {
 
 - (void)test_initial {
     uint32_t const file_length = 3;
-    auto format = playing_test_utils::make_format(file_length);
+    auto format = test_utils::make_format(file_length);
     auto const container = playing::test_utils::make_container(format, file_length);
 
     XCTAssertTrue(container);

@@ -31,6 +31,9 @@ using namespace yas::playing;
 }
 
 - (void)tearDown {
+    self->_queue.cancel();
+    self->_queue.wait_until_all_operations_are_finished();
+
     self->_queue = nullptr;
     self->_exporter = nullptr;
 
@@ -134,8 +137,6 @@ using namespace yas::playing;
 
     XCTAssertEqual(data_ptr[0], 2);
     XCTAssertEqual(data_ptr[1], 3);
-
-    self->_queue.wait_until_all_operations_are_finished();
 }
 
 - (void)test_seek {

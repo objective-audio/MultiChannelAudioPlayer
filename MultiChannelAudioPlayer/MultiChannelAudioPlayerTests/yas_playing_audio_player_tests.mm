@@ -88,9 +88,8 @@ using namespace yas::playing;
     test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
-    auto root_url = [self root_url];
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), root_url, self->_queue};
+    audio_player player{renderer.renderable(), [self root_url], self -> _queue};
 
     renderer.set_pcm_format(audio::pcm_format::int16);
     renderer.set_sample_rate(3);

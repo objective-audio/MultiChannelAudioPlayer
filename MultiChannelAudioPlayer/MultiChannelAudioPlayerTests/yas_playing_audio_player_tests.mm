@@ -92,8 +92,8 @@ using namespace yas::playing;
     audio_player player{renderer.renderable(), [self root_url], self -> _queue};
 
     renderer.set_pcm_format(audio::pcm_format::int16);
-    renderer.set_sample_rate(3);
-    renderer.set_channel_count(2);
+    renderer.set_sample_rate([self sample_rate]);
+    renderer.set_channel_count(1);
 
     self->_queue.wait_until_all_operations_are_finished();
 
@@ -134,6 +134,8 @@ using namespace yas::playing;
 
     XCTAssertEqual(data_ptr[0], 2);
     XCTAssertEqual(data_ptr[1], 3);
+
+    self->_queue.wait_until_all_operations_are_finished();
 }
 
 #pragma mark -

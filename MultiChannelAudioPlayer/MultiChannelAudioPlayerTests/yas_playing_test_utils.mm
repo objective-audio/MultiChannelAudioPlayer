@@ -3,9 +3,11 @@
 //
 
 #include "yas_playing_test_utils.h"
+#include "yas_fast_each.h"
 #include "yas_file_manager.h"
 #include "yas_system_url_utils.h"
 
+using namespace yas;
 using namespace yas::playing;
 
 void test_utils::remove_all_document_files() {
@@ -39,4 +41,14 @@ void test_utils::overwrite_file(audio_exporter &exporter,
                              }
                          },
                          std::move(completion));
+}
+
+std::vector<audio::pcm_buffer> test_utils::make_render_buffers(audio::format const &format, uint32_t const buffer_count,
+                                                               uint32_t const frame_length) {
+    std::vector<audio::pcm_buffer> render_buffers;
+    auto each = make_fast_each(buffer_count);
+    while (yas_each_next(each)) {
+        render_buffers.emplace_back(format, frame_length);
+    }
+    return render_buffers;
 }

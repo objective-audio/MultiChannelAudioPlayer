@@ -100,23 +100,40 @@ using namespace yas::playing;
     uint32_t const render_length = 2;
     std::vector<audio::pcm_buffer> render_buffers;
     render_buffers.emplace_back([self format], render_length);
-    int16_t const *data_ptr = render_buffers.at(0).data_ptr_at_index<int16_t>(0);
-
-    auto render_exp = [self expectationWithDescription:@"render"];
+    auto &render_buffer = render_buffers.at(0);
+    int16_t const *data_ptr = render_buffer.data_ptr_at_index<int16_t>(0);
 
     player.set_playing(true);
 
+    auto render_exp1 = [self expectationWithDescription:@"render1"];
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer, &render_buffers, &render_exp] {
+                   [&renderer, &render_buffers, &render_exp1] {
                        renderer.render(render_buffers);
 
-                       [render_exp fulfill];
+                       [render_exp1 fulfill];
                    });
 
-    [self waitForExpectations:@[render_exp] timeout:1.0];
+    [self waitForExpectations:@[render_exp1] timeout:1.0];
 
     XCTAssertEqual(data_ptr[0], 0);
     XCTAssertEqual(data_ptr[1], 1);
+
+    render_buffer.clear();
+
+    auto render_exp2 = [self expectationWithDescription:@"render1"];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   [&renderer, &render_buffers, &render_exp2] {
+                       renderer.render(render_buffers);
+
+                       [render_exp2 fulfill];
+                   });
+
+    [self waitForExpectations:@[render_exp2] timeout:1.0];
+
+    XCTAssertEqual(data_ptr[0], 2);
+    XCTAssertEqual(data_ptr[1], 3);
 }
 
 #pragma mark -

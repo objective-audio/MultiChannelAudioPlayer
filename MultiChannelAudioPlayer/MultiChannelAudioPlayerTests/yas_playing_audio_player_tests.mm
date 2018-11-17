@@ -26,7 +26,7 @@ using namespace yas::playing;
 
     self->_queue = operation_queue{};
 
-    self->_exporter = std::make_shared<playing::audio_exporter>(self->_sample_rate, audio::pcm_format::int16,
+    self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
                                                                 [self root_url], self -> _queue);
 }
 
@@ -100,6 +100,10 @@ using namespace yas::playing;
 }
 
 #pragma mark -
+
+- (double)sample_rate {
+    return 3.0;
+}
 
 - (url)root_url {
     return system_url_utils::directory_url(system_url_utils::dir::document).appending("root");

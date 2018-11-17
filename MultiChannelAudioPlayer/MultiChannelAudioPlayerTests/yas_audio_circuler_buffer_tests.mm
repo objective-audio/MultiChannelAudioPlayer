@@ -18,7 +18,6 @@ using namespace yas::playing;
 @end
 
 @implementation yas_audio_circuler_buffer_tests {
-    int64_t _ch_idx;
     operation_queue _queue;
     std::shared_ptr<audio::format> _format;
     std::shared_ptr<playing::audio_exporter> _exporter;
@@ -26,8 +25,6 @@ using namespace yas::playing;
 
 - (void)setUp {
     test_utils::remove_all_document_files();
-
-    self->_ch_idx = 0;
 
     self->_format = std::make_shared<audio::format>(audio::format::args{.sample_rate = [self sample_rate],
                                                                         .channel_count = 1,
@@ -52,7 +49,7 @@ using namespace yas::playing;
     test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
-    auto const ch_url = url_utils::channel_url([self root_url], self -> _ch_idx);
+    auto const ch_url = url_utils::channel_url([self root_url], [self ch_idx]);
     auto circular_buffer = make_audio_circular_buffer(*self->_format, 2, ch_url, self->_queue);
 
     circular_buffer->reload_all(-1);
@@ -95,7 +92,7 @@ using namespace yas::playing;
     test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
-    auto const ch_url = url_utils::channel_url([self root_url], self -> _ch_idx);
+    auto const ch_url = url_utils::channel_url([self root_url], [self ch_idx]);
     auto circular_buffer = make_audio_circular_buffer(*self->_format, 3, ch_url, self->_queue);
 
     circular_buffer->reload_all(-1);
@@ -148,6 +145,10 @@ using namespace yas::playing;
 
 - (uint32_t)file_length {
     return uint32_t([self sample_rate]);
+}
+
+- (int64_t)ch_idx {
+    return 0;
 }
 
 - (yas::url)root_url {

@@ -22,7 +22,6 @@ using namespace yas::playing;
     uint32_t _file_length;
     int64_t _ch_idx;
     operation_queue _queue;
-    std::shared_ptr<yas::url> _root_url;
     std::shared_ptr<audio::format> _format;
     std::shared_ptr<playing::audio_exporter> _exporter;
 }
@@ -31,9 +30,6 @@ using namespace yas::playing;
     test_utils::remove_all_document_files();
 
     self->_ch_idx = 0;
-
-    self->_root_url =
-        std::make_shared<yas::url>(system_url_utils::directory_url(system_url_utils::dir::document).appending("root"));
 
     self->_sample_rate = 3;
     self->_file_length = 3;
@@ -44,7 +40,7 @@ using namespace yas::playing;
                                                                         .interleaved = false});
 
     self->_exporter = std::make_shared<playing::audio_exporter>(self->_sample_rate, audio::pcm_format::int16,
-                                                                *self->_root_url, self->_queue);
+                                                                [self root_url], self -> _queue);
 
     self->_queue = operation_queue{};
 }
@@ -52,7 +48,6 @@ using namespace yas::playing;
 - (void)tearDown {
     self->_exporter = nullptr;
     self->_format = nullptr;
-    self->_root_url = nullptr;
 
     test_utils::remove_all_document_files();
 }
@@ -62,7 +57,7 @@ using namespace yas::playing;
     test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
-    auto const ch_url = url_utils::channel_url(*self->_root_url, self->_ch_idx);
+    auto const ch_url = url_utils::channel_url([self root_url], self -> _ch_idx);
     auto circular_buffer = make_audio_circular_buffer(*self->_format, 2, ch_url, self->_queue);
 
     circular_buffer->reload_all(-1);
@@ -105,7 +100,7 @@ using namespace yas::playing;
     test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
-    auto const ch_url = url_utils::channel_url(*self->_root_url, self->_ch_idx);
+    auto const ch_url = url_utils::channel_url([self root_url], self -> _ch_idx);
     auto circular_buffer = make_audio_circular_buffer(*self->_format, 3, ch_url, self->_queue);
 
     circular_buffer->reload_all(-1);
@@ -148,6 +143,12 @@ using namespace yas::playing;
     XCTAssertEqual(data_ptr[0], 3);
     XCTAssertEqual(data_ptr[1], 4);
     XCTAssertEqual(data_ptr[2], 5);
+}
+
+#pragma mark -
+
+- (yas::url)root_url {
+    return system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
 }
 
 @end

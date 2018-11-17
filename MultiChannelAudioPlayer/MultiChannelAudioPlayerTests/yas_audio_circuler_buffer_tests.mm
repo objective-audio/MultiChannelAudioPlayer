@@ -18,8 +18,6 @@ using namespace yas::playing;
 @end
 
 @implementation yas_audio_circuler_buffer_tests {
-    double _sample_rate;
-    uint32_t _file_length;
     int64_t _ch_idx;
     operation_queue _queue;
     std::shared_ptr<audio::format> _format;
@@ -31,15 +29,12 @@ using namespace yas::playing;
 
     self->_ch_idx = 0;
 
-    self->_sample_rate = 3;
-    self->_file_length = 3;
-
-    self->_format = std::make_shared<audio::format>(audio::format::args{.sample_rate = self->_sample_rate,
+    self->_format = std::make_shared<audio::format>(audio::format::args{.sample_rate = [self sample_rate],
                                                                         .channel_count = 1,
                                                                         .pcm_format = audio::pcm_format::int16,
                                                                         .interleaved = false});
 
-    self->_exporter = std::make_shared<playing::audio_exporter>(self->_sample_rate, audio::pcm_format::int16,
+    self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
                                                                 [self root_url], self -> _queue);
 
     self->_queue = operation_queue{};
@@ -146,6 +141,14 @@ using namespace yas::playing;
 }
 
 #pragma mark -
+
+- (double)sample_rate {
+    return 3.0;
+}
+
+- (uint32_t)file_length {
+    return uint32_t([self sample_rate]);
+}
 
 - (yas::url)root_url {
     return system_url_utils::directory_url(system_url_utils::dir::document).appending("root");

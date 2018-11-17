@@ -198,7 +198,7 @@ using namespace yas::playing;
     test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
-    audio_player player{renderer.renderable(), [self root_url], self -> _queue};
+    audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
 
     self->_queue.wait_until_all_operations_are_finished();
 

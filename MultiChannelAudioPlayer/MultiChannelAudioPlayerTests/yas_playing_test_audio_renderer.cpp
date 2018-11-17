@@ -55,6 +55,10 @@ void test_audio_renderer::set_sample_rate(double const sample_rate) {
 }
 
 void test_audio_renderer::render(std::vector<audio::pcm_buffer> &buffers) {
+    if (impl_ptr<impl>()->_channel_count.value() != buffers.size()) {
+        throw std::invalid_argument("buffers.size not equal to channel_count.");
+    }
+
     if (auto handler = impl_ptr<impl>()->_rendering_handler) {
         handler(buffers);
     }

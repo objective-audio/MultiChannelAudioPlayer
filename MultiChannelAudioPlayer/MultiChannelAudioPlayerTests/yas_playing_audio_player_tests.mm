@@ -33,7 +33,7 @@ using namespace yas::playing;
     self->_renderer = test_utils::test_audio_renderer{};
     self->_renderer.set_pcm_format(audio::pcm_format::int16);
     self->_renderer.set_sample_rate([self sample_rate]);
-    self->_renderer.set_channel_count(1);
+    self->_renderer.set_channel_count(2);
 }
 
 - (void)tearDown {

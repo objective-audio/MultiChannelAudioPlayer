@@ -102,9 +102,9 @@ using namespace yas::playing;
 
     self->_queue.wait_until_all_operations_are_finished();
 
+    uint32_t const buffer_count = 2;
     uint32_t const render_length = 2;
-    std::vector<audio::pcm_buffer> render_buffers;
-    render_buffers.emplace_back([self format], render_length);
+    auto render_buffers = test_utils::make_render_buffers([self format], buffer_count, render_length);
     auto &render_buffer = render_buffers.at(0);
     int16_t const *data_ptr = render_buffer.data_ptr_at_index<int16_t>(0);
 
@@ -150,9 +150,9 @@ using namespace yas::playing;
 
     self->_queue.wait_until_all_operations_are_finished();
 
+    uint32_t const buffer_count = 2;
     uint32_t const render_length = 2;
-    std::vector<audio::pcm_buffer> render_buffers;
-    render_buffers.emplace_back([self format], render_length);
+    auto render_buffers = test_utils::make_render_buffers([self format], buffer_count, render_length);
     auto &render_buffer = render_buffers.at(0);
     int16_t const *data_ptr = render_buffer.data_ptr_at_index<int16_t>(0);
 
@@ -202,9 +202,9 @@ using namespace yas::playing;
 
     self->_queue.wait_until_all_operations_are_finished();
 
+    uint32_t const buffer_count = 2;
     uint32_t const render_length = 2;
-    std::vector<audio::pcm_buffer> render_buffers;
-    render_buffers.emplace_back([self format], render_length);
+    auto render_buffers = test_utils::make_render_buffers([self format], buffer_count, render_length);
     auto &render_buffer = render_buffers.at(0);
     int16_t const *data_ptr = render_buffer.data_ptr_at_index<int16_t>(0);
 

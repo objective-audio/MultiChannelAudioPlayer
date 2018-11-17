@@ -19,17 +19,11 @@ using namespace yas::playing;
 
 @implementation yas_audio_circuler_buffer_tests {
     operation_queue _queue;
-    std::shared_ptr<audio::format> _format;
     std::shared_ptr<playing::audio_exporter> _exporter;
 }
 
 - (void)setUp {
     test_utils::remove_all_document_files();
-
-    self->_format = std::make_shared<audio::format>(audio::format::args{.sample_rate = [self sample_rate],
-                                                                        .channel_count = 1,
-                                                                        .pcm_format = audio::pcm_format::int16,
-                                                                        .interleaved = false});
 
     self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
                                                                 [self root_url], self -> _queue);
@@ -39,7 +33,6 @@ using namespace yas::playing;
 
 - (void)tearDown {
     self->_exporter = nullptr;
-    self->_format = nullptr;
 
     test_utils::remove_all_document_files();
 }
@@ -50,12 +43,12 @@ using namespace yas::playing;
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = url_utils::channel_url([self root_url], [self ch_idx]);
-    auto circular_buffer = make_audio_circular_buffer(*self->_format, 2, ch_url, self->_queue);
+    auto circular_buffer = make_audio_circular_buffer([self format], 2, ch_url, self -> _queue);
 
     circular_buffer->reload_all(-1);
     self->_queue.wait_until_all_operations_are_finished();
 
-    audio::pcm_buffer read_buffer{*self->_format, 3};
+    audio::pcm_buffer read_buffer{[self format], 3};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
 
     circular_buffer->read_into_buffer(read_buffer, -3);
@@ -93,7 +86,7 @@ using namespace yas::playing;
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = url_utils::channel_url([self root_url], [self ch_idx]);
-    auto circular_buffer = make_audio_circular_buffer(*self->_format, 3, ch_url, self->_queue);
+    auto circular_buffer = make_audio_circular_buffer([self format], 3, ch_url, self -> _queue);
 
     circular_buffer->reload_all(-1);
     self->_queue.wait_until_all_operations_are_finished();
@@ -105,7 +98,7 @@ using namespace yas::playing;
     circular_buffer->reload(0);
     self->_queue.wait_until_all_operations_are_finished();
 
-    audio::pcm_buffer read_buffer{*self->_format, 3};
+    audio::pcm_buffer read_buffer{[self format], 3};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
 
     circular_buffer->read_into_buffer(read_buffer, -3);
@@ -153,6 +146,13 @@ using namespace yas::playing;
 
 - (yas::url)root_url {
     return system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
+}
+
+- (audio::format)format {
+    return audio::format{audio::format::args{.sample_rate = [self sample_rate],
+                                             .channel_count = 1,
+                                             .pcm_format = audio::pcm_format::int16,
+                                             .interleaved = false}};
 }
 
 @end

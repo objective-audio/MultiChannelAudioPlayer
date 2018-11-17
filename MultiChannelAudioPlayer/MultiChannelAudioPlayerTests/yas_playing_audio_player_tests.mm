@@ -96,6 +96,27 @@ using namespace yas::playing;
     renderer.set_channel_count(2);
 
     self->_queue.wait_until_all_operations_are_finished();
+
+    uint32_t const render_length = 2;
+    std::vector<audio::pcm_buffer> render_buffers;
+    render_buffers.emplace_back([self format], render_length);
+    int16_t const *data_ptr = render_buffers.at(0).data_ptr_at_index<int16_t>(0);
+
+    auto render_exp = [self expectationWithDescription:@"render"];
+
+    player.set_playing(true);
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   [&renderer, &render_buffers, &render_exp] {
+                       renderer.render(render_buffers);
+
+                       [render_exp fulfill];
+                   });
+
+    [self waitForExpectations:@[render_exp] timeout:1.0];
+
+    XCTAssertEqual(data_ptr[0], 0);
+    XCTAssertEqual(data_ptr[1], 1);
 }
 
 #pragma mark -
@@ -104,8 +125,19 @@ using namespace yas::playing;
     return 3.0;
 }
 
+- (uint32_t)file_length {
+    return uint32_t([self sample_rate]);
+}
+
 - (url)root_url {
     return system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
+}
+
+- (audio::format)format {
+    return audio::format{audio::format::args{.sample_rate = [self sample_rate],
+                                             .channel_count = 1,
+                                             .pcm_format = audio::pcm_format::int16,
+                                             .interleaved = false}};
 }
 
 @end

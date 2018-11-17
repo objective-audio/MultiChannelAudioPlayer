@@ -32,8 +32,8 @@ using namespace yas::playing;
 
     self->_ch_idx = 0;
 
-    auto const doc_url = system_url_utils::directory_url(system_url_utils::dir::document);
-    self->_root_url = std::make_shared<yas::url>(doc_url.appending("root"));
+    self->_root_url =
+        std::make_shared<yas::url>(system_url_utils::directory_url(system_url_utils::dir::document).appending("root"));
 
     self->_sample_rate = 3;
     self->_file_length = 3;
@@ -50,6 +50,10 @@ using namespace yas::playing;
 }
 
 - (void)tearDown {
+    self->_exporter = nullptr;
+    self->_format = nullptr;
+    self->_root_url = nullptr;
+
     test_utils::remove_all_document_files();
 }
 

@@ -16,16 +16,25 @@ using namespace yas::playing;
 @end
 
 @implementation yas_playing_audio_player_tests {
+    double _sample_rate;
     operation_queue _queue;
     std::shared_ptr<audio_exporter> _exporter;
 }
 
 - (void)setUp {
+    test_utils::remove_all_document_files();
+
     self->_queue = operation_queue{};
+
+    self->_exporter = std::make_shared<playing::audio_exporter>(self->_sample_rate, audio::pcm_format::int16,
+                                                                [self root_url], self -> _queue);
 }
 
 - (void)tearDown {
     self->_queue = nullptr;
+    self->_exporter = nullptr;
+
+    test_utils::remove_all_document_files();
 }
 
 - (void)test_initial {

@@ -138,6 +138,14 @@ using namespace yas::playing;
     self->_queue.wait_until_all_operations_are_finished();
 }
 
+- (void)test_seek {
+#warning todo
+}
+
+- (void)test_reload_file {
+#warning todo
+}
+
 #pragma mark -
 
 - (double)sample_rate {

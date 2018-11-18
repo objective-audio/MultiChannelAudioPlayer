@@ -186,7 +186,7 @@ using namespace yas::playing;
 
     self->_queue.wait_until_all_operations_are_finished();
 
-    auto render_exp2 = [self expectationWithDescription:@"render1"];
+    auto render_exp2 = [self expectationWithDescription:@"render2"];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                    [&renderer = self->_renderer, &render_buffers, &render_exp2] {
@@ -249,7 +249,7 @@ using namespace yas::playing;
 
     self->_queue.wait_until_all_operations_are_finished();
 
-    auto render_exp2 = [self expectationWithDescription:@"render1"];
+    auto render_exp2 = [self expectationWithDescription:@"render2"];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                    [&renderer = self->_renderer, &render_buffers, &render_exp2] {

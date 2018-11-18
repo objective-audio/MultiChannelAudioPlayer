@@ -145,7 +145,7 @@ using namespace yas::playing;
 }
 
 - (uint32_t)ch_count {
-    return 2;
+    return 1;
 }
 
 - (yas::url)root_url {

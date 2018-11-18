@@ -52,8 +52,6 @@ void audio_circular_buffer::rotate_buffer(int64_t const next_file_idx) {
 }
 
 void audio_circular_buffer::reload_all(int64_t const top_file_idx) {
-    this->_queue.cancel();
-
     int64_t load_file_idx = top_file_idx;
 
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);

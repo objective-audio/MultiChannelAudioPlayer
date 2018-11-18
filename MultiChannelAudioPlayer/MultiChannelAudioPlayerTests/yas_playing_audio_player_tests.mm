@@ -224,7 +224,7 @@ using namespace yas::playing;
     render_buffer.clear();
 
     auto overwrite_exp = [self expectationWithDescription:@"overwrite"];
-    test_utils::overwrite_file(*self->_exporter, [&overwrite_exp](auto const &result) { [overwrite_exp fulfill]; });
+    test_utils::overwrite_file(*self->_exporter, [self ch_count], [&overwrite_exp] { [overwrite_exp fulfill]; });
 
     [self waitForExpectations:@[overwrite_exp] timeout:1.0];
 

@@ -40,18 +40,28 @@ void test_utils::setup_files(audio_exporter &exporter, uint32_t const ch_count,
     }
 }
 
-void test_utils::overwrite_file(audio_exporter &exporter,
-                                std::function<void(audio_exporter::export_result_t const &)> &&completion) {
-    exporter.export_file(0, proc::time::range{0, 3},
-                         [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
-                             int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
-                             auto each = make_fast_each(range.length);
-                             while (yas_each_next(each)) {
-                                 auto const &idx = yas_each_index(each);
-                                 data[idx] = int16_t(range.frame + idx + 100);
-                             }
-                         },
-                         std::move(completion));
+void test_utils::overwrite_file(audio_exporter &exporter, uint32_t const ch_count,
+                                std::function<void(void)> &&completion) {
+    auto remain = std::make_shared<uint32_t>(ch_count);
+
+    auto each = make_fast_each(ch_count);
+    while (yas_each_next(each)) {
+        exporter.export_file(0, proc::time::range{0, 3},
+                             [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                                 int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
+                                 auto each = make_fast_each(range.length);
+                                 while (yas_each_next(each)) {
+                                     auto const &idx = yas_each_index(each);
+                                     data[idx] = int16_t(range.frame + idx + 100);
+                                 }
+                             },
+                             [completion, remain](auto const &) {
+                                 *remain -= 1;
+                                 if (*remain == 0) {
+                                     completion();
+                                 }
+                             });
+    }
 }
 
 std::vector<audio::pcm_buffer> test_utils::make_render_buffers(audio::format const &format, uint32_t const buffer_count,

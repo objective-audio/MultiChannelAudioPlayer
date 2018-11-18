@@ -94,9 +94,7 @@ using namespace yas::playing;
 }
 
 - (void)test_render {
-    auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
-    [self waitForExpectations:@[setup_exp] timeout:10.0];
+    [self setup_files];
 
     audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
 
@@ -153,9 +151,7 @@ using namespace yas::playing;
 }
 
 - (void)test_seek {
-    auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
-    [self waitForExpectations:@[setup_exp] timeout:10.0];
+    [self setup_files];
 
     audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
 
@@ -192,9 +188,7 @@ using namespace yas::playing;
 }
 
 - (void)test_reload {
-    auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
-    [self waitForExpectations:@[setup_exp] timeout:10.0];
+    [self setup_files];
 
     audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
 
@@ -259,6 +253,12 @@ using namespace yas::playing;
                                              .channel_count = 1,
                                              .pcm_format = audio::pcm_format::int16,
                                              .interleaved = false}};
+}
+
+- (void)setup_files {
+    auto setup_exp = [self expectationWithDescription:@"setup"];
+    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
+    [self waitForExpectations:@[setup_exp] timeout:1.0];
 }
 
 - (void)render:(std::vector<audio::pcm_buffer> &)render_buffers {

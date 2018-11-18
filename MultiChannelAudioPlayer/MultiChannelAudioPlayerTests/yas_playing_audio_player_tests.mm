@@ -152,23 +152,6 @@ using namespace yas::playing;
     XCTAssertEqual(data_ptr_1[1], 1011);
 }
 
-- (void)render:(std::vector<audio::pcm_buffer> &)render_buffers {
-    for (auto &render_buffer : render_buffers) {
-        render_buffer.clear();
-    }
-
-    auto render_exp = [self expectationWithDescription:@"render"];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_renderer, &render_buffers, &render_exp] {
-                       renderer.render(render_buffers);
-
-                       [render_exp fulfill];
-                   });
-
-    [self waitForExpectations:@[render_exp] timeout:1.0];
-}
-
 - (void)test_seek {
     auto setup_exp = [self expectationWithDescription:@"setup"];
     test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
@@ -185,16 +168,7 @@ using namespace yas::playing;
 
     player.set_playing(true);
 
-    auto render_exp1 = [self expectationWithDescription:@"render1"];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_renderer, &render_buffers, &render_exp1] {
-                       renderer.render(render_buffers);
-
-                       [render_exp1 fulfill];
-                   });
-
-    [self waitForExpectations:@[render_exp1] timeout:1.0];
+    [self render:render_buffers];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
@@ -209,16 +183,7 @@ using namespace yas::playing;
 
     self->_queue.wait_until_all_operations_are_finished();
 
-    auto render_exp2 = [self expectationWithDescription:@"render2"];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_renderer, &render_buffers, &render_exp2] {
-                       renderer.render(render_buffers);
-
-                       [render_exp2 fulfill];
-                   });
-
-    [self waitForExpectations:@[render_exp2] timeout:1.0];
+    [self render:render_buffers];
 
     XCTAssertEqual(data_ptr_0[0], 6);
     XCTAssertEqual(data_ptr_0[1], 7);
@@ -242,16 +207,7 @@ using namespace yas::playing;
 
     player.set_playing(true);
 
-    auto render_exp1 = [self expectationWithDescription:@"render1"];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_renderer, &render_buffers, &render_exp1] {
-                       renderer.render(render_buffers);
-
-                       [render_exp1 fulfill];
-                   });
-
-    [self waitForExpectations:@[render_exp1] timeout:1.0];
+    [self render:render_buffers];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
@@ -272,16 +228,7 @@ using namespace yas::playing;
 
     self->_queue.wait_until_all_operations_are_finished();
 
-    auto render_exp2 = [self expectationWithDescription:@"render2"];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_renderer, &render_buffers, &render_exp2] {
-                       renderer.render(render_buffers);
-
-                       [render_exp2 fulfill];
-                   });
-
-    [self waitForExpectations:@[render_exp2] timeout:1.0];
+    [self render:render_buffers];
 
     XCTAssertEqual(data_ptr_0[0], 102);
     XCTAssertEqual(data_ptr_0[1], 3);
@@ -312,6 +259,23 @@ using namespace yas::playing;
                                              .channel_count = 1,
                                              .pcm_format = audio::pcm_format::int16,
                                              .interleaved = false}};
+}
+
+- (void)render:(std::vector<audio::pcm_buffer> &)render_buffers {
+    for (auto &render_buffer : render_buffers) {
+        render_buffer.clear();
+    }
+
+    auto render_exp = [self expectationWithDescription:@"render"];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   [&renderer = self->_renderer, &render_buffers, &render_exp] {
+                       renderer.render(render_buffers);
+
+                       [render_exp fulfill];
+                   });
+
+    [self waitForExpectations:@[render_exp] timeout:1.0];
 }
 
 @end

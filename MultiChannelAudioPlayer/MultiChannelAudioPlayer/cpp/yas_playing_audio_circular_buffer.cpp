@@ -40,11 +40,12 @@ void audio_circular_buffer::rotate_buffer(int64_t const next_file_idx) {
 
     auto &container_ptr = this->_containers.front();
 
-    if (container_ptr->file_idx() == next_file_idx - this->_container_count) {
+    if (container_ptr->file_idx() == next_file_idx - 1) {
         this->_containers.push_back(container_ptr);
         this->_containers.pop_front();
-        container_ptr->prepare_loading(next_file_idx);
-        this->_load_container(container_ptr, next_file_idx);
+        int64_t const loading_file_idx = next_file_idx + this->_container_count - 1;
+        container_ptr->prepare_loading(loading_file_idx);
+        this->_load_container(container_ptr, loading_file_idx);
     } else {
         this->reload_all(next_file_idx);
     }

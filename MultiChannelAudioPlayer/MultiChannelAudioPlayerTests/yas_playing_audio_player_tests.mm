@@ -157,8 +157,8 @@ using namespace yas::playing;
 
     uint32_t const render_length = 2;
     auto render_buffers = test_utils::make_render_buffers([self format], [self ch_count], render_length);
-    auto &render_buffer = render_buffers.at(0);
-    int16_t const *data_ptr = render_buffer.data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_0 = render_buffers.at(0).data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffers.at(1).data_ptr_at_index<int16_t>(0);
 
     player.set_playing(true);
 
@@ -173,10 +173,14 @@ using namespace yas::playing;
 
     [self waitForExpectations:@[render_exp1] timeout:1.0];
 
-    XCTAssertEqual(data_ptr[0], 0);
-    XCTAssertEqual(data_ptr[1], 1);
+    XCTAssertEqual(data_ptr_0[0], 0);
+    XCTAssertEqual(data_ptr_0[1], 1);
+    XCTAssertEqual(data_ptr_1[0], 1000);
+    XCTAssertEqual(data_ptr_1[1], 1001);
 
-    render_buffer.clear();
+    for (auto &render_buffer : render_buffers) {
+        render_buffer.clear();
+    }
 
     player.seek(6);
 
@@ -193,8 +197,10 @@ using namespace yas::playing;
 
     [self waitForExpectations:@[render_exp2] timeout:1.0];
 
-    XCTAssertEqual(data_ptr[0], 6);
-    XCTAssertEqual(data_ptr[1], 7);
+    XCTAssertEqual(data_ptr_0[0], 6);
+    XCTAssertEqual(data_ptr_0[1], 7);
+    XCTAssertEqual(data_ptr_1[0], 1006);
+    XCTAssertEqual(data_ptr_1[1], 1007);
 }
 
 - (void)test_reload {

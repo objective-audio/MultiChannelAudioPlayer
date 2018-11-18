@@ -215,7 +215,7 @@ using namespace yas::playing;
     uint32_t const render_length = 2;
     auto render_buffers = test_utils::make_render_buffers([self format], [self ch_count], render_length);
     int16_t const *data_ptr_0 = render_buffers.at(0).data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffers.at(0).data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffers.at(1).data_ptr_at_index<int16_t>(0);
 
     player.set_playing(true);
 

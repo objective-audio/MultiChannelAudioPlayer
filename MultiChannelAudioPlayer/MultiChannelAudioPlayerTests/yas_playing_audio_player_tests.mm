@@ -109,41 +109,64 @@ using namespace yas::playing;
 
     player.set_playing(true);
 
-    auto render_exp1 = [self expectationWithDescription:@"render1"];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_renderer, &render_buffers, &render_exp1] {
-                       renderer.render(render_buffers);
-
-                       [render_exp1 fulfill];
-                   });
-
-    [self waitForExpectations:@[render_exp1] timeout:1.0];
+    [self render:render_buffers];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
     XCTAssertEqual(data_ptr_1[0], 1000);
     XCTAssertEqual(data_ptr_1[1], 1001);
 
-    for (auto &render_buffer : render_buffers) {
-        render_buffer.clear();
-    }
-
-    auto render_exp2 = [self expectationWithDescription:@"render1"];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_renderer, &render_buffers, &render_exp2] {
-                       renderer.render(render_buffers);
-
-                       [render_exp2 fulfill];
-                   });
-
-    [self waitForExpectations:@[render_exp2] timeout:1.0];
+    [self render:render_buffers];
 
     XCTAssertEqual(data_ptr_0[0], 2);
     XCTAssertEqual(data_ptr_0[1], 3);
     XCTAssertEqual(data_ptr_1[0], 1002);
     XCTAssertEqual(data_ptr_1[1], 1003);
+
+    [self render:render_buffers];
+
+    XCTAssertEqual(data_ptr_0[0], 4);
+    XCTAssertEqual(data_ptr_0[1], 5);
+    XCTAssertEqual(data_ptr_1[0], 1004);
+    XCTAssertEqual(data_ptr_1[1], 1005);
+
+    [self render:render_buffers];
+
+    XCTAssertEqual(data_ptr_0[0], 6);
+    XCTAssertEqual(data_ptr_0[1], 7);
+    XCTAssertEqual(data_ptr_1[0], 1006);
+    XCTAssertEqual(data_ptr_1[1], 1007);
+
+    [self render:render_buffers];
+
+    XCTAssertEqual(data_ptr_0[0], 8);
+    XCTAssertEqual(data_ptr_0[1], 9);
+    XCTAssertEqual(data_ptr_1[0], 1008);
+    XCTAssertEqual(data_ptr_1[1], 1009);
+
+    [self render:render_buffers];
+
+    XCTAssertEqual(data_ptr_0[0], 10);
+    XCTAssertEqual(data_ptr_0[1], 11);
+    XCTAssertEqual(data_ptr_1[0], 1010);
+    XCTAssertEqual(data_ptr_1[1], 1011);
+}
+
+- (void)render:(std::vector<audio::pcm_buffer> &)render_buffers {
+    for (auto &render_buffer : render_buffers) {
+        render_buffer.clear();
+    }
+
+    auto render_exp = [self expectationWithDescription:@"render"];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   [&renderer = self->_renderer, &render_buffers, &render_exp] {
+                       renderer.render(render_buffers);
+
+                       [render_exp fulfill];
+                   });
+
+    [self waitForExpectations:@[render_exp] timeout:1.0];
 }
 
 - (void)test_seek {

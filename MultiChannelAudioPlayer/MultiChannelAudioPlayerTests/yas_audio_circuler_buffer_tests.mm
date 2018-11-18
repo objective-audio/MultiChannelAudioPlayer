@@ -39,7 +39,7 @@ using namespace yas::playing;
 
 - (void)test_read_into_buffer {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
+    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = url_utils::channel_url([self root_url], [self ch_idx]);
@@ -82,7 +82,7 @@ using namespace yas::playing;
 
 - (void)test_reload {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
+    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = url_utils::channel_url([self root_url], [self ch_idx]);
@@ -142,6 +142,10 @@ using namespace yas::playing;
 
 - (int64_t)ch_idx {
     return 0;
+}
+
+- (uint32_t)ch_count {
+    return 2;
 }
 
 - (yas::url)root_url {

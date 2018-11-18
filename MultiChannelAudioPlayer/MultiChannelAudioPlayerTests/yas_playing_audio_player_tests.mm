@@ -95,7 +95,7 @@ using namespace yas::playing;
 
 - (void)test_render {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
+    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
@@ -142,7 +142,7 @@ using namespace yas::playing;
 
 - (void)test_seek {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
+    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
@@ -193,7 +193,7 @@ using namespace yas::playing;
 
 - (void)test_reload {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [setup_exp](auto const &result) { [setup_exp fulfill]; });
+    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};

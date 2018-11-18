@@ -245,6 +245,7 @@ using namespace yas::playing;
     [self waitForExpectations:@[overwrite_exp] timeout:1.0];
 
     player.reload(0, 0);
+    player.reload(1, 0);
 
     self->_queue.wait_until_all_operations_are_finished();
 

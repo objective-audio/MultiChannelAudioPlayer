@@ -19,7 +19,7 @@ struct test_audio_renderer : base {
     void set_channel_count(uint32_t const);
     void set_sample_rate(double const);
 
-    void render(std::vector<audio::pcm_buffer> &buffers);
+    void render(audio::pcm_buffer &buffer);
 
     audio_renderable &renderable();
 

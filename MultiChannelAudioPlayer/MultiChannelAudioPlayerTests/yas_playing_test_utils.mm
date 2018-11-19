@@ -64,13 +64,3 @@ void test_utils::overwrite_file(audio_exporter &exporter, uint32_t const ch_coun
                              });
     }
 }
-
-std::vector<audio::pcm_buffer> test_utils::make_render_buffers(audio::format const &format, uint32_t const buffer_count,
-                                                               uint32_t const frame_length) {
-    std::vector<audio::pcm_buffer> render_buffers;
-    auto each = make_fast_each(buffer_count);
-    while (yas_each_next(each)) {
-        render_buffers.emplace_back(format, frame_length);
-    }
-    return render_buffers;
-}

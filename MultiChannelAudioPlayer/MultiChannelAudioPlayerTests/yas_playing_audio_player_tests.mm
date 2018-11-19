@@ -101,48 +101,48 @@ using namespace yas::playing;
     self->_queue.wait_until_all_operations_are_finished();
 
     uint32_t const render_length = 2;
-    auto render_buffers = test_utils::make_render_buffers([self format], [self ch_count], render_length);
-    int16_t const *data_ptr_0 = render_buffers.at(0).data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffers.at(1).data_ptr_at_index<int16_t>(0);
+    audio::pcm_buffer render_buffer{[self format], render_length};
+    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
 
     player.set_playing(true);
 
-    [self render:render_buffers];
+    [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
     XCTAssertEqual(data_ptr_1[0], 1000);
     XCTAssertEqual(data_ptr_1[1], 1001);
 
-    [self render:render_buffers];
+    [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 2);
     XCTAssertEqual(data_ptr_0[1], 3);
     XCTAssertEqual(data_ptr_1[0], 1002);
     XCTAssertEqual(data_ptr_1[1], 1003);
 
-    [self render:render_buffers];
+    [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 4);
     XCTAssertEqual(data_ptr_0[1], 5);
     XCTAssertEqual(data_ptr_1[0], 1004);
     XCTAssertEqual(data_ptr_1[1], 1005);
 
-    [self render:render_buffers];
+    [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 6);
     XCTAssertEqual(data_ptr_0[1], 7);
     XCTAssertEqual(data_ptr_1[0], 1006);
     XCTAssertEqual(data_ptr_1[1], 1007);
 
-    [self render:render_buffers];
+    [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 8);
     XCTAssertEqual(data_ptr_0[1], 9);
     XCTAssertEqual(data_ptr_1[0], 1008);
     XCTAssertEqual(data_ptr_1[1], 1009);
 
-    [self render:render_buffers];
+    [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 10);
     XCTAssertEqual(data_ptr_0[1], 11);
@@ -158,28 +158,26 @@ using namespace yas::playing;
     self->_queue.wait_until_all_operations_are_finished();
 
     uint32_t const render_length = 2;
-    auto render_buffers = test_utils::make_render_buffers([self format], [self ch_count], render_length);
-    int16_t const *data_ptr_0 = render_buffers.at(0).data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffers.at(1).data_ptr_at_index<int16_t>(0);
+    audio::pcm_buffer render_buffer{[self format], render_length};
+    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
 
     player.set_playing(true);
 
-    [self render:render_buffers];
+    [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
     XCTAssertEqual(data_ptr_1[0], 1000);
     XCTAssertEqual(data_ptr_1[1], 1001);
 
-    for (auto &render_buffer : render_buffers) {
-        render_buffer.clear();
-    }
+    render_buffer.clear();
 
     player.seek(6);
 
     self->_queue.wait_until_all_operations_are_finished();
 
-    [self render:render_buffers];
+    [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 6);
     XCTAssertEqual(data_ptr_0[1], 7);
@@ -195,22 +193,20 @@ using namespace yas::playing;
     self->_queue.wait_until_all_operations_are_finished();
 
     uint32_t const render_length = 2;
-    auto render_buffers = test_utils::make_render_buffers([self format], [self ch_count], render_length);
-    int16_t const *data_ptr_0 = render_buffers.at(0).data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffers.at(1).data_ptr_at_index<int16_t>(0);
+    audio::pcm_buffer render_buffer{[self format], render_length};
+    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
 
     player.set_playing(true);
 
-    [self render:render_buffers];
+    [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
     XCTAssertEqual(data_ptr_1[0], 1000);
     XCTAssertEqual(data_ptr_1[1], 1001);
 
-    for (auto &render_buffer : render_buffers) {
-        render_buffer.clear();
-    }
+    render_buffer.clear();
 
     auto overwrite_exp = [self expectationWithDescription:@"overwrite"];
     test_utils::overwrite_file(*self->_exporter, [self ch_count], [&overwrite_exp] { [overwrite_exp fulfill]; });
@@ -222,7 +218,7 @@ using namespace yas::playing;
 
     self->_queue.wait_until_all_operations_are_finished();
 
-    [self render:render_buffers];
+    [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 102);
     XCTAssertEqual(data_ptr_0[1], 3);
@@ -261,16 +257,14 @@ using namespace yas::playing;
     [self waitForExpectations:@[setup_exp] timeout:1.0];
 }
 
-- (void)render:(std::vector<audio::pcm_buffer> &)render_buffers {
-    for (auto &render_buffer : render_buffers) {
-        render_buffer.clear();
-    }
+- (void)render:(audio::pcm_buffer &)render_buffer {
+    render_buffer.clear();
 
     auto render_exp = [self expectationWithDescription:@"render"];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_renderer, &render_buffers, &render_exp] {
-                       renderer.render(render_buffers);
+                   [&renderer = self->_renderer, &render_buffer, &render_exp] {
+                       renderer.render(render_buffer);
 
                        [render_exp fulfill];
                    });

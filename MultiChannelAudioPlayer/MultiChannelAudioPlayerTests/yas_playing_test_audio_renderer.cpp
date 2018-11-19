@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_test_audio_renderer.h"
+#include "yas_audio_format.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -54,13 +55,19 @@ void test_audio_renderer::set_sample_rate(double const sample_rate) {
     impl_ptr<impl>()->_sample_rate.set_value(sample_rate);
 }
 
-void test_audio_renderer::render(std::vector<audio::pcm_buffer> &buffers) {
-    if (impl_ptr<impl>()->_channel_count.value() != buffers.size()) {
-        throw std::invalid_argument("buffers.size not equal to channel_count.");
+void test_audio_renderer::render(audio::pcm_buffer &buffer) {
+    auto const &format = buffer.format();
+
+    if (format.is_interleaved()) {
+        throw std::invalid_argument("buffer is not non-interleaved.");
+    }
+
+    if (impl_ptr<impl>()->_channel_count.value() != buffer.format().channel_count()) {
+        throw std::invalid_argument("buffers channel_count is not equal to channel_count.");
     }
 
     if (auto handler = impl_ptr<impl>()->_rendering_handler) {
-        handler(buffers);
+        handler(buffer);
     }
 }
 

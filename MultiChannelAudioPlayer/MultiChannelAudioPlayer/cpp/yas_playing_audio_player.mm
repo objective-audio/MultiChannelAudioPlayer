@@ -113,9 +113,9 @@ struct audio_player::impl : base::impl {
     void _setup_rendering_handler(audio_player &player) {
         auto weak_player = to_weak(player);
 
-        this->_renderable.set_rendering_handler([weak_player](std::vector<audio::pcm_buffer> &out_buffers) {
-            if (out_buffers.size() == 0) {
-                return;
+        this->_renderable.set_rendering_handler([weak_player](audio::pcm_buffer &out_buffer) {
+            if (out_buffer.format().is_interleaved()) {
+                throw std::invalid_argument("out_buffer is not non-interleaved.");
             }
 
             auto player = weak_player.lock();
@@ -133,17 +133,17 @@ struct audio_player::impl : base::impl {
 
             int64_t const begin_play_frame = player_impl->_play_frame;
             int64_t play_frame = begin_play_frame;
-            uint32_t const out_length = out_buffers.at(0).frame_length();
+            uint32_t const out_length = out_buffer.frame_length();
             int64_t const next_frame = play_frame + out_length;
             player_impl->_play_frame = next_frame;
             uint32_t const file_length = player_impl->_file_length();
-            auto read_buffer = player_impl->_get_or_create_read_buffer(out_buffers.at(0).format(), out_length);
+            auto read_buffer = player_impl->_get_or_create_read_buffer(out_buffer.format(), out_length);
 
             while (play_frame < next_frame) {
                 auto const info = audio_utils::processing_info{play_frame, next_frame, file_length};
                 uint32_t const to_frame = uint32_t(play_frame - begin_play_frame);
 
-                auto each = make_fast_each(out_buffers.size());
+                auto each = make_fast_each(out_buffer.format().channel_count());
                 while (yas_each_next(each)) {
                     auto const &idx = yas_each_index(each);
 
@@ -157,8 +157,9 @@ struct audio_player::impl : base::impl {
                     auto &circular_buffer = player_impl->_circular_buffers.at(idx);
                     circular_buffer->read_into_buffer(read_buffer, play_frame);
 
-#warning resultを見る？
-                    out_buffers.at(idx).copy_from(read_buffer, {.to_begin_frame = to_frame, .length = info.length});
+#warning 単独のChだけコピーする
+                    //                    out_buffers.at(idx).copy_from(read_buffer, {.to_begin_frame = to_frame,
+                    //                    .length = info.length});
 
                     if (info.next_file_idx.has_value()) {
                         circular_buffer->rotate_buffer(*info.next_file_idx);

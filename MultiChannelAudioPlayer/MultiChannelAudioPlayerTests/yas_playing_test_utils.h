@@ -10,6 +10,4 @@ namespace yas::playing::test_utils {
 void remove_all_document_files();
 void setup_files(audio_exporter &exporter, uint32_t const ch_count, std::function<void(void)> &&completion);
 void overwrite_file(audio_exporter &exporter, uint32_t const ch_count, std::function<void(void)> &&completion);
-std::vector<audio::pcm_buffer> make_render_buffers(audio::format const &, uint32_t const buffer_count,
-                                                   uint32_t const frame_length);
 }  // namespace yas::playing::test_utils

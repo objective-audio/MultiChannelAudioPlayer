@@ -105,9 +105,10 @@ struct audio_exporter::impl : base::impl {
                     }
 
                     // 作業バッファから1秒バッファへのコピー
-                    if (auto result = file_buffer.copy_from(process_buffer, 0,
-                                                            static_cast<uint32_t>(process_range.frame - file_frame_idx),
-                                                            static_cast<uint32_t>(process_range.length));
+                    if (auto result = file_buffer.copy_from(
+                            process_buffer,
+                            {.to_begin_frame = static_cast<uint32_t>(process_range.frame - file_frame_idx),
+                             .length = static_cast<uint32_t>(process_range.length)});
                         result.is_error()) {
                         export_result = export_result_t{export_error::copy_buffer_failed};
                         break;

@@ -95,8 +95,8 @@ audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(a
         return read_result_t{read_error::out_of_range_length};
     }
 
-    if (auto result =
-            to_buffer.copy_from(this->_buffer, static_cast<uint32_t>(from_frame), 0, to_buffer.frame_length())) {
+    if (auto result = to_buffer.copy_from(this->_buffer, {.from_begin_frame = static_cast<uint32_t>(from_frame),
+                                                          .length = to_buffer.frame_length()})) {
         return read_result_t{nullptr};
     } else {
         return read_result_t{read_error::copy_failed};

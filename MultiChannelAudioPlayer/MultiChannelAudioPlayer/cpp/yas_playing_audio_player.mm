@@ -158,7 +158,7 @@ struct audio_player::impl : base::impl {
                     circular_buffer->read_into_buffer(read_buffer, play_frame);
 
 #warning resultを見る？
-                    out_buffers.at(idx).copy_from(read_buffer, 0, to_frame, info.length);
+                    out_buffers.at(idx).copy_from(read_buffer, {.to_begin_frame = to_frame, .length = info.length});
 
                     if (info.next_file_idx.has_value()) {
                         circular_buffer->rotate_buffer(*info.next_file_idx);

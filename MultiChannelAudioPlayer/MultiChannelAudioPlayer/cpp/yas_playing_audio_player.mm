@@ -158,8 +158,8 @@ struct audio_player::impl : base::impl {
                     circular_buffer->read_into_buffer(read_buffer, play_frame);
 
 #warning 単独のChだけコピーする
-                    //                    out_buffers.at(idx).copy_from(read_buffer, {.to_begin_frame = to_frame,
-                    //                    .length = info.length});
+                    out_buffer.copy_channel_from(
+                        read_buffer, {.to_channel = idx, .to_begin_frame = to_frame, .length = info.length});
 
                     if (info.next_file_idx.has_value()) {
                         circular_buffer->rotate_buffer(*info.next_file_idx);

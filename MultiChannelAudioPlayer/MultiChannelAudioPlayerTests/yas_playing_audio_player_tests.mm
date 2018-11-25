@@ -246,7 +246,7 @@ using namespace yas::playing;
 
 - (audio::format)format {
     return audio::format{audio::format::args{.sample_rate = [self sample_rate],
-                                             .channel_count = 1,
+                                             .channel_count = 2,
                                              .pcm_format = audio::pcm_format::int16,
                                              .interleaved = false}};
 }

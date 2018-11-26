@@ -137,7 +137,12 @@ struct audio_player::impl : base::impl {
             int64_t const next_frame = play_frame + out_length;
             player_impl->_play_frame = next_frame;
             uint32_t const file_length = player_impl->_file_length();
-            auto read_buffer = player_impl->_get_or_create_read_buffer(out_buffer.format(), out_length);
+            audio::format const &out_format = out_buffer.format();
+            audio::format const read_format = audio::format{{.sample_rate = out_format.sample_rate(),
+                                                             .pcm_format = out_format.pcm_format(),
+                                                             .interleaved = false,
+                                                             .channel_count = 1}};
+            auto read_buffer = player_impl->_get_or_create_read_buffer(read_format, out_length);
 
             while (play_frame < next_frame) {
                 auto const info = audio_utils::processing_info{play_frame, next_frame, file_length};

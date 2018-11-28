@@ -162,7 +162,6 @@ struct audio_player::impl : base::impl {
                     auto &circular_buffer = player_impl->_circular_buffers.at(idx);
                     circular_buffer->read_into_buffer(read_buffer, play_frame);
 
-#warning 単独のChだけコピーする
                     out_buffer.copy_channel_from(
                         read_buffer, {.to_channel = idx, .to_begin_frame = to_frame, .length = info.length});
 

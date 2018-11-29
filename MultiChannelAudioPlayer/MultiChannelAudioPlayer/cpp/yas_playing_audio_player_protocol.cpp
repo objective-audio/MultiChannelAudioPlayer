@@ -29,5 +29,6 @@ chaining::chain_sync_t<uint32_t> audio_renderable::chain_channel_count() {
     return impl_ptr<impl>()->chain_channel_count();
 }
 
-void audio_renderable::set_is_rendering(bool const) {
+void audio_renderable::set_is_rendering(bool const is_rendering) {
+    impl_ptr<impl>()->set_is_rendering(is_rendering);
 }

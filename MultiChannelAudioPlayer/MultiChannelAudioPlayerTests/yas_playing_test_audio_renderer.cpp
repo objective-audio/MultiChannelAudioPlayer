@@ -13,7 +13,7 @@ struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
     chaining::holder<double> _sample_rate{0.0};
     chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
     chaining::holder<uint32_t> _channel_count{uint32_t(0)};
-    bool _is_rendering = false;
+    std::atomic<bool> _is_rendering = false;
     audio_renderable::rendering_f _rendering_handler;
 
     void set_rendering_handler(audio_renderable::rendering_f &&handler) override {
@@ -56,6 +56,10 @@ void test_audio_renderer::set_sample_rate(double const sample_rate) {
 }
 
 void test_audio_renderer::render(audio::pcm_buffer &buffer) {
+    if (!impl_ptr<impl>()->_is_rendering.load()) {
+        return;
+    }
+
     auto const &format = buffer.format();
 
     if (format.is_interleaved()) {

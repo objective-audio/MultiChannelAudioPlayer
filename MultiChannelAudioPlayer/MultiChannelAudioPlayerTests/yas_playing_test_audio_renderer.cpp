@@ -37,6 +37,31 @@ struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
     void set_is_rendering(bool const is_rendering) override {
         this->_is_rendering = is_rendering;
     }
+
+    void render(audio::pcm_buffer &buffer) {
+        if (!this->_is_rendering.load()) {
+            return;
+        }
+
+        auto const &format = buffer.format();
+
+        if (format.is_interleaved()) {
+            throw std::invalid_argument("buffer is not non-interleaved.");
+        }
+
+        if (this->_channel_count.value() != buffer.format().channel_count()) {
+            throw std::invalid_argument("buffers channel_count is not equal to channel_count.");
+        }
+
+        auto lock = std::unique_lock<std::recursive_mutex>(this->_rendering_mutex, std::try_to_lock);
+        if (!lock.owns_lock()) {
+            return;
+        }
+
+        if (auto const &handler = this->_rendering_handler) {
+            handler(buffer);
+        }
+    }
 };
 
 test_audio_renderer::test_audio_renderer() : base(std::make_shared<impl>()) {
@@ -58,28 +83,7 @@ void test_audio_renderer::set_sample_rate(double const sample_rate) {
 }
 
 void test_audio_renderer::render(audio::pcm_buffer &buffer) {
-    if (!impl_ptr<impl>()->_is_rendering.load()) {
-        return;
-    }
-
-    auto const &format = buffer.format();
-
-    if (format.is_interleaved()) {
-        throw std::invalid_argument("buffer is not non-interleaved.");
-    }
-
-    if (impl_ptr<impl>()->_channel_count.value() != buffer.format().channel_count()) {
-        throw std::invalid_argument("buffers channel_count is not equal to channel_count.");
-    }
-
-    auto lock = std::unique_lock<std::recursive_mutex>(impl_ptr<impl>()->_rendering_mutex, std::try_to_lock);
-    if (!lock.owns_lock()) {
-        return;
-    }
-
-    if (auto const &handler = impl_ptr<impl>()->_rendering_handler) {
-        handler(buffer);
-    }
+    impl_ptr<impl>()->render(buffer);
 }
 
 audio_renderable &test_audio_renderer::renderable() {

@@ -37,7 +37,8 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
         this->_is_rendering = is_rendering;
     }
 
-    void render(audio::pcm_buffer &buffer) {
+   private:
+    void _render(audio::pcm_buffer &buffer) {
         if (!this->_is_rendering.load()) {
             return;
         }

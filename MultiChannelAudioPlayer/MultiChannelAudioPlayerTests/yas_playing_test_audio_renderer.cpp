@@ -72,7 +72,7 @@ void test_audio_renderer::render(audio::pcm_buffer &buffer) {
         throw std::invalid_argument("buffers channel_count is not equal to channel_count.");
     }
 
-    auto lock = std::unique_lock<std::recursive_mutex>(impl_ptr<impl>()->_rendering_mutex);
+    auto lock = std::unique_lock<std::recursive_mutex>(impl_ptr<impl>()->_rendering_mutex, std::try_to_lock);
     if (!lock.owns_lock()) {
         return;
     }

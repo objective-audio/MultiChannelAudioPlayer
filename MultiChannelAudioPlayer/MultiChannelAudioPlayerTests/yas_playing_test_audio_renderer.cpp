@@ -15,8 +15,10 @@ struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
     chaining::holder<uint32_t> _channel_count{uint32_t(0)};
     std::atomic<bool> _is_rendering = false;
     audio_renderable::rendering_f _rendering_handler;
+    std::recursive_mutex _rendering_mutex;
 
     void set_rendering_handler(audio_renderable::rendering_f &&handler) override {
+        std::lock_guard<std::recursive_mutex> lock(this->_rendering_mutex);
         this->_rendering_handler = std::move(handler);
     }
 
@@ -70,7 +72,12 @@ void test_audio_renderer::render(audio::pcm_buffer &buffer) {
         throw std::invalid_argument("buffers channel_count is not equal to channel_count.");
     }
 
-    if (auto handler = impl_ptr<impl>()->_rendering_handler) {
+    auto lock = std::unique_lock<std::recursive_mutex>(impl_ptr<impl>()->_rendering_mutex);
+    if (!lock.owns_lock()) {
+        return;
+    }
+
+    if (auto const &handler = impl_ptr<impl>()->_rendering_handler) {
         handler(buffer);
     }
 }

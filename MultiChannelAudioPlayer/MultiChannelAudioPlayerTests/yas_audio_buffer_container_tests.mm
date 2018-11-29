@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "yas_audio_each_data.h"
 #import "yas_audio_file_utils.h"
 #import "yas_fast_each.h"
 #import "yas_playing_audio_buffer_container.h"
@@ -53,11 +54,9 @@ audio::file make_file(uint32_t const file_length) {
                                              .interleaved = false}};
     audio::pcm_buffer buffer{format, file_length};
 
-    int16_t *data_ptr = buffer.data_ptr_at_index<int16_t>(0);
-    auto each = make_fast_each(file_length);
-    while (yas_each_next(each)) {
-        int16_t const &idx = yas_each_index(each);
-        data_ptr[idx] = idx;
+    auto each = audio::make_each_data<int16_t>(buffer);
+    while (yas_each_data_next(each)) {
+        yas_each_data_value(each) = yas_each_data_index(each);
     }
 
     if (auto write_result = file.write_from_buffer(buffer); write_result.is_error()) {

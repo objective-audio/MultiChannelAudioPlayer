@@ -11,8 +11,9 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     chaining::holder<double> _sample_rate{0.0};
     chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
     chaining::holder<uint32_t> _channel_count{uint32_t(0)};
-    bool _is_rendering = false;
+    std::atomic<bool> _is_rendering = false;
     audio_renderable::rendering_f _rendering_handler;
+    std::recursive_mutex _rendering_mutex;
 
     void set_rendering_handler(audio_renderable::rendering_f &&handler) override {
         this->_rendering_handler = handler;
@@ -31,6 +32,7 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     }
 
     void set_is_rendering(bool const is_rendering) override {
+        std::lock_guard<std::recursive_mutex> lock(this->_rendering_mutex);
         this->_is_rendering = is_rendering;
     }
 };

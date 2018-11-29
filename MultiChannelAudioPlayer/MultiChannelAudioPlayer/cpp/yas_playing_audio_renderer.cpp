@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_audio_renderer.h"
+#include "yas_audio_format.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -34,6 +35,29 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     void set_is_rendering(bool const is_rendering) override {
         std::lock_guard<std::recursive_mutex> lock(this->_rendering_mutex);
         this->_is_rendering = is_rendering;
+    }
+
+    void render(audio::pcm_buffer &buffer) {
+        if (!this->_is_rendering.load()) {
+            return;
+        }
+
+        auto const &format = buffer.format();
+
+        if (format.is_interleaved()) {
+            throw std::invalid_argument("buffer is not non-interleaved.");
+        }
+
+        if (this->_channel_count.value() != buffer.format().channel_count()) {
+            return;
+        }
+
+        if (auto lock = std::unique_lock<std::recursive_mutex>(this->_rendering_mutex, std::try_to_lock);
+            lock.owns_lock()) {
+            if (auto const &handler = this->_rendering_handler) {
+                handler(buffer);
+            }
+        }
     }
 };
 

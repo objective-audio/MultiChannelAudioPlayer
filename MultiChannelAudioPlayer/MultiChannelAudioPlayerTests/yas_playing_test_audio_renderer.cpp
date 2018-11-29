@@ -53,13 +53,11 @@ struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
             throw std::invalid_argument("buffers channel_count is not equal to channel_count.");
         }
 
-        auto lock = std::unique_lock<std::recursive_mutex>(this->_rendering_mutex, std::try_to_lock);
-        if (!lock.owns_lock()) {
-            return;
-        }
-
-        if (auto const &handler = this->_rendering_handler) {
-            handler(buffer);
+        if (auto lock = std::unique_lock<std::recursive_mutex>(this->_rendering_mutex, std::try_to_lock);
+            lock.owns_lock()) {
+            if (auto const &handler = this->_rendering_handler) {
+                handler(buffer);
+            }
         }
     }
 };

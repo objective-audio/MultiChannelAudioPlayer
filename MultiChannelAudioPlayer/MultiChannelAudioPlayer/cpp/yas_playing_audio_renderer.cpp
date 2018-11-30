@@ -3,12 +3,19 @@
 //
 
 #include "yas_playing_audio_renderer.h"
+#include "yas_audio_engine_au_io.h"
+#include "yas_audio_engine_manager.h"
+#include "yas_audio_engine_tap.h"
 #include "yas_audio_format.h"
 
 using namespace yas;
 using namespace yas::playing;
 
 struct audio_renderer::impl : base::impl, audio_renderable::impl {
+    audio::engine::manager _manager;
+    audio::engine::au_output au_output;
+    audio::engine::tap tap;
+
     chaining::holder<double> _sample_rate{0.0};
     chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
     chaining::holder<uint32_t> _channel_count{uint32_t(0)};
@@ -33,7 +40,6 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     }
 
     void set_is_rendering(bool const is_rendering) override {
-        std::lock_guard<std::recursive_mutex> lock(this->_rendering_mutex);
         this->_is_rendering = is_rendering;
     }
 

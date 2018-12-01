@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_audio_renderer.h"
+#include "yas_audio_engine_au.h"
 #include "yas_audio_engine_au_io.h"
 #include "yas_audio_engine_manager.h"
 #include "yas_audio_engine_tap.h"
@@ -12,23 +13,11 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_renderer::impl : base::impl, audio_renderable::impl {
-    audio::engine::manager _manager;
-    audio::engine::au_output au_output;
-    audio::engine::tap tap;
-
-    chaining::observer_pool _pool;
-
-    chaining::holder<double> _sample_rate{0.0};
-    chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
-    chaining::holder<uint32_t> _channel_count{uint32_t(0)};
-    std::atomic<bool> _is_rendering = false;
-    audio_renderable::rendering_f _rendering_handler;
-    std::recursive_mutex _rendering_mutex;
-
     void prepare(audio_renderer &renderer) {
-        this->_pool += this->_manager.chain(audio::engine::manager::method::configuration_change)
-                           .perform([](audio::engine::manager const &manager) { manager.impl_ptr<impl>()->_update(); })
-                           .end();
+        this->_pool +=
+            this->_manager.chain(audio::engine::manager::method::configuration_change)
+                .perform([](audio::engine::manager const &manager) { manager.impl_ptr<impl>()->_update_connection(); })
+                .end();
     }
 
     void set_rendering_handler(audio_renderable::rendering_f &&handler) override {
@@ -52,10 +41,27 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     }
 
    private:
-    void _update() {
-        this->_manager.disconnect(this->tap.node());
+    audio::engine::manager _manager;
+    audio::engine::au_output _au_output;
+    audio::engine::tap _tap;
+    audio::engine::connection _connection = nullptr;
 
-        audio::engine::au_io const &au_io = this->au_output.au_io();
+    chaining::observer_pool _pool;
+
+    chaining::holder<double> _sample_rate{0.0};
+    chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
+    chaining::holder<uint32_t> _channel_count{uint32_t(0)};
+    std::atomic<bool> _is_rendering = false;
+    audio_renderable::rendering_f _rendering_handler;
+    std::recursive_mutex _rendering_mutex;
+
+    void _update_connection() {
+        if (this->_connection) {
+            this->_manager.disconnect(this->_connection);
+            this->_connection = nullptr;
+        }
+
+        audio::engine::au_io const &au_io = this->_au_output.au_io();
         double const sample_rate = au_io.device_sample_rate();
         uint32_t const ch_count = au_io.output_device_channel_count();
         this->_sample_rate.set_value(sample_rate);
@@ -63,7 +69,7 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
 
         audio::format format{{.sample_rate = sample_rate, .channel_count = ch_count}};
 
-#warning todo connect
+        this->_connection = this->_manager.connect(this->_tap.node(), this->_au_output.au_io().au().node(), format);
     }
 
     void _render(audio::pcm_buffer &buffer) {

@@ -18,6 +18,8 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
             this->_manager.chain(audio::engine::manager::method::configuration_change)
                 .perform([](audio::engine::manager const &manager) { manager.impl_ptr<impl>()->_update_connection(); })
                 .end();
+
+        this->_update_connection();
     }
 
     void set_rendering_handler(audio_renderable::rendering_f &&handler) override {
@@ -38,6 +40,12 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
 
     void set_is_rendering(bool const is_rendering) override {
         this->_is_rendering = is_rendering;
+
+        if (is_rendering) {
+            this->_manager.start_render();
+        } else {
+            this->_manager.stop();
+        }
     }
 
    private:
@@ -67,9 +75,10 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
         this->_sample_rate.set_value(sample_rate);
         this->_channel_count.set_value(ch_count);
 
-        audio::format format{{.sample_rate = sample_rate, .channel_count = ch_count}};
-
-        this->_connection = this->_manager.connect(this->_tap.node(), this->_au_output.au_io().au().node(), format);
+        if (sample_rate > 0.0 && ch_count > 0) {
+            audio::format format{{.sample_rate = sample_rate, .channel_count = ch_count}};
+            this->_connection = this->_manager.connect(this->_tap.node(), this->_au_output.au_io().au().node(), format);
+        }
     }
 
     void _render(audio::pcm_buffer &buffer) {

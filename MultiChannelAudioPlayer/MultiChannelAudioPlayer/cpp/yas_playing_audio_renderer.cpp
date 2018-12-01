@@ -16,6 +16,9 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     void prepare(audio_renderer &renderer) {
         auto weak_renderer = to_weak(renderer);
 
+        this->_setup_tap(weak_renderer);
+        this->_update_connection();
+
         this->_pool +=
             this->_manager.chain(audio::engine::manager::method::configuration_change)
                 .perform([](audio::engine::manager const &manager) { manager.impl_ptr<impl>()->_update_connection(); })
@@ -32,8 +35,6 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
                                }
                            })
                            .sync();
-
-        this->_update_connection();
     }
 
     void set_rendering_handler(audio_renderable::rendering_f &&handler) override {
@@ -70,6 +71,19 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     chaining::holder<bool> _is_rendering{false};
     audio_renderable::rendering_f _rendering_handler;
     std::recursive_mutex _rendering_mutex;
+
+    void _setup_tap(weak<audio_renderer> weak_renderer) {
+        this->_tap.set_render_handler(
+            [weak_renderer = std::move(weak_renderer)](audio::engine::node::render_args args) {
+                if (args.bus_idx != 0) {
+                    return;
+                }
+
+                if (auto renderer = weak_renderer.lock()) {
+                    renderer.impl_ptr<impl>()->_render(args.buffer);
+                }
+            });
+    }
 
     void _update_connection() {
         if (this->_connection) {

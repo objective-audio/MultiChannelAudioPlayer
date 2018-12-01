@@ -148,7 +148,7 @@ struct audio_player::impl : base::impl {
                 auto const info = audio_utils::processing_info{play_frame, next_frame, file_length};
                 uint32_t const to_frame = uint32_t(play_frame - begin_play_frame);
 
-                auto each = make_fast_each(out_buffer.format().channel_count());
+                auto each = make_fast_each(out_format.channel_count());
                 while (yas_each_next(each)) {
                     auto const &idx = yas_each_index(each);
 

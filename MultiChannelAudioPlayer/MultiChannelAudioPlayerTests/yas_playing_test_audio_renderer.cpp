@@ -49,10 +49,6 @@ struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
             throw std::invalid_argument("buffer is not non-interleaved.");
         }
 
-        if (this->_channel_count.value() != buffer.format().channel_count()) {
-            throw std::invalid_argument("buffers channel_count is not equal to channel_count.");
-        }
-
         if (auto lock = std::unique_lock<std::recursive_mutex>(this->_rendering_mutex, std::try_to_lock);
             lock.owns_lock()) {
             if (auto const &handler = this->_rendering_handler) {

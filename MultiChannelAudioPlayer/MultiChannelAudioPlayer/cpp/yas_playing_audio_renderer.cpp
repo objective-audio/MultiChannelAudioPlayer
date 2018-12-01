@@ -82,18 +82,10 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     }
 
     void _render(audio::pcm_buffer &buffer) {
-        if (!this->_is_rendering.load()) {
-            return;
-        }
-
         auto const &format = buffer.format();
 
         if (format.is_interleaved()) {
             throw std::invalid_argument("buffer is not non-interleaved.");
-        }
-
-        if (this->_channel_count.value() != buffer.format().channel_count()) {
-            return;
         }
 
         if (auto lock = std::unique_lock<std::recursive_mutex>(this->_rendering_mutex, std::try_to_lock);

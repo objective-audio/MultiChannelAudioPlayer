@@ -38,4 +38,8 @@ struct view_controller_cpp {
     self->_cpp.player.set_playing(false);
 }
 
+- (IBAction)seek:(UIButton *)sender {
+    self->_cpp.player.seek(0);
+}
+
 @end

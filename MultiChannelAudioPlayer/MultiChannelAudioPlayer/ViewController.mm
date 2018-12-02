@@ -31,11 +31,9 @@ struct view_controller_cpp {
 }
 
 - (IBAction)start:(UIButton *)sender {
-    
 }
 
 - (IBAction)stop:(UIButton *)sender {
-    
 }
 
 @end

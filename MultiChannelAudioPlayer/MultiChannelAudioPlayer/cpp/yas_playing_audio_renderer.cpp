@@ -5,7 +5,6 @@
 #include "yas_playing_audio_renderer.h"
 #include "yas_audio_engine_au.h"
 #include "yas_audio_engine_au_io.h"
-#include "yas_audio_engine_manager.h"
 #include "yas_audio_engine_tap.h"
 #include "yas_audio_format.h"
 
@@ -13,6 +12,8 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_renderer::impl : base::impl, audio_renderable::impl {
+    audio::engine::manager _manager;
+
     void prepare(audio_renderer &renderer) {
         auto weak_renderer = to_weak(renderer);
 
@@ -58,7 +59,6 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     }
 
    private:
-    audio::engine::manager _manager;
     audio::engine::au_output _output;
     audio::engine::tap _tap;
     audio::engine::connection _connection = nullptr;
@@ -124,6 +124,10 @@ audio_renderer::audio_renderer() : base(std::make_shared<impl>()) {
 }
 
 audio_renderer::audio_renderer(std::nullptr_t) : base(nullptr) {
+}
+
+audio::engine::manager const &audio_renderer::manager() {
+    return impl_ptr<impl>()->_manager;
 }
 
 audio_renderable &audio_renderer::renderable() {

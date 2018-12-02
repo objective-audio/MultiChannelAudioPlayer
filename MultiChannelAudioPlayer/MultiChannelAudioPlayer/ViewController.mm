@@ -31,7 +31,6 @@ struct view_controller_cpp {
 }
 
 - (IBAction)exportSine:(UIButton *)sender {
-    
 }
 
 - (IBAction)start:(UIButton *)sender {

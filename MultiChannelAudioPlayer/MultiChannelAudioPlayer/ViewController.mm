@@ -30,4 +30,12 @@ struct view_controller_cpp {
     [super viewDidLoad];
 }
 
+- (IBAction)start:(UIButton *)sender {
+    
+}
+
+- (IBAction)stop:(UIButton *)sender {
+    
+}
+
 @end

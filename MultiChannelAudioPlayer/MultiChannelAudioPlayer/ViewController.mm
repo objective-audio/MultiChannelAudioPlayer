@@ -30,6 +30,10 @@ struct view_controller_cpp {
     [super viewDidLoad];
 }
 
+- (IBAction)exportSine:(UIButton *)sender {
+    
+}
+
 - (IBAction)start:(UIButton *)sender {
     self->_cpp.player.set_playing(true);
 }

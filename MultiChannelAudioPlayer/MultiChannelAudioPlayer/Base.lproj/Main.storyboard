@@ -38,6 +38,14 @@
                                     <action selector="seek:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Wdn-Gv-pSN"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q8c-qQ-Swx">
+                                <rect key="frame" x="148" y="268.5" width="79" height="30"/>
+                                <state key="normal" title="Export Sine"/>
+                                <connections>
+                                    <action selector="exportSine:" destination="BYZ-38-t0r" eventType="touchUpInside" id="N5U-Gy-tw5"/>
+                                    <action selector="stop:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nLw-ep-SFy"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -45,8 +53,10 @@
                             <constraint firstItem="emY-F8-AoB" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="B2g-aW-Bbv"/>
                             <constraint firstItem="OOP-FC-bXv" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="HgN-On-HoV"/>
                             <constraint firstItem="ba4-RK-0uB" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="P3T-3h-niz"/>
+                            <constraint firstItem="q8c-qQ-Swx" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Pal-j8-ZyM"/>
                             <constraint firstItem="emY-F8-AoB" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="WfT-ms-fOu"/>
                             <constraint firstItem="ba4-RK-0uB" firstAttribute="top" secondItem="emY-F8-AoB" secondAttribute="bottom" constant="20" id="p3i-ff-6BC"/>
+                            <constraint firstItem="emY-F8-AoB" firstAttribute="top" secondItem="q8c-qQ-Swx" secondAttribute="bottom" constant="20" id="w6H-lf-k7n"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

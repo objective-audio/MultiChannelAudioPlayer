@@ -16,6 +16,7 @@ using namespace yas::playing;
 namespace yas::playing::sample {
 struct view_controller_cpp {
     url root_url{system_url_utils::directory_url(system_url_utils::dir::document).appending("sample")};
+    audio_coordinator coordinator{this->root_url};
     operation_queue queue;
     audio_renderer renderer;
     audio_player player{this->renderer.renderable(), this->root_url, this->queue};

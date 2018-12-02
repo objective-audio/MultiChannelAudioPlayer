@@ -39,7 +39,7 @@
 		B6821266217D550600E24A6B /* yas_playing_audio_exporter_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6821265217D550600E24A6B /* yas_playing_audio_exporter_tests.mm */; };
 		B68420C12197C4A900A03026 /* yas_playing_audio_player_protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B68420C02197C4A900A03026 /* yas_playing_audio_player_protocol.cpp */; };
 		B685EDCA2171ABE8002EDC9B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B685EDC92171ABE8002EDC9B /* AppDelegate.m */; };
-		B685EDCD2171ABE8002EDC9B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B685EDCC2171ABE8002EDC9B /* ViewController.m */; };
+		B685EDCD2171ABE8002EDC9B /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B685EDCC2171ABE8002EDC9B /* ViewController.mm */; };
 		B685EDD02171ABE8002EDC9B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B685EDCE2171ABE8002EDC9B /* Main.storyboard */; };
 		B685EDD22171ABE9002EDC9B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B685EDD12171ABE9002EDC9B /* Assets.xcassets */; };
 		B685EDD52171ABE9002EDC9B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B685EDD32171ABE9002EDC9B /* LaunchScreen.storyboard */; };
@@ -216,7 +216,7 @@
 		B685EDC82171ABE8002EDC9B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B685EDC92171ABE8002EDC9B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		B685EDCB2171ABE8002EDC9B /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		B685EDCC2171ABE8002EDC9B /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		B685EDCC2171ABE8002EDC9B /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
 		B685EDCF2171ABE8002EDC9B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B685EDD12171ABE9002EDC9B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B685EDD42171ABE9002EDC9B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -229,6 +229,7 @@
 		B6AC01B9219CF8F2001624B9 /* yas_playing_audio_player_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_audio_player_tests.mm; sourceTree = "<group>"; };
 		B6AC01BB21AF7756001624B9 /* yas_playing_audio_renderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_audio_renderer.cpp; sourceTree = "<group>"; };
 		B6AC01BC21AF7756001624B9 /* yas_playing_audio_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio_renderer.h; sourceTree = "<group>"; };
+		B6AC01BE21B36B8B001624B9 /* yas_playing_audio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio.h; sourceTree = "<group>"; };
 		B6DB824221820C4C00BBCC89 /* yas_playing_audio_player.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_audio_player.mm; sourceTree = "<group>"; };
 		B6DB824321820C4C00BBCC89 /* yas_playing_audio_player.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio_player.h; sourceTree = "<group>"; };
 		B6F05395218F2E7600904010 /* yas_url.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_url.mm; sourceTree = "<group>"; };
@@ -564,7 +565,7 @@
 				B685EDC82171ABE8002EDC9B /* AppDelegate.h */,
 				B685EDC92171ABE8002EDC9B /* AppDelegate.m */,
 				B685EDCB2171ABE8002EDC9B /* ViewController.h */,
-				B685EDCC2171ABE8002EDC9B /* ViewController.m */,
+				B685EDCC2171ABE8002EDC9B /* ViewController.mm */,
 				B685EDCE2171ABE8002EDC9B /* Main.storyboard */,
 				B685EDD12171ABE9002EDC9B /* Assets.xcassets */,
 				B685EDD32171ABE9002EDC9B /* LaunchScreen.storyboard */,
@@ -704,6 +705,7 @@
 			children = (
 				B61A406A217B51BB00B2717C /* yas_math.cpp */,
 				B61A406B217B51BB00B2717C /* yas_math.h */,
+				B6AC01BE21B36B8B001624B9 /* yas_playing_audio.h */,
 				B6777DF2218B1DD000A7358D /* yas_playing_audio_buffer_container.cpp */,
 				B6777DF3218B1DD000A7358D /* yas_playing_audio_buffer_container.h */,
 				B68FE3F42184688D0065FA3D /* yas_playing_audio_circular_buffer.cpp */,
@@ -1027,7 +1029,7 @@
 				B6FDB6AA2177618E00AF4365 /* yas_audio_engine_route.cpp in Sources */,
 				B6FDB6352174D06C00AF4365 /* yas_processing_constant_module.cpp in Sources */,
 				B6FDB69D2177618E00AF4365 /* yas_audio_format.mm in Sources */,
-				B685EDCD2171ABE8002EDC9B /* ViewController.m in Sources */,
+				B685EDCD2171ABE8002EDC9B /* ViewController.mm in Sources */,
 				B679E2F72172BF3700859687 /* yas_protocol.cpp in Sources */,
 				B6FDB6B32177618E00AF4365 /* yas_audio_engine_device_io_protocol.cpp in Sources */,
 				B679E2FB2172BF3700859687 /* yas_cf_utils.mm in Sources */,

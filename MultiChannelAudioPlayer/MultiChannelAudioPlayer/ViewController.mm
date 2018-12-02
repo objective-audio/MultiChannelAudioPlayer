@@ -3,6 +3,7 @@
 //
 
 #import "ViewController.h"
+#import "yas_playing_audio.h"
 
 @interface ViewController ()
 

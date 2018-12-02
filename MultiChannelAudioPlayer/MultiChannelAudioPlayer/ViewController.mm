@@ -31,9 +31,11 @@ struct view_controller_cpp {
 }
 
 - (IBAction)start:(UIButton *)sender {
+    self->_cpp.player.set_playing(true);
 }
 
 - (IBAction)stop:(UIButton *)sender {
+    self->_cpp.player.set_playing(false);
 }
 
 @end

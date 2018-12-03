@@ -13,6 +13,9 @@ using namespace yas::playing;
 
 struct audio_renderer::impl : base::impl, audio_renderable::impl {
     audio::engine::manager _manager;
+    chaining::holder<double> _sample_rate{0.0};
+    chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
+    chaining::holder<uint32_t> _channel_count{uint32_t(0)};
 
     void prepare(audio_renderer &renderer) {
         auto weak_renderer = to_weak(renderer);
@@ -65,9 +68,6 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
 
     chaining::observer_pool _pool;
 
-    chaining::holder<double> _sample_rate{0.0};
-    chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
-    chaining::holder<uint32_t> _channel_count{uint32_t(0)};
     chaining::holder<bool> _is_rendering{false};
     audio_renderable::rendering_f _rendering_handler;
     std::recursive_mutex _rendering_mutex;
@@ -128,6 +128,18 @@ audio_renderer::audio_renderer(std::nullptr_t) : base(nullptr) {
 
 audio::engine::manager const &audio_renderer::manager() {
     return impl_ptr<impl>()->_manager;
+}
+
+double audio_renderer::sample_rate() const {
+    return impl_ptr<impl>()->_sample_rate.value();
+}
+
+audio::pcm_format audio_renderer::pcm_format() const {
+    return impl_ptr<impl>()->_pcm_format.value();
+}
+
+uint32_t audio_renderer::channel_count() const {
+    return impl_ptr<impl>()->_channel_count.value();
 }
 
 audio_renderable &audio_renderer::renderable() {

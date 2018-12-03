@@ -25,6 +25,21 @@ struct audio_coordinator::impl : base::impl {
     }
 
     void prepare(audio_coordinator &coordinator) {
+        auto weak_coordinator = to_weak(coordinator);
+
+        this->_pool += this->_renderer.manager()
+                           .chain(audio::engine::manager::method::configuration_change)
+                           .perform([weak_coordinator](auto const &manager) {
+                               if (auto coordinator = weak_coordinator.lock()) {
+                                   auto coordinator_impl = coordinator.impl_ptr<impl>();
+
+                                   double const sample_rate = 0.0;
+                                   audio::pcm_format const pcm_format = audio::pcm_format::float32;
+                                   coordinator_impl->_exporter = audio_exporter{
+                                       sample_rate, pcm_format, coordinator_impl->_root_url, coordinator_impl->_queue};
+                               }
+                           })
+                           .end();
     }
 };
 

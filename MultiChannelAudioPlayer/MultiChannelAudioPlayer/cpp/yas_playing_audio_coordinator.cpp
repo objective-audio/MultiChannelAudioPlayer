@@ -31,15 +31,27 @@ struct audio_coordinator::impl : base::impl {
                            .chain(audio::engine::manager::method::configuration_change)
                            .perform([weak_coordinator](auto const &manager) {
                                if (auto coordinator = weak_coordinator.lock()) {
-                                   auto coordinator_impl = coordinator.impl_ptr<impl>();
-
-                                   double const sample_rate = 0.0;
-                                   audio::pcm_format const pcm_format = audio::pcm_format::float32;
-                                   coordinator_impl->_exporter = audio_exporter{
-                                       sample_rate, pcm_format, coordinator_impl->_root_url, coordinator_impl->_queue};
+                                   coordinator.impl_ptr<impl>()->update_exporter(manager);
                                }
                            })
                            .end();
+    }
+
+   private:
+    void update_exporter(audio::engine::manager const &manager) {
+        double const sample_rate = this->_renderer.sample_rate();
+        audio::pcm_format const pcm_format = this->_renderer.pcm_format();
+
+        if (this->_exporter) {
+            if (this->_exporter.sample_rate() == sample_rate && this->_exporter.pcm_format() == pcm_format) {
+                return;
+            }
+
+            this->_exporter.clear([](auto const &) {});
+            this->_exporter = nullptr;
+        }
+
+        this->_exporter = audio_exporter{sample_rate, pcm_format, this->_root_url, this->_queue};
     }
 };
 

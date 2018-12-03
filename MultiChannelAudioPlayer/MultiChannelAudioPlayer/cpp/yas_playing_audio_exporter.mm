@@ -3,12 +3,14 @@
 //
 
 #include "yas_playing_audio_exporter.h"
+#include "yas_audio_file.h"
 #include "yas_cf_utils.h"
 #include "yas_file_manager.h"
 #include "yas_math.h"
 #include "yas_operation.h"
 #include "yas_playing_url_utils.h"
 
+using namespace yas;
 using namespace yas::playing;
 
 struct audio_exporter::impl : base::impl {
@@ -182,6 +184,14 @@ void audio_exporter::export_file(uint32_t const ch_idx, proc::time::range const 
 
 void audio_exporter::clear(std::function<void(clear_result_t const &)> result_handler) {
     impl_ptr<impl>()->clear_all_files(result_handler);
+}
+
+double audio_exporter::sample_rate() const {
+    return impl_ptr<impl>()->_format.sample_rate();
+}
+
+audio::pcm_format audio_exporter::pcm_format() const {
+    return impl_ptr<impl>()->_format.pcm_format();
 }
 
 #pragma mark -

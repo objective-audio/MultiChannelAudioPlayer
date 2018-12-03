@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_audio_coordinator.h"
+#include "yas_playing_audio_exporter.h"
 #include "yas_playing_audio_player.h"
 #include "yas_playing_audio_renderer.h"
 #include "yas_url.h"
@@ -15,6 +16,7 @@ struct audio_coordinator::impl : base::impl {
     operation_queue _queue;
     audio_renderer _renderer;
     audio_player _player{this->_renderer.renderable(), this->_root_url, this->_queue};
+    audio_exporter _exporter = nullptr;
 
     impl(url &&root_url) : _root_url(std::move(root_url)) {
     }

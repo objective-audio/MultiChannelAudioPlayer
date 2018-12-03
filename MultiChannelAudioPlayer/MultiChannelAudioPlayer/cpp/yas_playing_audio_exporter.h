@@ -5,9 +5,12 @@
 #pragma once
 
 #include <string>
-#include "yas_audio.h"
+#include "yas_audio_format.h"
+#include "yas_audio_pcm_buffer.h"
 #include "yas_base.h"
+#include "yas_operation.h"
 #include "yas_processing.h"
+#include "yas_result.h"
 #include "yas_url.h"
 
 namespace yas::playing {
@@ -38,6 +41,9 @@ struct audio_exporter : base {
                      std::function<void(export_result_t const &)> result_handler);
 
     void clear(std::function<void(clear_result_t const &)> result_handler);
+
+    double sample_rate() const;
+    audio::pcm_format pcm_format() const;
 };
 }  // namespace yas::playing
 

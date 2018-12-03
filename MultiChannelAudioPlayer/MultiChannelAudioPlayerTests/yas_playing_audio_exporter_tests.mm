@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "yas_audio.h"
 #import "yas_file_manager.h"
 #import "yas_playing_audio_exporter.h"
 #import "yas_playing_test_utils.h"

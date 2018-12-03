@@ -5,7 +5,10 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_url.h"
+
+namespace yas {
+class url;
+}
 
 namespace yas::playing {
 struct audio_coordinator : base {
@@ -13,5 +16,8 @@ struct audio_coordinator : base {
 
     audio_coordinator(url root_url);
     audio_coordinator(std::nullptr_t);
+
+    void set_playing(bool const);
+    void seek(int64_t const);
 };
 }  // namespace yas::playing

@@ -17,9 +17,6 @@ namespace yas::playing::sample {
 struct view_controller_cpp {
     url root_url{system_url_utils::directory_url(system_url_utils::dir::document).appending("sample")};
     audio_coordinator coordinator{this->root_url};
-    operation_queue queue;
-    audio_renderer renderer;
-    audio_player player{this->renderer.renderable(), this->root_url, this->queue};
 };
 }
 
@@ -35,15 +32,15 @@ struct view_controller_cpp {
 }
 
 - (IBAction)start:(UIButton *)sender {
-    self->_cpp.player.set_playing(true);
+    self->_cpp.coordinator.set_playing(true);
 }
 
 - (IBAction)stop:(UIButton *)sender {
-    self->_cpp.player.set_playing(false);
+    self->_cpp.coordinator.set_playing(false);
 }
 
 - (IBAction)seek:(UIButton *)sender {
-    self->_cpp.player.seek(0);
+    self->_cpp.coordinator.seek(0);
 }
 
 @end

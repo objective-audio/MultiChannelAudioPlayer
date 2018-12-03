@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_audio_coordinator.h"
+#include "yas_chaining.h"
 #include "yas_playing_audio_exporter.h"
 #include "yas_playing_audio_player.h"
 #include "yas_playing_audio_renderer.h"
@@ -18,11 +19,17 @@ struct audio_coordinator::impl : base::impl {
     audio_player _player{this->_renderer.renderable(), this->_root_url, this->_queue};
     audio_exporter _exporter = nullptr;
 
+    chaining::observer_pool _pool;
+
     impl(url &&root_url) : _root_url(std::move(root_url)) {
+    }
+
+    void prepare(audio_coordinator &coordinator) {
     }
 };
 
 audio_coordinator::audio_coordinator(url root_url) : base(std::make_shared<impl>(std::move(root_url))) {
+    impl_ptr<impl>()->prepare(*this);
 }
 
 audio_coordinator::audio_coordinator(std::nullptr_t) : base(nullptr) {

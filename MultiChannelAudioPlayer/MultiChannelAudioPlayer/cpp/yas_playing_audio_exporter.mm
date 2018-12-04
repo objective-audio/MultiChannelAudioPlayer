@@ -168,7 +168,7 @@ struct audio_exporter::impl : base::impl {
     }
 
     void clear_all_files(std::function<void(clear_result_t const &)> result_handler) {
-        this->_queue.cancel();
+        this->_queue.cancel_for_id(this->_cancel_id);
 
         operation op([result_handler, root_url = this->_root_url](operation const &) {
             if (auto result = file_manager::remove_file(root_url.path())) {

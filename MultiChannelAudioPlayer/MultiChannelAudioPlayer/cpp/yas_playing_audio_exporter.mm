@@ -30,6 +30,10 @@ struct audio_exporter::impl : base::impl {
         }
     }
 
+    void update_format(double const sample_rate, audio::pcm_format const pcm_format) {
+#warning todo
+    }
+
     void export_file(uint32_t const ch_idx, proc::time::range const &range,
                      std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&proc_handler,
                      std::function<void(export_result_t const &)> &&result_handler) {
@@ -174,6 +178,10 @@ audio_exporter::audio_exporter(double const sample_rate, audio::pcm_format const
 }
 
 audio_exporter::audio_exporter(std::nullptr_t) : base(nullptr) {
+}
+
+void audio_exporter::update_format(double const sample_rate, audio::pcm_format const pcm_format) {
+    impl_ptr<impl>()->update_format(sample_rate, pcm_format);
 }
 
 void audio_exporter::export_file(uint32_t const ch_idx, proc::time::range const &range,

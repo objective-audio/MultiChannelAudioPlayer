@@ -20,25 +20,31 @@ struct audio_exporter::impl : base::impl {
         }
     };
 
-    audio::format const _format;
+    audio::format _format;
     url const _root_url;
     operation_queue _queue;
     cancel_id _all_cancel_id;
-    audio::pcm_buffer _file_buffer;
-    audio::pcm_buffer _process_buffer;
+    audio::pcm_buffer _file_buffer = nullptr;
+    audio::pcm_buffer _process_buffer = nullptr;
 
     impl(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url, operation_queue &&queue)
         : _format({.sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}),
-          _root_url(root_url),
-          _file_buffer(this->_format, static_cast<uint32_t>(sample_rate)),
-          _process_buffer(this->_format, static_cast<uint32_t>(sample_rate)) {
+          _root_url(root_url) {
         if (auto result = file_manager::create_directory_if_not_exists(this->_root_url.path()); result.is_error()) {
             std::runtime_error(to_string(result.error()));
         }
+        this->setup_buffers();
+    }
+
+    void setup_buffers() {
+        double const sample_rate = this->_format.sample_rate();
+        this->_file_buffer = audio::pcm_buffer{this->_format, static_cast<uint32_t>(sample_rate)};
+        this->_process_buffer = audio::pcm_buffer{this->_format, static_cast<uint32_t>(sample_rate)};
     }
 
     void update_format(double const sample_rate, audio::pcm_format const pcm_format) {
-#warning todo
+        this->clear_all_files([](auto const &) {});
+        this->setup_buffers();
     }
 
     void export_file(uint32_t const ch_idx, proc::time::range const &range,

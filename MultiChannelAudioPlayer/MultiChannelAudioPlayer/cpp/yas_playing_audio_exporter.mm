@@ -23,7 +23,7 @@ struct audio_exporter::impl : base::impl {
     audio::format const _format;
     url const _root_url;
     operation_queue _queue;
-    cancel_id _cancel_id;
+    cancel_id _all_cancel_id;
     audio::pcm_buffer _file_buffer;
     audio::pcm_buffer _process_buffer;
 
@@ -163,12 +163,12 @@ struct audio_exporter::impl : base::impl {
                                    result_handler(export_result);
                                });
             },
-            {.identifier = this->_cancel_id}};
+            {.identifier = this->_all_cancel_id}};
         this->_queue.push_back(std::move(op));
     }
 
     void clear_all_files(std::function<void(clear_result_t const &)> result_handler) {
-        this->_queue.cancel_for_id(this->_cancel_id);
+        this->_queue.cancel_for_id(this->_all_cancel_id);
 
         operation op([result_handler, root_url = this->_root_url](operation const &) {
             if (auto result = file_manager::remove_file(root_url.path())) {

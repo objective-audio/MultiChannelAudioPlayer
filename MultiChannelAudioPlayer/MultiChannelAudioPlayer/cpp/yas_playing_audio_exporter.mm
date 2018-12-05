@@ -43,10 +43,17 @@ struct audio_exporter::impl : base::impl {
         }
     }
 
-    void update_format(double const sample_rate, audio::pcm_format const pcm_format) {
+    void update_format(double const sample_rate, audio::pcm_format const pcm_format,
+                       std::function<void(void)> handler) {
         this->clear_all_files([](auto const &) {});
         this->_file_buffer = make_one_sec_buffer(this->_format);
         this->_process_buffer = make_one_sec_buffer(this->_format);
+
+        operation op{[handler = std::move(handler)](operation const &operation) {
+            dispatch_async(dispatch_get_main_queue(), [handler = std::move(handler)] { handler(); });
+        }};
+
+        this->_queue.push_back(std::move(op));
     }
 
     void export_file(uint32_t const ch_idx, proc::time::range const &range,
@@ -197,8 +204,9 @@ audio_exporter::audio_exporter(double const sample_rate, audio::pcm_format const
 audio_exporter::audio_exporter(std::nullptr_t) : base(nullptr) {
 }
 
-void audio_exporter::update_format(double const sample_rate, audio::pcm_format const pcm_format) {
-    impl_ptr<impl>()->update_format(sample_rate, pcm_format);
+void audio_exporter::update_format(double const sample_rate, audio::pcm_format const pcm_format,
+                                   std::function<void(void)> handler) {
+    impl_ptr<impl>()->update_format(sample_rate, pcm_format, handler);
 }
 
 void audio_exporter::export_file(uint32_t const ch_idx, proc::time::range const &range,

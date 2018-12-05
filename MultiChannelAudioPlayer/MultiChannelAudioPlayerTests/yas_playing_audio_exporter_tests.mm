@@ -172,4 +172,57 @@ using namespace yas::playing;
     XCTAssertFalse(file_manager::file_exists(root_url.path()));
 }
 
+- (void)test_update_format {
+    auto root_url = system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
+
+    audio::format format{audio::format::args{
+        .sample_rate = 3, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
+
+    playing::audio_exporter exporter{3, audio::pcm_format::int16, root_url, self->_queue};
+
+    XCTestExpectation *firstExp = [self expectationWithDescription:@"export_first"];
+
+    exporter.export_file(0, proc::time::range{0, 3},
+                         [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                             int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
+                             auto each = make_fast_each(range.length);
+                             while (yas_each_next(each)) {
+                                 auto const &idx = yas_each_index(each);
+                                 data[idx] = int16_t(range.frame + idx);
+                             }
+                         },
+                         [=](auto const &result) {
+                             XCTAssertTrue(result.is_success());
+                             [firstExp fulfill];
+                         });
+
+    [self waitForExpectations:@[firstExp] timeout:10.0];
+
+    {
+        auto url = root_url.appending("0/0.caf");
+
+        auto file_result = audio::make_opened_file(audio::file::open_args{
+            .file_url = url,
+            .pcm_format = audio::pcm_format::int16,
+            .interleaved = false,
+        });
+
+        XCTAssertTrue(file_result);
+
+        auto const &file = file_result.value();
+
+        XCTAssertEqual(file.file_length(), 3);
+    }
+
+    XCTestExpectation *updateExp = [self expectationWithDescription:@"update_format"];
+
+    exporter.update_format(4, audio::pcm_format::int16, [=] { [updateExp fulfill]; });
+
+    [self waitForExpectations:@[updateExp] timeout:10.0];
+
+    XCTAssertFalse(file_manager::file_exists(root_url.path()));
+
+#warning todo
+}
+
 @end

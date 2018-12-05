@@ -183,14 +183,7 @@ using namespace yas::playing;
     XCTestExpectation *firstExp = [self expectationWithDescription:@"export_first"];
 
     exporter.export_file(0, proc::time::range{0, 3},
-                         [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
-                             int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
-                             auto each = make_fast_each(range.length);
-                             while (yas_each_next(each)) {
-                                 auto const &idx = yas_each_index(each);
-                                 data[idx] = int16_t(range.frame + idx);
-                             }
-                         },
+                         [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
                              [firstExp fulfill];
@@ -225,14 +218,7 @@ using namespace yas::playing;
     XCTestExpectation *secondExp = [self expectationWithDescription:@"export_second"];
 
     exporter.export_file(0, proc::time::range{0, 4},
-                         [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
-                             int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
-                             auto each = make_fast_each(range.length);
-                             while (yas_each_next(each)) {
-                                 auto const &idx = yas_each_index(each);
-                                 data[idx] = int16_t(range.frame + idx);
-                             }
-                         },
+                         [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
                              [secondExp fulfill];

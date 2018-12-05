@@ -205,6 +205,9 @@ using namespace yas::playing;
         auto const &file = file_result.value();
 
         XCTAssertEqual(file.file_length(), 3);
+
+        XCTAssertFalse(file_manager::file_exists(root_url.appending("0/-1.caf").path()));
+        XCTAssertFalse(file_manager::file_exists(root_url.appending("0/1.caf").path()));
     }
 
     XCTestExpectation *updateExp = [self expectationWithDescription:@"update_format"];
@@ -240,8 +243,10 @@ using namespace yas::playing;
         auto const &file = file_result.value();
 
         XCTAssertEqual(file.file_length(), 4);
+
+        XCTAssertFalse(file_manager::file_exists(root_url.appending("0/-1.caf").path()));
+        XCTAssertFalse(file_manager::file_exists(root_url.appending("0/1.caf").path()));
     }
-#warning todo
 }
 
 @end

@@ -222,6 +222,39 @@ using namespace yas::playing;
 
     XCTAssertFalse(file_manager::file_exists(root_url.path()));
 
+    XCTestExpectation *secondExp = [self expectationWithDescription:@"export_second"];
+
+    exporter.export_file(0, proc::time::range{0, 4},
+                         [](audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                             int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
+                             auto each = make_fast_each(range.length);
+                             while (yas_each_next(each)) {
+                                 auto const &idx = yas_each_index(each);
+                                 data[idx] = int16_t(range.frame + idx);
+                             }
+                         },
+                         [=](auto const &result) {
+                             XCTAssertTrue(result.is_success());
+                             [secondExp fulfill];
+                         });
+
+    [self waitForExpectations:@[secondExp] timeout:10.0];
+
+    {
+        auto url = root_url.appending("0/0.caf");
+
+        auto file_result = audio::make_opened_file(audio::file::open_args{
+            .file_url = url,
+            .pcm_format = audio::pcm_format::int16,
+            .interleaved = false,
+        });
+
+        XCTAssertTrue(file_result);
+
+        auto const &file = file_result.value();
+
+        XCTAssertEqual(file.file_length(), 4);
+    }
 #warning todo
 }
 

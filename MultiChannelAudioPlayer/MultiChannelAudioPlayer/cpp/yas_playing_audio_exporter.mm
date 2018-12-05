@@ -14,6 +14,11 @@ using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing {
+static audio::format make_export_format(double const sample_rate, audio::pcm_format const pcm_format) {
+    return audio::format{
+        {.sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}};
+}
+
 static audio::pcm_buffer make_one_sec_buffer(audio::format const &format) {
     return audio::pcm_buffer{format, static_cast<uint32_t>(format.sample_rate())};
 }
@@ -34,7 +39,7 @@ struct audio_exporter::impl : base::impl {
     audio::pcm_buffer _process_buffer;
 
     impl(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url, operation_queue &&queue)
-        : _format({.sample_rate = sample_rate, .channel_count = 1, .pcm_format = pcm_format, .interleaved = false}),
+        : _format(make_export_format(sample_rate, pcm_format)),
           _file_buffer(make_one_sec_buffer(this->_format)),
           _process_buffer(make_one_sec_buffer(this->_format)),
           _root_url(root_url) {
@@ -46,6 +51,7 @@ struct audio_exporter::impl : base::impl {
     void update_format(double const sample_rate, audio::pcm_format const pcm_format,
                        std::function<void(void)> handler) {
         this->clear_all_files([](auto const &) {});
+        this->_format = make_export_format(sample_rate, pcm_format);
         this->_file_buffer = make_one_sec_buffer(this->_format);
         this->_process_buffer = make_one_sec_buffer(this->_format);
 

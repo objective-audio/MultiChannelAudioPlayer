@@ -47,11 +47,10 @@ struct audio_coordinator::impl : base::impl {
                 return;
             }
 
-            this->_exporter.clear([](auto const &) {});
-            this->_exporter = nullptr;
+            this->_exporter.update_format(sample_rate, pcm_format, [] {});
+        } else {
+            this->_exporter = audio_exporter{sample_rate, pcm_format, this->_root_url, this->_queue};
         }
-
-        this->_exporter = audio_exporter{sample_rate, pcm_format, this->_root_url, this->_queue};
     }
 };
 

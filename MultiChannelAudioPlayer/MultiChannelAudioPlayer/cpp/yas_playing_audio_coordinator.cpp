@@ -7,6 +7,7 @@
 #include "yas_playing_audio_exporter.h"
 #include "yas_playing_audio_player.h"
 #include "yas_playing_audio_renderer.h"
+#include "yas_playing_audio_types.h"
 #include "yas_url.h"
 
 using namespace yas;
@@ -14,7 +15,7 @@ using namespace yas::playing;
 
 struct audio_coordinator::impl : base::impl {
     url _root_url;
-    operation_queue _queue;
+    operation_queue _queue{audio_queue_priority_count};
     audio_renderer _renderer;
     audio_player _player{this->_renderer.renderable(), this->_root_url, this->_queue};
     audio_exporter _exporter = nullptr;

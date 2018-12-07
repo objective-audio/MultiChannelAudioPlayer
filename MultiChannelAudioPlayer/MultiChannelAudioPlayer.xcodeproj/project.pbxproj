@@ -141,6 +141,7 @@
 		B64C1F0D219C6717000ADD4E /* yas_playing_audio_utils_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_audio_utils_tests.mm; sourceTree = "<group>"; };
 		B655A99221B40DC7004818B4 /* yas_playing_audio_coordinator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_audio_coordinator.cpp; sourceTree = "<group>"; };
 		B655A99321B40DC7004818B4 /* yas_playing_audio_coordinator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio_coordinator.h; sourceTree = "<group>"; };
+		B655A99521BAA1D4004818B4 /* yas_playing_audio_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio_types.h; sourceTree = "<group>"; };
 		B65740FB218BD7D4008FFBF9 /* yas_audio_buffer_container_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_audio_buffer_container_tests.mm; sourceTree = "<group>"; };
 		B65740FD218D5A97008FFBF9 /* yas_playing_test_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_test_utils.h; sourceTree = "<group>"; };
 		B65740FE218D6742008FFBF9 /* yas_playing_test_utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_test_utils.mm; sourceTree = "<group>"; };
@@ -724,6 +725,7 @@
 				B6AC01BC21AF7756001624B9 /* yas_playing_audio_renderer.h */,
 				B64C1F0A219C5749000ADD4E /* yas_playing_audio_utils.cpp */,
 				B64C1F0B219C5749000ADD4E /* yas_playing_audio_utils.h */,
+				B655A99521BAA1D4004818B4 /* yas_playing_audio_types.h */,
 				B6AC01BE21B36B8B001624B9 /* yas_playing_audio.h */,
 				B6652B4021833E6300A3A41C /* yas_playing_url_utils.cpp */,
 				B6652B4121833E6300A3A41C /* yas_playing_url_utils.h */,

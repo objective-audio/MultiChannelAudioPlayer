@@ -57,8 +57,9 @@ struct audio_exporter::impl : base::impl {
         this->_process_buffer = make_one_sec_buffer(this->_format);
 
         operation op{[handler = std::move(handler)](operation const &operation) {
-            dispatch_async(dispatch_get_main_queue(), [handler = std::move(handler)] { handler(); });
-        }};
+                         dispatch_async(dispatch_get_main_queue(), [handler = std::move(handler)] { handler(); });
+                     },
+                     {.priority = audio_queue_priority::exporter}};
 
         this->_queue.push_back(std::move(op));
     }
@@ -192,13 +193,15 @@ struct audio_exporter::impl : base::impl {
     void clear_all_files(std::function<void(clear_result_t const &)> result_handler) {
         this->_queue.cancel_for_id(this->_all_cancel_id);
 
-        operation op([result_handler, root_url = this->_root_url](operation const &) {
-            if (auto result = file_manager::remove_file(root_url.path())) {
-                result_handler(clear_result_t{nullptr});
-            } else {
-                result_handler(clear_result_t{clear_error::remove_failed});
-            }
-        });
+        operation op(
+            [result_handler, root_url = this->_root_url](operation const &) {
+                if (auto result = file_manager::remove_file(root_url.path())) {
+                    result_handler(clear_result_t{nullptr});
+                } else {
+                    result_handler(clear_result_t{clear_error::remove_failed});
+                }
+            },
+            {.priority = audio_queue_priority::exporter});
         this->_queue.push_back(std::move(op));
     }
 };

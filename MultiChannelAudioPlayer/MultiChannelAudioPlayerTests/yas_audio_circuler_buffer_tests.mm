@@ -6,6 +6,7 @@
 #import "yas_audio_format.h"
 #import "yas_playing_audio_circular_buffer.h"
 #import "yas_playing_audio_exporter.h"
+#import "yas_playing_audio_types.h"
 #import "yas_playing_test_utils.h"
 #import "yas_playing_url_utils.h"
 #import "yas_system_url_utils.h"
@@ -25,10 +26,10 @@ using namespace yas::playing;
 - (void)setUp {
     test_utils::remove_all_document_files();
 
+    self->_queue = operation_queue{audio_queue_priority_count};
+
     self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
                                                                 [self root_url], self -> _queue);
-
-    self->_queue = operation_queue{};
 }
 
 - (void)tearDown {

@@ -6,6 +6,7 @@
 #import "yas_audio.h"
 #import "yas_file_manager.h"
 #import "yas_playing_audio_exporter.h"
+#import "yas_playing_audio_types.h"
 #import "yas_playing_test_utils.h"
 #import "yas_system_url_utils.h"
 
@@ -23,7 +24,7 @@ using namespace yas::playing;
 - (void)setUp {
     test_utils::remove_all_document_files();
 
-    self->_queue = operation_queue{};
+    self->_queue = operation_queue{audio_queue_priority_count};
 }
 
 - (void)tearDown {

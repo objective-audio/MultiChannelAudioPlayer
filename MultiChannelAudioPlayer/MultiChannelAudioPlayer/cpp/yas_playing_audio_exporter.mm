@@ -43,7 +43,8 @@ struct audio_exporter::impl : base::impl {
         : _format(make_export_format(sample_rate, pcm_format)),
           _file_buffer(make_one_sec_buffer(this->_format)),
           _process_buffer(make_one_sec_buffer(this->_format)),
-          _root_url(root_url) {
+          _root_url(root_url),
+          _queue(std::move(queue)) {
         if (auto result = file_manager::create_directory_if_not_exists(this->_root_url.path()); result.is_error()) {
             std::runtime_error(to_string(result.error()));
         }

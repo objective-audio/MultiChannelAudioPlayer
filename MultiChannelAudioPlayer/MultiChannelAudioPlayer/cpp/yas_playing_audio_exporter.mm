@@ -8,6 +8,7 @@
 #include "yas_file_manager.h"
 #include "yas_math.h"
 #include "yas_operation.h"
+#include "yas_playing_audio_types.h"
 #include "yas_playing_url_utils.h"
 
 using namespace yas;
@@ -184,7 +185,7 @@ struct audio_exporter::impl : base::impl {
                                    result_handler(export_result);
                                });
             },
-            {.identifier = this->_all_cancel_id}};
+            {.identifier = this->_all_cancel_id, .priority = audio_queue_priority::exporter}};
         this->_queue.push_back(std::move(op));
     }
 

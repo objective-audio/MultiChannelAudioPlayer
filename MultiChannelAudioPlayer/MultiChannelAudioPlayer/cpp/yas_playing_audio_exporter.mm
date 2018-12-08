@@ -66,7 +66,7 @@ struct audio_exporter::impl : base::impl {
     }
 
     void export_file(uint32_t const ch_idx, proc::time::range const &range,
-                     std::function<void(audio::pcm_buffer &, proc::time::range const &)> &&proc_handler,
+                     std::function<void(uint32_t const, audio::pcm_buffer &, proc::time::range const &)> &&proc_handler,
                      std::function<void(export_result_t const &)> &&result_handler) {
         auto ch_url = url_utils::channel_url(this->_root_url, ch_idx);
 
@@ -136,7 +136,7 @@ struct audio_exporter::impl : base::impl {
                         }
 
                         // 作業バッファへの書き込みをクロージャで行う
-                        proc_handler(process_buffer, process_range);
+                        proc_handler(ch_idx, process_buffer, process_range);
 
                         if (operation.is_canceled()) {
                             return;
@@ -220,9 +220,10 @@ void audio_exporter::update_format(double const sample_rate, audio::pcm_format c
     impl_ptr<impl>()->update_format(sample_rate, pcm_format, handler);
 }
 
-void audio_exporter::export_file(uint32_t const ch_idx, proc::time::range const &range,
-                                 std::function<void(audio::pcm_buffer &, proc::time::range const &)> proc_handler,
-                                 std::function<void(export_result_t const &)> completion_handler) {
+void audio_exporter::export_file(
+    uint32_t const ch_idx, proc::time::range const &range,
+    std::function<void(uint32_t const, audio::pcm_buffer &, proc::time::range const &)> proc_handler,
+    std::function<void(export_result_t const &)> completion_handler) {
     impl_ptr<impl>()->export_file(ch_idx, range, std::move(proc_handler), std::move(completion_handler));
 }
 

@@ -38,9 +38,10 @@ struct audio_exporter : base {
 
     void update_format(double const sample_rate, audio::pcm_format const, std::function<void(void)> completion_handler);
 
-    void export_file(uint32_t const ch_idx, proc::time::range const &,
-                     std::function<void(audio::pcm_buffer &, proc::time::range const &)> proc_handler,
-                     std::function<void(export_result_t const &)> result_handler);
+    void export_file(
+        uint32_t const ch_idx, proc::time::range const &,
+        std::function<void(uint32_t const ch_idx, audio::pcm_buffer &, proc::time::range const &)> proc_handler,
+        std::function<void(export_result_t const &)> result_handler);
 
     void clear(std::function<void(clear_result_t const &)> result_handler);
 

@@ -62,6 +62,17 @@ audio_coordinator::audio_coordinator(url root_url) : base(std::make_shared<impl>
 audio_coordinator::audio_coordinator(std::nullptr_t) : base(nullptr) {
 }
 
+void audio_coordinator::export_file(uint32_t const ch_idx, proc::time::range const range) {
+    impl_ptr<impl>()->_exporter.export_file(
+        ch_idx, range,
+        [ch_idx](uint32_t const ch_idx, audio::pcm_buffer &buffer, proc::time::range const &proc_range) {
+#warning todo
+        },
+        [](audio_exporter::export_result_t const &result) {
+#warning todo エラーを外に知らせる？
+        });
+}
+
 void audio_coordinator::set_playing(bool const is_playing) {
     impl_ptr<impl>()->_player.set_playing(is_playing);
 }

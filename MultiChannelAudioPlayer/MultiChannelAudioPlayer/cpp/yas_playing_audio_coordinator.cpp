@@ -41,17 +41,13 @@ struct audio_coordinator::impl : base::impl {
 
     void export_file(uint32_t const ch_idx, proc::time::range const range) {
         if (!this->_export_proc_handler) {
-            throw std::runtime_error("_export_proc_handler is null.");
+            throw std::runtime_error("export_proc_handler is null.");
         }
 
-        this->_exporter.export_file(
-            ch_idx, range,
-            [ch_idx](uint32_t const ch_idx, audio::pcm_buffer &buffer, proc::time::range const &proc_range) {
-#warning todo
-            },
-            [](audio_exporter::export_result_t const &result) {
+        this->_exporter.export_file(ch_idx, range, this->_export_proc_handler,
+                                    [](audio_exporter::export_result_t const &result) {
 #warning todo エラーを外に知らせる？
-            });
+                                    });
     }
 
    private:

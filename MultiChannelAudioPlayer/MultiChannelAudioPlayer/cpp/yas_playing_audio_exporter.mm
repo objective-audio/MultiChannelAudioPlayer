@@ -65,9 +65,8 @@ struct audio_exporter::impl : base::impl {
         this->_queue.push_back(std::move(op));
     }
 
-    void export_file(uint32_t const ch_idx, proc::time::range const &range,
-                     std::function<void(uint32_t const, audio::pcm_buffer &, proc::time::range const &)> &&proc_handler,
-                     std::function<void(export_result_t const &)> &&result_handler) {
+    void export_file(uint32_t const ch_idx, proc::time::range const &range, export_proc_f &&proc_handler,
+                     export_completion_f &&result_handler) {
         auto ch_url = url_utils::channel_url(this->_root_url, ch_idx);
 
         operation op{
@@ -220,10 +219,8 @@ void audio_exporter::update_format(double const sample_rate, audio::pcm_format c
     impl_ptr<impl>()->update_format(sample_rate, pcm_format, handler);
 }
 
-void audio_exporter::export_file(
-    uint32_t const ch_idx, proc::time::range const &range,
-    std::function<void(uint32_t const, audio::pcm_buffer &, proc::time::range const &)> proc_handler,
-    std::function<void(export_result_t const &)> completion_handler) {
+void audio_exporter::export_file(uint32_t const ch_idx, proc::time::range const &range, export_proc_f proc_handler,
+                                 export_completion_f completion_handler) {
     impl_ptr<impl>()->export_file(ch_idx, range, std::move(proc_handler), std::move(completion_handler));
 }
 

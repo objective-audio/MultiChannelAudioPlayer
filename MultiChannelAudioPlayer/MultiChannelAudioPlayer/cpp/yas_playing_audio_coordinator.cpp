@@ -19,6 +19,7 @@ struct audio_coordinator::impl : base::impl {
     audio_renderer _renderer;
     audio_player _player{this->_renderer.renderable(), this->_root_url, this->_queue};
     audio_exporter _exporter = nullptr;
+    export_proc_f _export_proc_handler = nullptr;
 
     chaining::observer_pool _pool;
 
@@ -36,6 +37,17 @@ struct audio_coordinator::impl : base::impl {
                                }
                            })
                            .end();
+    }
+
+    void export_file(uint32_t const ch_idx, proc::time::range const range) {
+        this->_exporter.export_file(
+            ch_idx, range,
+            [ch_idx](uint32_t const ch_idx, audio::pcm_buffer &buffer, proc::time::range const &proc_range) {
+#warning todo
+            },
+            [](audio_exporter::export_result_t const &result) {
+#warning todo エラーを外に知らせる？
+            });
     }
 
    private:
@@ -62,15 +74,12 @@ audio_coordinator::audio_coordinator(url root_url) : base(std::make_shared<impl>
 audio_coordinator::audio_coordinator(std::nullptr_t) : base(nullptr) {
 }
 
+void audio_coordinator::set_export_proc_handler(export_proc_f handler) {
+    impl_ptr<impl>()->_export_proc_handler = handler;
+}
+
 void audio_coordinator::export_file(uint32_t const ch_idx, proc::time::range const range) {
-    impl_ptr<impl>()->_exporter.export_file(
-        ch_idx, range,
-        [ch_idx](uint32_t const ch_idx, audio::pcm_buffer &buffer, proc::time::range const &proc_range) {
-#warning todo
-        },
-        [](audio_exporter::export_result_t const &result) {
-#warning todo エラーを外に知らせる？
-        });
+    impl_ptr<impl>()->export_file(ch_idx, range);
 }
 
 void audio_coordinator::set_playing(bool const is_playing) {

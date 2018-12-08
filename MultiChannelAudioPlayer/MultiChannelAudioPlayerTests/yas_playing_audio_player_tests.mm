@@ -38,7 +38,7 @@ using namespace yas::playing;
 }
 
 - (void)tearDown {
-    self->_queue.cancel();
+    self->_queue.cancel_all();
     self->_queue.wait_until_all_operations_are_finished();
 
     self->_queue = nullptr;

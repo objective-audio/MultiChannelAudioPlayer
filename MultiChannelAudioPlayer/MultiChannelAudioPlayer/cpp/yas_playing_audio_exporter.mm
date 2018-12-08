@@ -187,7 +187,7 @@ struct audio_exporter::impl : base::impl {
                                    result_handler(export_result);
                                });
             },
-            {.identifier = this->_all_cancel_id, .priority = audio_queue_priority::exporter}};
+            {.cancel_id = this->_all_cancel_id, .priority = audio_queue_priority::exporter}};
         this->_queue.push_back(std::move(op));
     }
 

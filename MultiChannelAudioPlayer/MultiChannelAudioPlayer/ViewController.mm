@@ -76,8 +76,6 @@ struct view_controller_cpp {
     proc::stream stream{sync_src};
     timeline.process(process_range, stream);
 
-    std::cout << "stream has_channel(0) : " << stream.has_channel(0) << std::endl;
-
     if (!stream.has_channel(0)) {
         return;
     }
@@ -87,24 +85,22 @@ struct view_controller_cpp {
     auto const filtered_events = channel.filtered_events<Float32, proc::signal_event>(
         [process_range](auto const &pair) { return pair.first == process_range; });
 
-    std::cout << "channel filtered_events size : " << filtered_events.size() << std::endl;
-
     if (filtered_events.size() == 0) {
         return;
     }
 
-    coordinator.set_export_proc_handler(
-        [event_pair = std::move(*filtered_events.begin())](uint32_t const ch_idx, audio::pcm_buffer &buffer,
-                                                           proc::time::range const &range) mutable {
-            audio::format const &format = buffer.format();
-            if (format.pcm_format() == audio::pcm_format::float32 && format.channel_count() == 1) {
-                if (event_pair.first == range) {
-                    proc::signal_event const &event = event_pair.second;
-                    Float32 const *event_data = event.data<Float32>();
-                    buffer.copy_from(event_data, 1, 0, 0, 0, buffer.frame_length());
-                }
+    coordinator.set_export_proc_handler([event_pair = *filtered_events.begin()](uint32_t const ch_idx,
+                                                                               audio::pcm_buffer &buffer,
+                                                                               proc::time::range const &range) mutable {
+        audio::format const &format = buffer.format();
+        if (format.pcm_format() == audio::pcm_format::float32 && format.channel_count() == 1) {
+            if (event_pair.first == range) {
+                proc::signal_event const &event = event_pair.second;
+                Float32 const *event_data = event.data<Float32>();
+                buffer.copy_from(event_data, 1, 0, 0, 0, range.length);
             }
-        });
+        }
+    });
 
     coordinator.export_file(0, process_range);
 }

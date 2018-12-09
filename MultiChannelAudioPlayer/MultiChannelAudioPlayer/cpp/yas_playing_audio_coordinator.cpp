@@ -49,6 +49,7 @@ struct audio_coordinator::impl : base::impl {
         }
 
         this->_exporter.export_file(ch_idx, range, this->_export_proc_handler,
+                                    [](uint32_t const ch_idx, proc::time::range const &) {},
                                     [](audio_exporter::export_result_t const &result) {
 #warning todo エラーを外に知らせる？
                                     });

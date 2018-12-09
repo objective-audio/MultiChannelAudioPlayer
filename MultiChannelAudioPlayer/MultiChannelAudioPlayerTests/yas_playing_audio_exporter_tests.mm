@@ -51,6 +51,7 @@ using namespace yas::playing;
                                  data[idx] = int16_t(range.frame + idx);
                              }
                          },
+                         [](uint32_t const ch_idx, proc::time::range const &) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
                              [firstExp fulfill];
@@ -124,6 +125,7 @@ using namespace yas::playing;
                                  data[yas_each_index(each)] = 100;
                              }
                          },
+                         [](uint32_t const ch_idx, proc::time::range const &) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
                              [secondExp fulfill];
@@ -185,6 +187,7 @@ using namespace yas::playing;
 
     exporter.export_file(0, proc::time::range{0, 3},
                          [](uint32_t const, audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {},
+                         [](uint32_t const ch_idx, proc::time::range const &) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
                              [firstExp fulfill];
@@ -223,6 +226,7 @@ using namespace yas::playing;
 
     exporter.export_file(0, proc::time::range{0, 4},
                          [](uint32_t const, audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {},
+                         [](uint32_t const ch_idx, proc::time::range const &) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
                              [secondExp fulfill];

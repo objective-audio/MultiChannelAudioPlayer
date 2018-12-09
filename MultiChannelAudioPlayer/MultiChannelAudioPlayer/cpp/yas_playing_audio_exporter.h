@@ -28,6 +28,7 @@ struct audio_exporter : base {
     using export_result_t = result<std::nullptr_t, export_error>;
 
     using export_proc_f = std::function<void(uint32_t const ch_idx, audio::pcm_buffer &, proc::time::range const &)>;
+    using export_written_f = std::function<void(uint32_t const ch_idx, proc::time::range const &)>;
     using export_completion_f = std::function<void(export_result_t const &)>;
 
     enum class clear_error {
@@ -41,8 +42,8 @@ struct audio_exporter : base {
 
     void update_format(double const sample_rate, audio::pcm_format const, std::function<void(void)> completion_handler);
 
-    void export_file(uint32_t const ch_idx, proc::time::range const &, export_proc_f proc_handler,
-                     export_completion_f result_handler);
+    void export_file(uint32_t const ch_idx, proc::time::range const &, export_proc_f, export_written_f,
+                     export_completion_f);
 
     void clear(std::function<void(clear_result_t const &)> result_handler);
 

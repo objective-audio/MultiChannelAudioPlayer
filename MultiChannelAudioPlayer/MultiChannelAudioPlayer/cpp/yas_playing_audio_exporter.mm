@@ -181,10 +181,7 @@ struct audio_exporter::impl : base::impl {
                     export_result = export_result_t{export_error::create_dir_failed};
                 }
 
-                dispatch_async(dispatch_get_main_queue(),
-                               [result_handler = std::move(result_handler), export_result = std::move(export_result)] {
-                                   result_handler(export_result);
-                               });
+                result_handler(export_result);
             },
             {.cancel_id = this->_all_cancel_id, .priority = audio_queue_priority::exporter}};
         this->_queue.push_back(std::move(op));
@@ -220,7 +217,7 @@ void audio_exporter::update_format(double const sample_rate, audio::pcm_format c
 }
 
 void audio_exporter::export_file(uint32_t const ch_idx, proc::time::range const &range, export_proc_f proc_handler,
-                                 export_completion_f completion_handler) {
+                                 export_written_f written_handler, export_completion_f completion_handler) {
     impl_ptr<impl>()->export_file(ch_idx, range, std::move(proc_handler), std::move(completion_handler));
 }
 

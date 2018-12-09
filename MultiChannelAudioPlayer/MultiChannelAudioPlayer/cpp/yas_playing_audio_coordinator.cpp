@@ -21,6 +21,7 @@ struct audio_coordinator::impl : base::impl {
     audio_exporter _exporter = nullptr;
     export_proc_f _export_proc_handler = nullptr;
 
+    chaining::notifier<std::nullptr_t> _configuration_change_notifier;
     chaining::observer_pool _pool;
 
     impl(url &&root_url) : _root_url(std::move(root_url)) {
@@ -36,6 +37,7 @@ struct audio_coordinator::impl : base::impl {
                                    coordinator.impl_ptr<impl>()->_update_exporter(manager);
                                }
                            })
+                           .receive_null(this->_configuration_change_notifier.receiver())
                            .end();
 
         this->_update_exporter(this->_renderer.manager());
@@ -102,4 +104,8 @@ audio::pcm_format audio_coordinator::pcm_format() const {
 
 uint32_t audio_coordinator::channel_count() const {
     return impl_ptr<impl>()->_renderer.channel_count();
+}
+
+chaining::chain_unsync_t<std::nullptr_t> audio_coordinator::chain_configuration_change() const {
+    return impl_ptr<impl>()->_configuration_change_notifier.chain();
 }

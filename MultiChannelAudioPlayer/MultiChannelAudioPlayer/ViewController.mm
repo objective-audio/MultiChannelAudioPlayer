@@ -40,32 +40,32 @@ struct view_controller_cpp {
     proc::track_index_t trk_idx = 0;
 
     if (proc::track &track = timeline.add_track(trk_idx++)) {
-        proc::module module = proc::make_signal_module<float>(proc::generator::kind::second, 0);
+        proc::module module = proc::make_signal_module<Float32>(proc::generator::kind::second, 0);
         module.connect_output(proc::to_connector_index(proc::generator::output::value), 0);
         track.insert_module(process_range, std::move(module));
     }
 
     if (proc::track &track = timeline.add_track(trk_idx++)) {
-        proc::module module = proc::make_signal_module<float>(audio::math::two_pi * 1000.0);
+        proc::module module = proc::make_signal_module<Float32>(audio::math::two_pi * 1000.0);
         module.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
         track.insert_module(process_range, std::move(module));
     }
 
     if (proc::track &track = timeline.add_track(trk_idx++)) {
-        proc::module module = proc::make_signal_module<float>(proc::math1::kind::sin);
+        proc::module module = proc::make_signal_module<Float32>(proc::math1::kind::sin);
         module.connect_input(proc::to_connector_index(proc::math1::input::parameter), 0);
         module.connect_output(proc::to_connector_index(proc::math1::output::result), 0);
         track.insert_module(process_range, std::move(module));
     }
 
     if (auto &track = timeline.add_track(trk_idx++)) {
-        auto module = proc::make_signal_module<float>(0.1f);
+        auto module = proc::make_signal_module<Float32>(0.1f);
         module.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
         track.insert_module(process_range, std::move(module));
     }
 
     if (auto &track = timeline.add_track(trk_idx++)) {
-        auto module = proc::make_signal_module<float>(proc::math2::kind::multiply);
+        auto module = proc::make_signal_module<Float32>(proc::math2::kind::multiply);
         module.connect_input(proc::to_connector_index(proc::math2::input::left), 0);
         module.connect_input(proc::to_connector_index(proc::math2::input::right), 1);
         module.connect_output(proc::to_connector_index(proc::math2::output::result), 0);
@@ -77,32 +77,34 @@ struct view_controller_cpp {
     timeline.process(process_range, stream);
 
     std::cout << "stream has_channel(0) : " << stream.has_channel(0) << std::endl;
+
     if (!stream.has_channel(0)) {
         return;
     }
 
     auto const &channel = stream.channel(0);
-    auto const filtered_events = channel.filtered_events<float, proc::signal_event>();
+
+    auto const filtered_events = channel.filtered_events<Float32, proc::signal_event>(
+        [process_range](auto const &pair) { return pair.first == process_range; });
+
     std::cout << "channel filtered_events size : " << filtered_events.size() << std::endl;
 
     if (filtered_events.size() == 0) {
         return;
     }
 
-    auto it = filtered_events.find(process_range);
-    if (it == filtered_events.end()) {
-        return;
-    }
-
-    std::cout << "finded" << std::endl;
-
-    coordinator.set_export_proc_handler([stream = std::move(stream)](uint32_t const ch_idx, audio::pcm_buffer &buffer,
-                                                                     proc::time::range const &range) mutable {
-        audio::format const &format = buffer.format();
-        if (format.pcm_format() == audio::pcm_format::float32) {
-            std::cout << "called" << std::endl;
-        }
-    });
+    coordinator.set_export_proc_handler(
+        [event_pair = std::move(*filtered_events.begin())](uint32_t const ch_idx, audio::pcm_buffer &buffer,
+                                                           proc::time::range const &range) mutable {
+            audio::format const &format = buffer.format();
+            if (format.pcm_format() == audio::pcm_format::float32 && format.channel_count() == 1) {
+                if (event_pair.first == range) {
+                    proc::signal_event const &event = event_pair.second;
+                    Float32 const *event_data = event.data<Float32>();
+                    buffer.copy_from(event_data, 1, 0, 0, 0, buffer.frame_length());
+                }
+            }
+        });
 
     coordinator.export_file(0, process_range);
 }

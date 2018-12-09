@@ -66,12 +66,13 @@ struct audio_exporter::impl : base::impl {
     }
 
     void export_file(uint32_t const ch_idx, proc::time::range const &range, export_proc_f &&proc_handler,
-                     export_completion_f &&result_handler) {
+                     export_written_f &&written_handler, export_completion_f &&result_handler) {
         auto ch_url = url_utils::channel_url(this->_root_url, ch_idx);
 
         operation op{
-            [ch_idx, range, proc_handler = std::move(proc_handler), result_handler = std::move(result_handler),
-             format = this->_format, ch_url = std::move(ch_url), file_buffer = this->_file_buffer,
+            [ch_idx, range, proc_handler = std::move(proc_handler), written_handler = std::move(written_handler),
+             result_handler = std::move(result_handler), format = this->_format, ch_url = std::move(ch_url),
+             file_buffer = this->_file_buffer,
              process_buffer = this->_process_buffer](operation const &operation) mutable {
                 proc::length_t const sample_rate = format.sample_rate();
                 proc::length_t const file_length = sample_rate;
@@ -170,6 +171,8 @@ struct audio_exporter::impl : base::impl {
                                 break;
                             }
                             file.close();
+
+                            written_handler(ch_idx, process_range);
                         } else {
                             export_result = export_result_t{export_error::create_file_failed};
                             break;
@@ -218,7 +221,8 @@ void audio_exporter::update_format(double const sample_rate, audio::pcm_format c
 
 void audio_exporter::export_file(uint32_t const ch_idx, proc::time::range const &range, export_proc_f proc_handler,
                                  export_written_f written_handler, export_completion_f completion_handler) {
-    impl_ptr<impl>()->export_file(ch_idx, range, std::move(proc_handler), std::move(completion_handler));
+    impl_ptr<impl>()->export_file(ch_idx, range, std::move(proc_handler), std::move(written_handler),
+                                  std::move(completion_handler));
 }
 
 void audio_exporter::clear(std::function<void(clear_result_t const &)> result_handler) {

@@ -42,6 +42,7 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     }
 
     void set_rendering_handler(audio_renderable::rendering_f &&handler) override {
+        std::lock_guard<std::recursive_mutex> lock(this->_rendering_mutex);
         this->_rendering_handler = handler;
     }
 

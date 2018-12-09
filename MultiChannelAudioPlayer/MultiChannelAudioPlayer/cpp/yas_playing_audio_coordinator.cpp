@@ -33,10 +33,12 @@ struct audio_coordinator::impl : base::impl {
                            .chain(audio::engine::manager::method::configuration_change)
                            .perform([weak_coordinator](auto const &manager) {
                                if (auto coordinator = weak_coordinator.lock()) {
-                                   coordinator.impl_ptr<impl>()->update_exporter(manager);
+                                   coordinator.impl_ptr<impl>()->_update_exporter(manager);
                                }
                            })
                            .end();
+
+        this->_update_exporter(this->_renderer.manager());
     }
 
     void export_file(uint32_t const ch_idx, proc::time::range const range) {
@@ -51,7 +53,7 @@ struct audio_coordinator::impl : base::impl {
     }
 
    private:
-    void update_exporter(audio::engine::manager const &manager) {
+    void _update_exporter(audio::engine::manager const &manager) {
         double const sample_rate = this->_renderer.sample_rate();
         audio::pcm_format const pcm_format = this->_renderer.pcm_format();
 
@@ -88,4 +90,16 @@ void audio_coordinator::set_playing(bool const is_playing) {
 
 void audio_coordinator::seek(int64_t const play_frame) {
     impl_ptr<impl>()->_player.seek(play_frame);
+}
+
+double audio_coordinator::sample_rate() const {
+    return impl_ptr<impl>()->_renderer.sample_rate();
+}
+
+audio::pcm_format audio_coordinator::pcm_format() const {
+    return impl_ptr<impl>()->_renderer.pcm_format();
+}
+
+uint32_t audio_coordinator::channel_count() const {
+    return impl_ptr<impl>()->_renderer.channel_count();
 }

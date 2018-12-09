@@ -113,6 +113,7 @@ struct view_controller_cpp {
         });
 
     coordinator.export_file(0, process_range);
+    coordinator.export_file(1, process_range);
 }
 
 - (IBAction)start:(UIButton *)sender {

@@ -99,18 +99,18 @@ struct view_controller_cpp {
         return;
     }
 
-    coordinator.set_export_proc_handler(
-        [event_pair = *filtered_events.begin()](uint32_t const ch_idx, audio::pcm_buffer &buffer,
-                                                proc::time::range const &range) mutable {
-            audio::format const &format = buffer.format();
-            if (format.pcm_format() == audio::pcm_format::float32 && format.channel_count() == 1) {
-                if (event_pair.first == range) {
-                    proc::signal_event const &event = event_pair.second;
-                    Float32 const *event_data = event.data<Float32>();
-                    buffer.copy_from(event_data, 1, 0, 0, 0, buffer.frame_length());
-                }
+    coordinator.set_export_proc_handler([event_pair = *filtered_events.begin()](uint32_t const ch_idx,
+                                                                                proc::time::range const &range,
+                                                                                audio::pcm_buffer &buffer) mutable {
+        audio::format const &format = buffer.format();
+        if (format.pcm_format() == audio::pcm_format::float32 && format.channel_count() == 1) {
+            if (event_pair.first == range) {
+                proc::signal_event const &event = event_pair.second;
+                Float32 const *event_data = event.data<Float32>();
+                buffer.copy_from(event_data, 1, 0, 0, 0, buffer.frame_length());
             }
-        });
+        }
+    });
 
     coordinator.export_file(0, process_range);
     coordinator.export_file(1, process_range);

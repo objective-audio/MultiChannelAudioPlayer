@@ -27,7 +27,7 @@ struct audio_exporter : base {
     };
     using export_result_t = result<std::nullptr_t, export_error>;
 
-    using export_proc_f = std::function<void(uint32_t const ch_idx, audio::pcm_buffer &, proc::time::range const &)>;
+    using export_proc_f = std::function<void(uint32_t const ch_idx, proc::time::range const &, audio::pcm_buffer &)>;
     using export_written_f = std::function<void(uint32_t const ch_idx, proc::time::range const &)>;
     using export_completion_f = std::function<void(export_result_t const &)>;
 

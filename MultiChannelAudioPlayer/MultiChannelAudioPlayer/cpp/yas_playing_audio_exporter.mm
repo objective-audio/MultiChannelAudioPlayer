@@ -136,7 +136,7 @@ struct audio_exporter::impl : base::impl {
                         }
 
                         // 作業バッファへの書き込みをクロージャで行う
-                        proc_handler(ch_idx, process_buffer, process_range);
+                        proc_handler(ch_idx, process_range, process_buffer);
 
                         if (operation.is_canceled()) {
                             return;

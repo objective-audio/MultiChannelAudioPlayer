@@ -43,7 +43,7 @@ using namespace yas::playing;
     XCTestExpectation *firstExp = [self expectationWithDescription:@"export_first"];
 
     exporter.export_file(0, proc::time::range{-1, static_cast<proc::length_t>(file_length + 2)},
-                         [](uint32_t const, audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                         [](uint32_t const, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {
                              int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
                              auto each = make_fast_each(range.length);
                              while (yas_each_next(each)) {
@@ -118,7 +118,7 @@ using namespace yas::playing;
     XCTestExpectation *secondExp = [self expectationWithDescription:@"export_second"];
 
     exporter.export_file(0, proc::time::range{1, 1},
-                         [](uint32_t const, audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                         [](uint32_t const, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {
                              int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
                              auto each = make_fast_each(range.length);
                              while (yas_each_next(each)) {
@@ -186,7 +186,7 @@ using namespace yas::playing;
     XCTestExpectation *firstExp = [self expectationWithDescription:@"export_first"];
 
     exporter.export_file(0, proc::time::range{0, 3},
-                         [](uint32_t const, audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {},
+                         [](uint32_t const, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {},
                          [](uint32_t const ch_idx, proc::time::range const &) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
@@ -225,7 +225,7 @@ using namespace yas::playing;
     XCTestExpectation *secondExp = [self expectationWithDescription:@"export_second"];
 
     exporter.export_file(0, proc::time::range{0, 4},
-                         [](uint32_t const, audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {},
+                         [](uint32_t const, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {},
                          [](uint32_t const ch_idx, proc::time::range const &) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());

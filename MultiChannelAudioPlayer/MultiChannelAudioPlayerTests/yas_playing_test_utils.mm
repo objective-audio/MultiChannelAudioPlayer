@@ -23,7 +23,7 @@ void test_utils::setup_files(audio_exporter &exporter, uint32_t const ch_count,
     while (yas_each_next(each)) {
         auto const &ch_idx = yas_each_index(each);
         exporter.export_file(ch_idx, proc::time::range{-3, 18},
-                             [](uint32_t const ch_idx, audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                             [](uint32_t const ch_idx, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {
                                  int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
                                  auto each = make_fast_each(range.length);
                                  while (yas_each_next(each)) {
@@ -49,7 +49,7 @@ void test_utils::overwrite_file(audio_exporter &exporter, uint32_t const ch_coun
     while (yas_each_next(each)) {
         auto const &ch_idx = yas_each_index(each);
         exporter.export_file(ch_idx, proc::time::range{0, 3},
-                             [ch_idx](uint32_t const, audio::pcm_buffer &pcm_buffer, proc::time::range const &range) {
+                             [ch_idx](uint32_t const, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {
                                  int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
                                  auto each = make_fast_each(range.length);
                                  while (yas_each_next(each)) {

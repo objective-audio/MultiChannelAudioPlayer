@@ -15,12 +15,12 @@ struct audio_renderer : base {
     audio_renderer();
     audio_renderer(std::nullptr_t);
 
-    audio::engine::manager const &manager();
-    double sample_rate() const;
-    audio::pcm_format pcm_format() const;
-    uint32_t channel_count() const;
+    [[nodiscard]] audio::engine::manager const &manager();
+    [[nodiscard]] double sample_rate() const;
+    [[nodiscard]] audio::pcm_format pcm_format() const;
+    [[nodiscard]] uint32_t channel_count() const;
 
-    audio_renderable &renderable();
+    [[nodiscard]] audio_renderable &renderable();
 
    private:
     audio_renderable _renderable = nullptr;

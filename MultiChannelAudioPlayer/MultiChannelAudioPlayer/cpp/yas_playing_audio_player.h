@@ -20,8 +20,8 @@ struct audio_player : base {
     void seek(int64_t const play_frame);
     void reload(int64_t const ch_idx, int64_t const file_idx);
 
-    url root_url() const;
-    bool is_playing() const;
-    int64_t play_frame() const;
+    [[nodiscard]] url root_url() const;
+    [[nodiscard]] bool is_playing() const;
+    [[nodiscard]] int64_t play_frame() const;
 };
 }  // namespace yas::playing

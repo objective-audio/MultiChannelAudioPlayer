@@ -46,8 +46,8 @@ struct audio_exporter : base {
 
     void clear(std::function<void(clear_result_t const &)> result_handler);
 
-    double sample_rate() const;
-    audio::pcm_format pcm_format() const;
+    [[nodiscard]] double sample_rate() const;
+    [[nodiscard]] audio::pcm_format pcm_format() const;
 };
 }  // namespace yas::playing
 

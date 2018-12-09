@@ -27,8 +27,8 @@ struct audio_coordinator : base {
     void set_playing(bool const);
     void seek(int64_t const);
 
-    double sample_rate() const;
-    audio::pcm_format pcm_format() const;
-    uint32_t channel_count() const;
+    [[nodiscard]] double sample_rate() const;
+    [[nodiscard]] audio::pcm_format pcm_format() const;
+    [[nodiscard]] uint32_t channel_count() const;
 };
 }  // namespace yas::playing

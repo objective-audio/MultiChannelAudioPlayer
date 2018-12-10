@@ -42,6 +42,8 @@ using namespace yas::playing;
 
     XCTestExpectation *firstExp = [self expectationWithDescription:@"export_first"];
 
+    std::vector<std::pair<uint32_t, proc::time::range>> written_params;
+
     exporter.export_file(0, proc::time::range{-1, static_cast<proc::length_t>(file_length + 2)},
                          [](uint32_t const, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {
                              int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
@@ -51,13 +53,26 @@ using namespace yas::playing;
                                  data[idx] = int16_t(range.frame + idx);
                              }
                          },
-                         [](uint32_t const ch_idx, proc::time::range const &) {},
+                         [&written_params](uint32_t const ch_idx, proc::time::range const &range) {
+                             written_params.emplace_back(ch_idx, range);
+                         },
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
                              [firstExp fulfill];
                          });
 
     [self waitForExpectations:@[firstExp] timeout:10.0];
+
+    XCTAssertEqual(written_params.size(), 3);
+    XCTAssertEqual(written_params.at(0).first, 0);
+    XCTAssertEqual(written_params.at(0).second.frame, -1);
+    XCTAssertEqual(written_params.at(0).second.length, 1);
+    XCTAssertEqual(written_params.at(1).first, 0);
+    XCTAssertEqual(written_params.at(1).second.frame, 0);
+    XCTAssertEqual(written_params.at(1).second.length, 3);
+    XCTAssertEqual(written_params.at(2).first, 0);
+    XCTAssertEqual(written_params.at(2).second.frame, 3);
+    XCTAssertEqual(written_params.at(2).second.length, 1);
 
     auto assert_file = [=](audio::format const &format, url const &url, std::vector<int16_t> const &expected) {
         uint32_t const expected_length = static_cast<uint32_t>(expected.size());

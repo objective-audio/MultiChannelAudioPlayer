@@ -38,9 +38,9 @@ struct audio_player::impl : base::impl {
     }
 
     void seek(int64_t const play_frame) {
-        uint32_t const file_length = this->_file_length();
-
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
+        uint32_t const file_length = this->_file_length();
 
         this->_play_frame = play_frame;
 

@@ -54,6 +54,7 @@ struct audio_coordinator::impl : base::impl {
                                     [weak_coordinator](uint32_t const ch_idx, int64_t const &file_idx) {
                                         if (auto coordinator = weak_coordinator.lock()) {
                                             auto coordinator_impl = coordinator.impl_ptr<impl>();
+                                            coordinator_impl->_player.reload(ch_idx, file_idx);
                                         }
                                     },
                                     [](audio_exporter::export_result_t const &result) {

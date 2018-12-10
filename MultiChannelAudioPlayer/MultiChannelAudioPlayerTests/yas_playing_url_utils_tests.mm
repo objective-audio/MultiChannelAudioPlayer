@@ -35,16 +35,14 @@ using namespace yas::playing;
     XCTAssertEqual(url_utils::caf_url(ch_url, -1).path(), "/root/1/-1.caf");
 }
 
-- (void)test_caf_url_with_file_frame {
-    auto ch_url = url_utils::channel_url(yas::url::file_url("/root"), 1);
-
-    XCTAssertEqual(url_utils::caf_url(ch_url, 0, 10).path(), "/root/1/0.caf");
-    XCTAssertEqual(url_utils::caf_url(ch_url, 1, 10).path(), "/root/1/0.caf");
-    XCTAssertEqual(url_utils::caf_url(ch_url, 9, 10).path(), "/root/1/0.caf");
-    XCTAssertEqual(url_utils::caf_url(ch_url, 10, 10).path(), "/root/1/1.caf");
-    XCTAssertEqual(url_utils::caf_url(ch_url, -1, 10).path(), "/root/1/-1.caf");
-    XCTAssertEqual(url_utils::caf_url(ch_url, -10, 10).path(), "/root/1/-1.caf");
-    XCTAssertEqual(url_utils::caf_url(ch_url, -11, 10).path(), "/root/1/-2.caf");
+- (void)test_caf_idx {
+    XCTAssertEqual(url_utils::caf_idx(0, 10), 0);
+    XCTAssertEqual(url_utils::caf_idx(1, 10), 0);
+    XCTAssertEqual(url_utils::caf_idx(9, 10), 0);
+    XCTAssertEqual(url_utils::caf_idx(10, 10), 1);
+    XCTAssertEqual(url_utils::caf_idx(-1, 10), -1);
+    XCTAssertEqual(url_utils::caf_idx(-10, 10), -1);
+    XCTAssertEqual(url_utils::caf_idx(-11, 10), -2);
 }
 
 @end

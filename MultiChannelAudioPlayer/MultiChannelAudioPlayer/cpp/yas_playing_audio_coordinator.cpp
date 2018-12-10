@@ -43,13 +43,19 @@ struct audio_coordinator::impl : base::impl {
         this->_update_exporter(this->_renderer.manager());
     }
 
-    void export_file(uint32_t const ch_idx, proc::time::range const range) {
+    void export_file(uint32_t const ch_idx, proc::time::range const range, audio_coordinator &coordinator) {
         if (!this->_export_proc_handler) {
             throw std::runtime_error("export_proc_handler is null.");
         }
 
+        auto weak_coordinator = to_weak(coordinator);
+
         this->_exporter.export_file(ch_idx, range, this->_export_proc_handler,
-                                    [](uint32_t const ch_idx, proc::time::range const &) {},
+                                    [weak_coordinator](uint32_t const ch_idx, int64_t const &file_idx) {
+                                        if (auto coordinator = weak_coordinator.lock()) {
+                                            auto coordinator_impl = coordinator.impl_ptr<impl>();
+                                        }
+                                    },
                                     [](audio_exporter::export_result_t const &result) {
 #warning todo エラーを外に知らせる？
                                     });
@@ -84,7 +90,7 @@ void audio_coordinator::set_export_proc_handler(export_proc_f handler) {
 }
 
 void audio_coordinator::export_file(uint32_t const ch_idx, proc::time::range const range) {
-    impl_ptr<impl>()->export_file(ch_idx, range);
+    impl_ptr<impl>()->export_file(ch_idx, range, *this);
 }
 
 void audio_coordinator::set_playing(bool const is_playing) {

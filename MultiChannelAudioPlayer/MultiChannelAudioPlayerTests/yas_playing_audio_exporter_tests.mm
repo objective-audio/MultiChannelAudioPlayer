@@ -42,7 +42,7 @@ using namespace yas::playing;
 
     XCTestExpectation *firstExp = [self expectationWithDescription:@"export_first"];
 
-    std::vector<std::pair<uint32_t, proc::time::range>> written_params;
+    std::vector<std::pair<uint32_t, int64_t>> written_params;
 
     exporter.export_file(0, proc::time::range{-1, static_cast<proc::length_t>(file_length + 2)},
                          [](uint32_t const, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {
@@ -53,8 +53,8 @@ using namespace yas::playing;
                                  data[idx] = int16_t(range.frame + idx);
                              }
                          },
-                         [&written_params](uint32_t const ch_idx, proc::time::range const &range) {
-                             written_params.emplace_back(ch_idx, range);
+                         [&written_params](uint32_t const ch_idx, int64_t const &file_idx) {
+                             written_params.emplace_back(ch_idx, file_idx);
                          },
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
@@ -65,14 +65,11 @@ using namespace yas::playing;
 
     XCTAssertEqual(written_params.size(), 3);
     XCTAssertEqual(written_params.at(0).first, 0);
-    XCTAssertEqual(written_params.at(0).second.frame, -1);
-    XCTAssertEqual(written_params.at(0).second.length, 1);
+    XCTAssertEqual(written_params.at(0).second, -1);
     XCTAssertEqual(written_params.at(1).first, 0);
-    XCTAssertEqual(written_params.at(1).second.frame, 0);
-    XCTAssertEqual(written_params.at(1).second.length, 3);
+    XCTAssertEqual(written_params.at(1).second, 0);
     XCTAssertEqual(written_params.at(2).first, 0);
-    XCTAssertEqual(written_params.at(2).second.frame, 3);
-    XCTAssertEqual(written_params.at(2).second.length, 1);
+    XCTAssertEqual(written_params.at(2).second, 1);
 
     auto assert_file = [=](audio::format const &format, url const &url, std::vector<int16_t> const &expected) {
         uint32_t const expected_length = static_cast<uint32_t>(expected.size());
@@ -140,7 +137,7 @@ using namespace yas::playing;
                                  data[yas_each_index(each)] = 100;
                              }
                          },
-                         [](uint32_t const ch_idx, proc::time::range const &) {},
+                         [](uint32_t const ch_idx, int64_t const file_idx) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
                              [secondExp fulfill];
@@ -202,7 +199,7 @@ using namespace yas::playing;
 
     exporter.export_file(0, proc::time::range{0, 3},
                          [](uint32_t const, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {},
-                         [](uint32_t const ch_idx, proc::time::range const &) {},
+                         [](uint32_t const ch_idx, int64_t const) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
                              [firstExp fulfill];
@@ -241,7 +238,7 @@ using namespace yas::playing;
 
     exporter.export_file(0, proc::time::range{0, 4},
                          [](uint32_t const, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {},
-                         [](uint32_t const ch_idx, proc::time::range const &) {},
+                         [](uint32_t const ch_idx, int64_t const) {},
                          [=](auto const &result) {
                              XCTAssertTrue(result.is_success());
                              [secondExp fulfill];

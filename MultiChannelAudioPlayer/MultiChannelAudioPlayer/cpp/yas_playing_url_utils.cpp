@@ -15,7 +15,7 @@ yas::url url_utils::caf_url(yas::url const &ch_url, int64_t const file_idx) {
     return ch_url.appending(std::to_string(file_idx) + ".caf");
 }
 
-yas::url url_utils::caf_url(yas::url const &ch_url, int64_t const file_frame_idx, uint64_t const file_length) {
+int64_t url_utils::caf_idx(int64_t const file_frame_idx, uint64_t const file_length) {
     int64_t const floored_frame_idx = math::floor_int(file_frame_idx, file_length);
-    return caf_url(ch_url, floored_frame_idx / (int64_t)file_length);
+    return floored_frame_idx / (int64_t)file_length;
 }

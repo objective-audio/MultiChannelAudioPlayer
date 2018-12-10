@@ -88,7 +88,8 @@ struct audio_exporter::impl : base::impl {
                             return;
                         }
 
-                        auto const file_url = url_utils::caf_url(ch_url, file_frame_idx, sample_rate);
+                        int64_t const file_idx = url_utils::caf_idx(file_frame_idx, sample_rate);
+                        url const file_url = url_utils::caf_url(ch_url, file_idx);
                         proc::time::range const file_range{file_frame_idx, file_length};
 
                         // 1秒バッファをクリアする
@@ -172,7 +173,7 @@ struct audio_exporter::impl : base::impl {
                             }
                             file.close();
 
-                            written_handler(ch_idx, process_range);
+                            written_handler(ch_idx, file_idx);
                         } else {
                             export_result = export_result_t{export_error::create_file_failed};
                             break;

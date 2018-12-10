@@ -31,7 +31,7 @@ void test_utils::setup_files(audio_exporter &exporter, uint32_t const ch_count,
                                      data[idx] = int16_t(range.frame + idx + 1000 * ch_idx);
                                  }
                              },
-                             [](uint32_t const ch_idx, proc::time::range const &) {},
+                             [](uint32_t const ch_idx, int64_t const &) {},
                              [completion, remain](auto const &) {
                                  *remain -= 1;
                                  if (*remain == 0) {
@@ -57,7 +57,7 @@ void test_utils::overwrite_file(audio_exporter &exporter, uint32_t const ch_coun
                                      data[idx] = int16_t(range.frame + idx + 100 + 1000 * ch_idx);
                                  }
                              },
-                             [](uint32_t const ch_idx, proc::time::range const &) {},
+                             [](uint32_t const ch_idx, int64_t const &) {},
                              [completion, remain](auto const &) {
                                  *remain -= 1;
                                  if (*remain == 0) {

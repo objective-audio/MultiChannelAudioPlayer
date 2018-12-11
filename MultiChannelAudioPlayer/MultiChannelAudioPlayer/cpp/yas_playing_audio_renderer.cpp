@@ -16,6 +16,8 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     chaining::holder<double> _sample_rate{0.0};
     chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
     chaining::holder<uint32_t> _channel_count{uint32_t(0)};
+    chaining::holder<audio_configuration> _configuration{
+        {.sample_rate = 0.0, .pcm_format = audio::pcm_format::float32, .channel_count = 0}};
 
     void prepare(audio_renderer &renderer) {
         auto weak_renderer = to_weak(renderer);
@@ -97,6 +99,7 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
         uint32_t const ch_count = au_io.output_device_channel_count();
         this->_sample_rate.set_value(sample_rate);
         this->_channel_count.set_value(ch_count);
+        this->_configuration.set_value(audio_configuration{.sample_rate = sample_rate, .channel_count = ch_count});
 
         if (sample_rate > 0.0 && ch_count > 0) {
             audio::format format{{.sample_rate = sample_rate, .channel_count = ch_count}};
@@ -141,6 +144,10 @@ audio::pcm_format audio_renderer::pcm_format() const {
 
 uint32_t audio_renderer::channel_count() const {
     return impl_ptr<impl>()->_channel_count.value();
+}
+
+chaining::chain_sync_t<audio_configuration> audio_renderer::chain_configuration() const {
+    return impl_ptr<impl>()->_configuration.chain();
 }
 
 audio_renderable &audio_renderer::renderable() {

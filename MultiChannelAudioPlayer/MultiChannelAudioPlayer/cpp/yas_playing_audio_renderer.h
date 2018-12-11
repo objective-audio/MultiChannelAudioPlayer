@@ -7,6 +7,7 @@
 #include "yas_audio_engine_manager.h"
 #include "yas_base.h"
 #include "yas_playing_audio_player_protocol.h"
+#include "yas_playing_audio_types.h"
 
 namespace yas::playing {
 struct audio_renderer : base {
@@ -19,6 +20,8 @@ struct audio_renderer : base {
     [[nodiscard]] double sample_rate() const;
     [[nodiscard]] audio::pcm_format pcm_format() const;
     [[nodiscard]] uint32_t channel_count() const;
+
+    [[nodiscard]] chaining::chain_sync_t<audio_configuration> chain_configuration() const;
 
     [[nodiscard]] audio_renderable &renderable();
 

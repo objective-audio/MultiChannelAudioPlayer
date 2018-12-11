@@ -21,7 +21,6 @@ struct audio_coordinator::impl : base::impl {
     audio_exporter _exporter = nullptr;
     export_proc_f _export_proc_handler = nullptr;
 
-    chaining::notifier<std::nullptr_t> _configuration_change_notifier;
     chaining::observer_pool _pool;
 
     impl(url &&root_url) : _root_url(std::move(root_url)) {
@@ -30,17 +29,13 @@ struct audio_coordinator::impl : base::impl {
     void prepare(audio_coordinator &coordinator) {
         auto weak_coordinator = to_weak(coordinator);
 
-        this->_pool += this->_renderer.manager()
-                           .chain(audio::engine::manager::method::configuration_change)
-                           .perform([weak_coordinator](auto const &manager) {
+        this->_pool += this->_renderer.chain_configuration()
+                           .perform([weak_coordinator](auto const &configuration) {
                                if (auto coordinator = weak_coordinator.lock()) {
-                                   coordinator.impl_ptr<impl>()->_update_exporter(manager);
+                                   coordinator.impl_ptr<impl>()->_update_exporter(configuration);
                                }
                            })
-                           .receive_null(this->_configuration_change_notifier.receiver())
-                           .end();
-
-        this->_update_exporter(this->_renderer.manager());
+                           .sync();
     }
 
     void export_file(uint32_t const ch_idx, proc::time::range const range, audio_coordinator &coordinator) {
@@ -63,9 +58,9 @@ struct audio_coordinator::impl : base::impl {
     }
 
    private:
-    void _update_exporter(audio::engine::manager const &manager) {
-        double const sample_rate = this->_renderer.sample_rate();
-        audio::pcm_format const pcm_format = this->_renderer.pcm_format();
+    void _update_exporter(audio_configuration const &configuration) {
+        double const &sample_rate = configuration.sample_rate;
+        audio::pcm_format const &pcm_format = configuration.pcm_format;
 
         if (this->_exporter) {
             if (this->_exporter.sample_rate() == sample_rate && this->_exporter.pcm_format() == pcm_format) {
@@ -114,6 +109,6 @@ uint32_t audio_coordinator::channel_count() const {
     return impl_ptr<impl>()->_renderer.channel_count();
 }
 
-chaining::chain_unsync_t<std::nullptr_t> audio_coordinator::chain_configuration_change() const {
-    return impl_ptr<impl>()->_configuration_change_notifier.chain();
+chaining::chain_sync_t<audio_configuration> audio_coordinator::chain_configuration() const {
+    return impl_ptr<impl>()->_renderer.chain_configuration();
 }

@@ -7,6 +7,7 @@
 #include "yas_audio_pcm_buffer.h"
 #include "yas_base.h"
 #include "yas_chaining.h"
+#include "yas_playing_audio_types.h"
 #include "yas_processing_time.h"
 
 namespace yas {
@@ -32,6 +33,6 @@ struct audio_coordinator : base {
     [[nodiscard]] audio::pcm_format pcm_format() const;
     [[nodiscard]] uint32_t channel_count() const;
 
-    [[nodiscard]] chaining::chain_unsync_t<std::nullptr_t> chain_configuration_change() const;
+    [[nodiscard]] chaining::chain_sync_t<audio_configuration> chain_configuration() const;
 };
 }  // namespace yas::playing

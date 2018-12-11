@@ -24,16 +24,22 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
 
         this->_setup_tap(weak_renderer);
         this->_update_configuration();
-        this->_update_connection();
 
         this->_pool += this->_manager.chain(audio::engine::manager::method::configuration_change)
                            .perform([weak_renderer](audio::engine::manager const &) {
                                if (auto renderer = weak_renderer.lock()) {
                                    renderer.impl_ptr<impl>()->_update_configuration();
-                                   renderer.impl_ptr<impl>()->_update_connection();
                                }
                            })
                            .end();
+
+        this->_pool += this->_configuration.chain()
+                           .perform([weak_renderer](auto const &) {
+                               if (auto renderer = weak_renderer.lock()) {
+                                   renderer.impl_ptr<impl>()->_update_connection();
+                               }
+                           })
+                           .sync();
 
         this->_pool += this->_is_rendering.chain()
                            .perform([weak_renderer](bool const &is_rendering) {

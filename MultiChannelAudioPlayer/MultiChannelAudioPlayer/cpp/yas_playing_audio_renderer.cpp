@@ -23,12 +23,17 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
         auto weak_renderer = to_weak(renderer);
 
         this->_setup_tap(weak_renderer);
+        this->_update_configuration();
         this->_update_connection();
 
-        this->_pool +=
-            this->_manager.chain(audio::engine::manager::method::configuration_change)
-                .perform([](audio::engine::manager const &manager) { manager.impl_ptr<impl>()->_update_connection(); })
-                .end();
+        this->_pool += this->_manager.chain(audio::engine::manager::method::configuration_change)
+                           .perform([weak_renderer](audio::engine::manager const &) {
+                               if (auto renderer = weak_renderer.lock()) {
+                                   renderer.impl_ptr<impl>()->_update_configuration();
+                                   renderer.impl_ptr<impl>()->_update_connection();
+                               }
+                           })
+                           .end();
 
         this->_pool += this->_is_rendering.chain()
                            .perform([weak_renderer](bool const &is_rendering) {
@@ -88,18 +93,23 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
             });
     }
 
-    void _update_connection() {
-        if (this->_connection) {
-            this->_manager.disconnect(this->_connection);
-            this->_connection = nullptr;
-        }
-
+    void _update_configuration() {
         audio::engine::au_io const &au_io = this->_output.au_io();
         double const sample_rate = au_io.device_sample_rate();
         uint32_t const ch_count = au_io.output_device_channel_count();
         this->_sample_rate.set_value(sample_rate);
         this->_channel_count.set_value(ch_count);
         this->_configuration.set_value(audio_configuration{.sample_rate = sample_rate, .channel_count = ch_count});
+    }
+
+    void _update_connection() {
+        if (this->_connection) {
+            this->_manager.disconnect(this->_connection);
+            this->_connection = nullptr;
+        }
+
+        double const &sample_rate = this->_sample_rate.value();
+        uint32_t const ch_count = this->_channel_count.value();
 
         if (sample_rate > 0.0 && ch_count > 0) {
             audio::format format{{.sample_rate = sample_rate, .channel_count = ch_count}};

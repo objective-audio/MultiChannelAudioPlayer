@@ -23,6 +23,22 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
         auto weak_renderer = to_weak(renderer);
 
         this->_setup_tap(weak_renderer);
+
+        this->_pool += this->_sample_rate.chain()
+                           .to_null()
+                           .merge(this->_pcm_format.chain().to_null())
+                           .merge(this->_channel_count.chain().to_null())
+                           .perform([weak_renderer](auto const &) {
+                               if (auto renderer = weak_renderer.lock()) {
+                                   auto renderer_impl = renderer.impl_ptr<impl>();
+                                   renderer_impl->_configuration.set_value(
+                                       audio_configuration{.sample_rate = renderer_impl->_sample_rate.value(),
+                                                           .pcm_format = renderer_impl->_pcm_format.value(),
+                                                           .channel_count = renderer_impl->_channel_count.value()});
+                               }
+                           })
+                           .sync();
+
         this->_update_configuration();
 
         this->_pool += this->_manager.chain(audio::engine::manager::method::configuration_change)
@@ -105,7 +121,6 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
         uint32_t const ch_count = au_io.output_device_channel_count();
         this->_sample_rate.set_value(sample_rate);
         this->_channel_count.set_value(ch_count);
-        this->_configuration.set_value(audio_configuration{.sample_rate = sample_rate, .channel_count = ch_count});
     }
 
     void _update_connection() {

@@ -16,6 +16,8 @@ using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
     url const _root_url;
+    chaining::holder<std::vector<int64_t>> _ch_mapping{{}};
+
     // ロックここから
     std::atomic<int64_t> _play_frame = 0;
     std::atomic<bool> _is_playing = false;
@@ -239,6 +241,10 @@ audio_player::audio_player(audio_renderable renderable, url const &root_url, ope
 audio_player::audio_player(std::nullptr_t) : base(nullptr) {
 }
 
+void audio_player::set_ch_mapping(std::vector<int64_t> ch_mapping) {
+    impl_ptr<impl>()->_ch_mapping.set_value(std::move(ch_mapping));
+}
+
 void audio_player::set_playing(bool const is_playing) {
     impl_ptr<impl>()->set_playing(is_playing);
 }
@@ -253,6 +259,10 @@ void audio_player::reload(int64_t const ch_idx, int64_t const file_idx) {
 
 url audio_player::root_url() const {
     return impl_ptr<impl>()->_root_url;
+}
+
+std::vector<int64_t> const &audio_player::ch_mapping() const {
+    return impl_ptr<impl>()->_ch_mapping.value();
 }
 
 bool audio_player::is_playing() const {

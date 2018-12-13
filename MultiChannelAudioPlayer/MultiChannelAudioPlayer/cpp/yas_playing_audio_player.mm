@@ -75,6 +75,7 @@ struct audio_player::impl : base::impl {
     audio_renderable _renderable;
     chaining::holder<uint32_t> _ch_count{uint32_t(0)};
     chaining::holder<std::optional<audio::format>> _format{std::nullopt};
+    chaining::receiver<> _update_circular_buffers_receiver = nullptr;
 
     // ロックここから
     std::vector<audio_circular_buffer::ptr> _circular_buffers;
@@ -87,6 +88,12 @@ struct audio_player::impl : base::impl {
 
     void _setup_chaining(audio_player &player) {
         auto weak_player = to_weak(player);
+
+        this->_update_circular_buffers_receiver = chaining::receiver<>{[weak_player](auto const &) {
+            if (auto player = weak_player.lock()) {
+                player.impl_ptr<impl>()->_update_circular_buffers();
+            }
+        }};
 
         this->_pool +=
             this->_renderable.chain_sample_rate()
@@ -108,12 +115,11 @@ struct audio_player::impl : base::impl {
 
         this->_pool += this->_format.chain()
                            .combine(this->_ch_count.chain())
-                           .perform([weak_player](auto const &pair) {
-                               if (auto player = weak_player.lock()) {
-                                   player.impl_ptr<impl>()->_update_circular_buffers();
-                               }
-                           })
+                           .to_null()
+                           .receive(this->_update_circular_buffers_receiver)
                            .sync();
+
+        this->_pool += this->_ch_mapping.chain().to_null().receive(this->_update_circular_buffers_receiver).sync();
     }
 
     void _setup_rendering_handler(audio_player &player) {

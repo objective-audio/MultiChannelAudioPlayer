@@ -73,10 +73,12 @@ struct audio_player::impl : base::impl {
 
     operation_queue _queue;
     audio_renderable _renderable;
+    chaining::holder<uint32_t> _ch_count{uint32_t(0)};
+    chaining::holder<std::optional<audio::format>> _format{std::nullopt};
 
     // ロックここから
     std::vector<audio_circular_buffer::ptr> _circular_buffers;
-    chaining::holder<std::optional<audio::format>> _format{std::nullopt};
+    std::optional<audio::format> _locked_format{std::nullopt};
     // ロックここまで
     std::recursive_mutex _mutex;
 
@@ -102,11 +104,13 @@ struct audio_player::impl : base::impl {
                 .receive(this->_format.receiver())
                 .sync();
 
+        this->_pool += this->_renderable.chain_channel_count().receive(this->_ch_count.receiver()).sync();
+
         this->_pool += this->_format.chain()
-                           .combine(this->_renderable.chain_channel_count())
+                           .combine(this->_ch_count.chain())
                            .perform([weak_player](auto const &pair) {
                                if (auto player = weak_player.lock()) {
-                                   player.impl_ptr<impl>()->_update_circular_buffers(pair);
+                                   player.impl_ptr<impl>()->_update_circular_buffers();
                                }
                            })
                            .sync();
@@ -180,18 +184,24 @@ struct audio_player::impl : base::impl {
     uint32_t _file_length() {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-        if (auto const &format = this->_format.value(); format) {
+        if (auto const &format = this->_locked_format) {
             return static_cast<uint32_t>(format->sample_rate());
         } else {
             return 0;
         }
     }
 
-    void _update_circular_buffers(std::pair<std::optional<audio::format>, uint32_t> const &pair) {
-        auto const &[format, ch_count] = pair;
+    void _update_circular_buffers() {
+        auto const &format = this->_format.value();
+        if (!format) {
+            return;
+        }
+
+        uint32_t const ch_count = this->_ch_count.value();
 
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
+        this->_locked_format = format;
         this->_circular_buffers.clear();
 
         if (auto top_file_idx = this->_top_file_idx(); top_file_idx && ch_count > 0) {

@@ -16,7 +16,7 @@ using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
     url const _root_url;
-    chaining::holder<std::vector<int64_t>> _ch_mapping{{}};
+    chaining::holder<std::vector<int64_t>> _ch_mapping{std::vector<int64_t>{}};
 
     // ロックここから
     std::atomic<int64_t> _play_frame = 0;
@@ -95,6 +95,8 @@ struct audio_player::impl : base::impl {
             }
         }};
 
+        this->_pool += this->_ch_mapping.chain().to_null().receive(this->_update_circular_buffers_receiver).sync();
+
         this->_pool +=
             this->_renderable.chain_sample_rate()
                 .combine(this->_renderable.chain_pcm_format())
@@ -118,8 +120,6 @@ struct audio_player::impl : base::impl {
                            .to_null()
                            .receive(this->_update_circular_buffers_receiver)
                            .sync();
-
-        this->_pool += this->_ch_mapping.chain().to_null().receive(this->_update_circular_buffers_receiver).sync();
     }
 
     void _setup_rendering_handler(audio_player &player) {
@@ -205,15 +205,24 @@ struct audio_player::impl : base::impl {
 
         uint32_t const ch_count = this->_ch_count.value();
 
+        std::vector<int64_t> const ch_mapping = this->_ch_mapping.value();
+
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
         this->_locked_format = format;
         this->_circular_buffers.clear();
 
         if (auto top_file_idx = this->_top_file_idx(); top_file_idx && ch_count > 0) {
-            auto each = make_fast_each(ch_count);
+            auto each = make_fast_each(int64_t(ch_count));
             while (yas_each_next(each)) {
-                auto const ch_url = url_utils::channel_url(this->_root_url, yas_each_index(each));
+                auto ch_idx = yas_each_index(each);
+                if (ch_mapping.size() > 0) {
+                    if (ch_idx >= ch_mapping.size()) {
+                        return;
+                    }
+                    ch_idx = ch_mapping.at(ch_idx);
+                }
+                auto const ch_url = url_utils::channel_url(this->_root_url, ch_idx);
                 auto buffer = make_audio_circular_buffer(*format, 3, ch_url, this->_queue);
                 buffer->reload_all(*top_file_idx);
                 this->_circular_buffers.push_back(std::move(buffer));

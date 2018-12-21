@@ -121,7 +121,7 @@ struct audio_exporter::impl : base::impl {
                         }
 
                         // 処理をする範囲を調べる
-                        auto opt_process_range = file_range.intersect(range);
+                        auto opt_process_range = file_range.intersected(range);
                         if (!opt_process_range) {
                             export_result = export_result_t{export_error::invalid_process_range};
                             break;

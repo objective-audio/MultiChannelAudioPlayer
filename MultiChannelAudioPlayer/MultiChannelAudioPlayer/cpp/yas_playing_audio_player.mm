@@ -204,8 +204,7 @@ struct audio_player::impl : base::impl {
         }
 
         uint32_t const ch_count = this->_ch_count.value();
-
-        std::vector<int64_t> const ch_mapping = this->_ch_mapping.value();
+        std::vector<int64_t> const ch_mapping = this->_current_ch_mapping();
 
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
@@ -215,13 +214,7 @@ struct audio_player::impl : base::impl {
         if (auto top_file_idx = this->_top_file_idx(); top_file_idx && ch_count > 0) {
             auto each = make_fast_each(int64_t(ch_count));
             while (yas_each_next(each)) {
-                auto ch_idx = yas_each_index(each);
-                if (ch_mapping.size() > 0) {
-                    if (ch_idx >= ch_mapping.size()) {
-                        return;
-                    }
-                    ch_idx = ch_mapping.at(ch_idx);
-                }
+                auto ch_idx = ch_mapping.at(yas_each_index(each));
                 auto const ch_url = url_utils::channel_url(this->_root_url, ch_idx);
                 auto buffer = make_audio_circular_buffer(*format, 3, ch_url, this->_queue);
                 buffer->reload_all(*top_file_idx);
@@ -254,6 +247,27 @@ struct audio_player::impl : base::impl {
             return math::floor_int(this->_play_frame, file_length) / file_length;
         } else {
             return std::nullopt;
+        }
+    }
+
+    std::vector<int64_t> _current_ch_mapping() {
+        std::vector<int64_t> mapped;
+
+        auto each = make_fast_each(this->_ch_count.value());
+        while (yas_each_next(each)) {
+            mapped.push_back(this->_map_ch_idx(yas_each_index(each)));
+        }
+
+        return mapped;
+    }
+
+    int64_t _map_ch_idx(int64_t ch_idx) {
+        auto const &mapping = this->_ch_mapping.value();
+
+        if (ch_idx < mapping.size()) {
+            return mapping.at(ch_idx);
+        } else {
+            return ch_idx;
         }
     }
 };

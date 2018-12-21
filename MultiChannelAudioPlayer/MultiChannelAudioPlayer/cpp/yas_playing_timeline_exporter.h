@@ -15,5 +15,7 @@ struct timeline_exporter : base {
 
     timeline_exporter(url const &root_url, operation_queue queue);
     timeline_exporter(std::nullptr_t);
+
+    void set_timeline(proc::timeline);
 };
 }  // namespace yas::playing

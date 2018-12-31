@@ -41,19 +41,19 @@ struct view_controller_cpp {
     proc::timeline timeline;
     proc::track_index_t trk_idx = 0;
 
-    if (proc::track &track = timeline.add_track(trk_idx++)) {
+    if (proc::track &track = timeline.insert_track(trk_idx++)) {
         proc::module module = proc::make_signal_module<Float32>(proc::generator::kind::second, 0);
         module.connect_output(proc::to_connector_index(proc::generator::output::value), 0);
         track.insert_module(process_range, std::move(module));
     }
 
-    if (proc::track &track = timeline.add_track(trk_idx++)) {
+    if (proc::track &track = timeline.insert_track(trk_idx++)) {
         proc::module module = proc::make_signal_module<Float32>(audio::math::two_pi * 1000.0);
         module.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
         track.insert_module(process_range, std::move(module));
     }
 
-    if (auto &track = timeline.add_track(trk_idx++)) {
+    if (auto &track = timeline.insert_track(trk_idx++)) {
         auto module = proc::make_signal_module<Float32>(proc::math2::kind::multiply);
         module.connect_input(proc::to_connector_index(proc::math2::input::left), 0);
         module.connect_input(proc::to_connector_index(proc::math2::input::right), 1);
@@ -61,20 +61,20 @@ struct view_controller_cpp {
         track.insert_module(process_range, std::move(module));
     }
 
-    if (proc::track &track = timeline.add_track(trk_idx++)) {
+    if (proc::track &track = timeline.insert_track(trk_idx++)) {
         proc::module module = proc::make_signal_module<Float32>(proc::math1::kind::sin);
         module.connect_input(proc::to_connector_index(proc::math1::input::parameter), 0);
         module.connect_output(proc::to_connector_index(proc::math1::output::result), 0);
         track.insert_module(process_range, std::move(module));
     }
 
-    if (auto &track = timeline.add_track(trk_idx++)) {
+    if (auto &track = timeline.insert_track(trk_idx++)) {
         auto module = proc::make_signal_module<Float32>(0.1f);
         module.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
         track.insert_module(process_range, std::move(module));
     }
 
-    if (auto &track = timeline.add_track(trk_idx++)) {
+    if (auto &track = timeline.insert_track(trk_idx++)) {
         auto module = proc::make_signal_module<Float32>(proc::math2::kind::multiply);
         module.connect_input(proc::to_connector_index(proc::math2::input::left), 0);
         module.connect_input(proc::to_connector_index(proc::math2::input::right), 1);

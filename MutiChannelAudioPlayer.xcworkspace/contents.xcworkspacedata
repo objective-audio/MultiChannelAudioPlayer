@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:MultiChannelAudioPlayer/MultiChannelAudioPlayer.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:submodules/audio_engine/audio_ios/audio_ios.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:submodules/chaining/chaining_ios/chaining_ios.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:submodules/cpp_utils/cpp_utils_ios/cpp_utils_ios.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:submodules/objc_utils/objc_utils_ios/objc_utils_ios.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:submodules/processing/processing_ios/processing_ios.xcodeproj">
+   </FileRef>
+</Workspace>

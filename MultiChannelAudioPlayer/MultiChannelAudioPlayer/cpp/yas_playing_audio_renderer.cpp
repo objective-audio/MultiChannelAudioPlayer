@@ -3,10 +3,10 @@
 //
 
 #include "yas_playing_audio_renderer.h"
-#include "yas_audio_engine_au.h"
-#include "yas_audio_engine_au_io.h"
-#include "yas_audio_engine_tap.h"
-#include "yas_audio_format.h"
+#include <audio/yas_audio_engine_au.h>
+#include <audio/yas_audio_engine_au_io.h>
+#include <audio/yas_audio_engine_tap.h>
+#include <audio/yas_audio_format.h>
 
 using namespace yas;
 using namespace yas::playing;

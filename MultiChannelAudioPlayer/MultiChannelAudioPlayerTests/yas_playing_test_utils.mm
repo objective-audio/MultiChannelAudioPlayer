@@ -3,9 +3,9 @@
 //
 
 #include "yas_playing_test_utils.h"
-#include "yas_fast_each.h"
-#include "yas_file_manager.h"
-#include "yas_system_url_utils.h"
+#include <cpp_utils/yas_fast_each.h>
+#include <cpp_utils/yas_file_manager.h>
+#include <cpp_utils/yas_system_url_utils.h>
 
 using namespace yas;
 using namespace yas::playing;

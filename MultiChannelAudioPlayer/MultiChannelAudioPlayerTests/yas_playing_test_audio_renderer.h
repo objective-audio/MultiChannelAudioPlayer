@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "yas_base.h"
-#include "yas_chaining.h"
+#include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_base.h>
 #include "yas_playing_audio_player_protocol.h"
 
 namespace yas::playing::test_utils {

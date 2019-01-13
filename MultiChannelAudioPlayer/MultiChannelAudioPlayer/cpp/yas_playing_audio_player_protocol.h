@@ -4,10 +4,10 @@
 
 #pragma once
 
+#include <audio/yas_audio_pcm_buffer.h>
+#include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_protocol.h>
 #include <functional>
-#include "yas_audio_pcm_buffer.h"
-#include "yas_chaining.h"
-#include "yas_protocol.h"
 
 namespace yas::playing {
 struct audio_renderable : protocol {

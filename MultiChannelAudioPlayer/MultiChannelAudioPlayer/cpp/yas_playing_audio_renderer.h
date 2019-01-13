@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "yas_audio_engine_manager.h"
-#include "yas_base.h"
+#include <audio/yas_audio_engine_manager.h>
+#include <cpp_utils/yas_base.h>
 #include "yas_playing_audio_player_protocol.h"
 #include "yas_playing_audio_types.h"
 

@@ -3,8 +3,8 @@
 //
 
 #include "yas_playing_audio_circular_buffer.h"
+#include <cpp_utils/yas_fast_each.h>
 #include <mutex>
-#include "yas_fast_each.h"
 #include "yas_math.h"
 #include "yas_playing_audio_types.h"
 #include "yas_playing_url_utils.h"

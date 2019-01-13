@@ -3,11 +3,11 @@
 //
 
 #include "yas_playing_audio_exporter.h"
-#include "yas_audio_file.h"
-#include "yas_cf_utils.h"
-#include "yas_file_manager.h"
+#include <audio/yas_audio_file.h>
+#include <cpp_utils/yas_cf_utils.h>
+#include <cpp_utils/yas_file_manager.h>
+#include <cpp_utils/yas_operation.h>
 #include "yas_math.h"
-#include "yas_operation.h"
 #include "yas_playing_audio_types.h"
 #include "yas_playing_url_utils.h"
 

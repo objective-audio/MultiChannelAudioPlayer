@@ -3,12 +3,12 @@
 //
 
 #include "yas_playing_audio_coordinator.h"
-#include "yas_chaining.h"
+#include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_url.h>
 #include "yas_playing_audio_exporter.h"
 #include "yas_playing_audio_player.h"
 #include "yas_playing_audio_renderer.h"
 #include "yas_playing_audio_types.h"
-#include "yas_url.h"
 
 using namespace yas;
 using namespace yas::playing;

@@ -4,14 +4,14 @@
 
 #pragma once
 
+#include <audio/yas_audio_format.h>
+#include <audio/yas_audio_pcm_buffer.h>
+#include <cpp_utils/yas_base.h>
+#include <cpp_utils/yas_operation.h>
+#include <cpp_utils/yas_result.h>
+#include <cpp_utils/yas_url.h>
+#include <processing/yas_processing_umbrella.h>
 #include <string>
-#include "yas_audio_format.h"
-#include "yas_audio_pcm_buffer.h"
-#include "yas_base.h"
-#include "yas_operation.h"
-#include "yas_processing.h"
-#include "yas_result.h"
-#include "yas_url.h"
 
 namespace yas::playing {
 struct audio_exporter : base {

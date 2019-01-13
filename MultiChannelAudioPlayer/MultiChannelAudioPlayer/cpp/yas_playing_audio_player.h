@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "yas_base.h"
-#include "yas_operation.h"
+#include <cpp_utils/yas_base.h>
+#include <cpp_utils/yas_operation.h>
+#include <cpp_utils/yas_url.h>
 #include "yas_playing_audio_player_protocol.h"
-#include "yas_url.h"
 
 namespace yas::playing {
 struct audio_player : base {

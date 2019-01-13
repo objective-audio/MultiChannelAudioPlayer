@@ -3,7 +3,7 @@
 //
 
 #include "yas_playing_timeline_exporter.h"
-#include "yas_chaining.h"
+#include <chaining/yas_chaining_umbrella.h>
 
 using namespace yas;
 using namespace yas::playing;

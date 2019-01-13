@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "yas_base.h"
-#include "yas_url.h"
+#include <cpp_utils/yas_base.h>
+#include <cpp_utils/yas_url.h>
 
 namespace yas::playing::url_utils {
 [[nodiscard]] yas::url channel_url(yas::url const &root_url, int64_t const ch_idx);

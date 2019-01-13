@@ -3,7 +3,7 @@
 //
 
 #include "yas_playing_test_audio_renderer.h"
-#include "yas_audio_format.h"
+#include <audio/yas_audio_format.h>
 
 using namespace yas;
 using namespace yas::playing;

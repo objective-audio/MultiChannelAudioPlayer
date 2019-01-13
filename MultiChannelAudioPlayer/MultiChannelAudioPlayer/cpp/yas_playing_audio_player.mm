@@ -3,9 +3,9 @@
 //
 
 #include "yas_playing_audio_player.h"
+#include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_fast_each.h>
 #include <atomic>
-#include "yas_chaining.h"
-#include "yas_fast_each.h"
 #include "yas_math.h"
 #include "yas_playing_audio_circular_buffer.h"
 #include "yas_playing_audio_utils.h"

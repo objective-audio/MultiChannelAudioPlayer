@@ -32,6 +32,11 @@
 		B62879BB21EB61EB00566CC1 /* yas_playing_audio_player.h in Headers */ = {isa = PBXBuildFile; fileRef = B62879A321EB61EB00566CC1 /* yas_playing_audio_player.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62879BC21EB61EB00566CC1 /* yas_playing_math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B62879A421EB61EB00566CC1 /* yas_playing_math.cpp */; };
 		B62879BD21EB61EB00566CC1 /* yas_playing_audio_player_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B62879A521EB61EB00566CC1 /* yas_playing_audio_player_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62879C121EB641C00566CC1 /* audio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879C021EB641C00566CC1 /* audio.framework */; };
+		B62879C321EB641C00566CC1 /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879C221EB641C00566CC1 /* chaining.framework */; };
+		B62879C521EB641C00566CC1 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879C421EB641C00566CC1 /* cpp_utils.framework */; };
+		B62879C721EB641C00566CC1 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879C621EB641C00566CC1 /* objc_utils.framework */; };
+		B62879C921EB641C00566CC1 /* processing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879C821EB641C00566CC1 /* processing.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,6 +68,11 @@
 		B62879A421EB61EB00566CC1 /* yas_playing_math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_math.cpp; sourceTree = "<group>"; };
 		B62879A521EB61EB00566CC1 /* yas_playing_audio_player_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio_player_protocol.h; sourceTree = "<group>"; };
 		B62879BE21EB623F00566CC1 /* yas_playing_umbrella.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_umbrella.h; sourceTree = "<group>"; };
+		B62879C021EB641C00566CC1 /* audio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = audio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62879C221EB641C00566CC1 /* chaining.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = chaining.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62879C421EB641C00566CC1 /* cpp_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = cpp_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62879C621EB641C00566CC1 /* objc_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = objc_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62879C821EB641C00566CC1 /* processing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = processing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +80,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B62879C121EB641C00566CC1 /* audio.framework in Frameworks */,
+				B62879C321EB641C00566CC1 /* chaining.framework in Frameworks */,
+				B62879C521EB641C00566CC1 /* cpp_utils.framework in Frameworks */,
+				B62879C721EB641C00566CC1 /* objc_utils.framework in Frameworks */,
+				B62879C921EB641C00566CC1 /* processing.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +96,7 @@
 			children = (
 				B628798621EB5BAC00566CC1 /* playing */,
 				B628798521EB5BAC00566CC1 /* Products */,
+				B62879BF21EB641C00566CC1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -133,6 +149,18 @@
 			);
 			name = playing;
 			path = ../../playing;
+			sourceTree = "<group>";
+		};
+		B62879BF21EB641C00566CC1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B62879C021EB641C00566CC1 /* audio.framework */,
+				B62879C221EB641C00566CC1 /* chaining.framework */,
+				B62879C421EB641C00566CC1 /* cpp_utils.framework */,
+				B62879C621EB641C00566CC1 /* objc_utils.framework */,
+				B62879C821EB641C00566CC1 /* processing.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -260,10 +288,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -340,10 +367,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;

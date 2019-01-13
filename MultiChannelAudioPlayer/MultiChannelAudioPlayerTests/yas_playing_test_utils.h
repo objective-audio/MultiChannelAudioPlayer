@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "yas_playing_audio_exporter.h"
+#include <playing/yas_playing_audio_exporter.h>
 
 namespace yas::playing::test_utils {
 void remove_all_document_files();

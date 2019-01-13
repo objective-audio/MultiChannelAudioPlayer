@@ -24,6 +24,9 @@
 		B628797321EB595800566CC1 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B628797221EB595800566CC1 /* cpp_utils.framework */; };
 		B628797521EB595800566CC1 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B628797421EB595800566CC1 /* objc_utils.framework */; };
 		B628797721EB595800566CC1 /* processing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B628797621EB595800566CC1 /* processing.framework */; };
+		B62879CC21EB644F00566CC1 /* playing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879CA21EB643600566CC1 /* playing.framework */; };
+		B62879CD21EB644F00566CC1 /* playing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B62879CA21EB643600566CC1 /* playing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B62879CF21EB646C00566CC1 /* playing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879CE21EB646C00566CC1 /* playing.framework */; };
 		B64C1F0921984E5F000ADD4E /* yas_playing_test_audio_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B64C1F0721984E5F000ADD4E /* yas_playing_test_audio_renderer.cpp */; };
 		B64C1F0E219C6717000ADD4E /* yas_playing_audio_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B64C1F0D219C6717000ADD4E /* yas_playing_audio_utils_tests.mm */; };
 		B65740FC218BD7D4008FFBF9 /* yas_audio_buffer_container_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65740FB218BD7D4008FFBF9 /* yas_audio_buffer_container_tests.mm */; };
@@ -63,6 +66,7 @@
 				B628795C21EB50AF00566CC1 /* cpp_utils.framework in Embed Frameworks */,
 				B628795621EB50AF00566CC1 /* audio.framework in Embed Frameworks */,
 				B628795F21EB50AF00566CC1 /* objc_utils.framework in Embed Frameworks */,
+				B62879CD21EB644F00566CC1 /* playing.framework in Embed Frameworks */,
 				B628796221EB50AF00566CC1 /* processing.framework in Embed Frameworks */,
 				B628795921EB50AF00566CC1 /* chaining.framework in Embed Frameworks */,
 			);
@@ -88,6 +92,8 @@
 		B628797221EB595800566CC1 /* cpp_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = cpp_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B628797421EB595800566CC1 /* objc_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = objc_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B628797621EB595800566CC1 /* processing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = processing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62879CA21EB643600566CC1 /* playing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = playing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62879CE21EB646C00566CC1 /* playing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = playing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B64C1F0721984E5F000ADD4E /* yas_playing_test_audio_renderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_test_audio_renderer.cpp; sourceTree = "<group>"; };
 		B64C1F0821984E5F000ADD4E /* yas_playing_test_audio_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_test_audio_renderer.h; sourceTree = "<group>"; };
 		B64C1F0D219C6717000ADD4E /* yas_playing_audio_utils_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_audio_utils_tests.mm; sourceTree = "<group>"; };
@@ -123,6 +129,7 @@
 				B628796521EB582A00566CC1 /* UIKit.framework in Frameworks */,
 				B628795E21EB50AF00566CC1 /* objc_utils.framework in Frameworks */,
 				B628795B21EB50AF00566CC1 /* cpp_utils.framework in Frameworks */,
+				B62879CC21EB644F00566CC1 /* playing.framework in Frameworks */,
 				B6FDB6E22177629500AF4365 /* AVFoundation.framework in Frameworks */,
 				B628795821EB50AF00566CC1 /* chaining.framework in Frameworks */,
 				B628795521EB50AF00566CC1 /* audio.framework in Frameworks */,
@@ -136,6 +143,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B62879CF21EB646C00566CC1 /* playing.framework in Frameworks */,
 				B628797321EB595800566CC1 /* cpp_utils.framework in Frameworks */,
 				B628797521EB595800566CC1 /* objc_utils.framework in Frameworks */,
 				B628797721EB595800566CC1 /* processing.framework in Frameworks */,
@@ -150,6 +158,8 @@
 		B679E2FF2172BFBE00859687 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B62879CE21EB646C00566CC1 /* playing.framework */,
+				B62879CA21EB643600566CC1 /* playing.framework */,
 				B628797221EB595800566CC1 /* cpp_utils.framework */,
 				B628797421EB595800566CC1 /* objc_utils.framework */,
 				B628797621EB595800566CC1 /* processing.framework */,

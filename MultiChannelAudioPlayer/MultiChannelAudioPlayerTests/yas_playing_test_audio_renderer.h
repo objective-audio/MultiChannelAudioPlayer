@@ -6,7 +6,7 @@
 
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_base.h>
-#include "yas_playing_audio_player_protocol.h"
+#include <playing/yas_playing_audio_player_protocol.h>
 
 namespace yas::playing::test_utils {
 struct test_audio_renderer : base {

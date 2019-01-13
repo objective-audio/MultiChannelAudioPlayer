@@ -6,8 +6,8 @@
 #import <audio/yas_audio_umbrella.h>
 #import <cpp_utils/yas_file_manager.h>
 #import <cpp_utils/yas_system_url_utils.h>
-#import "yas_playing_audio_exporter.h"
-#import "yas_playing_audio_types.h"
+#import <playing/yas_playing_audio_exporter.h>
+#import <playing/yas_playing_audio_types.h>
 #import "yas_playing_test_utils.h"
 
 using namespace yas;

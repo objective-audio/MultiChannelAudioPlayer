@@ -5,7 +5,7 @@
 #import "ViewController.h"
 #import <audio/yas_audio_math.h>
 #import <cpp_utils/yas_system_url_utils.h>
-#import "yas_playing_audio.h"
+#import <playing/yas_playing_audio.h>
 
 #import <iostream>
 

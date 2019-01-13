@@ -6,9 +6,9 @@
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_fast_each.h>
 #include <atomic>
-#include "yas_math.h"
 #include "yas_playing_audio_circular_buffer.h"
 #include "yas_playing_audio_utils.h"
+#include "yas_playing_math.h"
 #include "yas_playing_url_utils.h"
 
 using namespace yas;

@@ -5,6 +5,9 @@
       location = "group:MultiChannelAudioPlayer/MultiChannelAudioPlayer.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:playing_ios/playing_ios.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:submodules/audio_engine/audio_ios/audio_ios.xcodeproj">
    </FileRef>
    <FileRef

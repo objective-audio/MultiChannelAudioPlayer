@@ -3,9 +3,10 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_math.h"
+#import "yas_playing_math.h"
 
 using namespace yas;
+using namespace yas::playing;
 
 @interface yas_math_tests : XCTestCase
 

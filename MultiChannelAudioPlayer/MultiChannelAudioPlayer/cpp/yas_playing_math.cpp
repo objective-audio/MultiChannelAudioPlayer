@@ -1,10 +1,11 @@
 //
-//  yas_math.cpp
+//  yas_playing_math.cpp
 //
 
-#include "yas_math.h"
+#include "yas_playing_math.h"
 
 using namespace yas;
+using namespace yas::playing;
 
 int64_t math::floor_int(int64_t const value, uint64_t const interval) {
     if (interval <= 0) {

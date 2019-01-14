@@ -17,23 +17,25 @@ struct timeline_exporter::impl : base::impl {
 
     void set_timeline(proc::timeline &&timeline) {
         this->_timeline = std::move(timeline);
-        
-        this->_pool += this->_timeline.chain().perform([](proc::timeline_event_t const &event){
-            switch (event.type) {
-                case proc::timeline_event_type::fetched:
-                case proc::timeline_event_type::any:
-                    // 全部or何処かが変わった
-                    break;
-                case proc::timeline_event_type::inserted:
-                    break;
-                case proc::timeline_event_type::erased:
-                    break;
-                case proc::timeline_event_type::replaced:
-                    break;
-                case proc::timeline_event_type::relayed:
-                    break;
-            }
-        }).sync();
+
+        this->_pool += this->_timeline.chain()
+                           .perform([](proc::timeline_event_t const &event) {
+                               switch (event.type) {
+                                   case proc::timeline_event_type::fetched:
+                                   case proc::timeline_event_type::any:
+                                       // 全部or何処かが変わった
+                                       break;
+                                   case proc::timeline_event_type::inserted:
+                                       break;
+                                   case proc::timeline_event_type::erased:
+                                       break;
+                                   case proc::timeline_event_type::replaced:
+                                       break;
+                                   case proc::timeline_event_type::relayed:
+                                       break;
+                               }
+                           })
+                           .sync();
     }
 
    private:

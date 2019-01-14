@@ -37,6 +37,7 @@
 		B62879C521EB641C00566CC1 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879C421EB641C00566CC1 /* cpp_utils.framework */; };
 		B62879C721EB641C00566CC1 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879C621EB641C00566CC1 /* objc_utils.framework */; };
 		B62879C921EB641C00566CC1 /* processing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879C821EB641C00566CC1 /* processing.framework */; };
+		B6D4C60D21EC6455004A95A8 /* yas_playing_umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B62879BE21EB623F00566CC1 /* yas_playing_umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -183,6 +184,7 @@
 				B62879A721EB61EB00566CC1 /* yas_playing_audio_buffer_container.h in Headers */,
 				B62879AE21EB61EB00566CC1 /* yas_playing_url_utils.h in Headers */,
 				B62879B821EB61EB00566CC1 /* yas_playing_audio_utils.h in Headers */,
+				B6D4C60D21EC6455004A95A8 /* yas_playing_umbrella.h in Headers */,
 				B62879BA21EB61EB00566CC1 /* yas_playing_timeline_exporter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

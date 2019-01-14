@@ -5,7 +5,7 @@
 #import "ViewController.h"
 #import <audio/yas_audio_math.h>
 #import <cpp_utils/yas_system_url_utils.h>
-#import <playing/yas_playing_audio.h>
+#import <playing/yas_playing_umbrella.h>
 
 #import <iostream>
 
@@ -20,6 +20,8 @@ namespace yas::playing::sample {
 struct view_controller_cpp {
     url root_url{system_url_utils::directory_url(system_url_utils::dir::document).appending("sample")};
     audio_coordinator coordinator{this->root_url};
+#warning queueを共通にするかは後で考える
+    playing::timeline_exporter timeline_exporter{this->root_url, yas::operation_queue{}};
 };
 }
 

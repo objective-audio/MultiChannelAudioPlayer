@@ -13,10 +13,10 @@ using namespace yas::playing;
 
 struct audio_renderer::impl : base::impl, audio_renderable::impl {
     audio::engine::manager _manager;
-    chaining::holder<double> _sample_rate{0.0};
-    chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
-    chaining::holder<uint32_t> _channel_count{uint32_t(0)};
-    chaining::holder<audio_configuration> _configuration{
+    chaining::value::holder<double> _sample_rate{0.0};
+    chaining::value::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
+    chaining::value::holder<uint32_t> _channel_count{uint32_t(0)};
+    chaining::value::holder<audio_configuration> _configuration{
         {.sample_rate = 0.0, .pcm_format = audio::pcm_format::float32, .channel_count = 0}};
 
     void prepare(audio_renderer &renderer) {
@@ -32,9 +32,9 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
                                if (auto renderer = weak_renderer.lock()) {
                                    auto renderer_impl = renderer.impl_ptr<impl>();
                                    renderer_impl->_configuration.set_value(
-                                       audio_configuration{.sample_rate = renderer_impl->_sample_rate.value(),
-                                                           .pcm_format = renderer_impl->_pcm_format.value(),
-                                                           .channel_count = renderer_impl->_channel_count.value()});
+                                       audio_configuration{.sample_rate = renderer_impl->_sample_rate.raw(),
+                                                           .pcm_format = renderer_impl->_pcm_format.raw(),
+                                                           .channel_count = renderer_impl->_channel_count.raw()});
                                }
                            })
                            .sync();
@@ -98,7 +98,7 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
 
     chaining::observer_pool _pool;
 
-    chaining::holder<bool> _is_rendering{false};
+    chaining::value::holder<bool> _is_rendering{false};
     audio_renderable::rendering_f _rendering_handler;
     std::recursive_mutex _rendering_mutex;
 
@@ -129,8 +129,8 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
             this->_connection = nullptr;
         }
 
-        double const &sample_rate = this->_sample_rate.value();
-        uint32_t const ch_count = this->_channel_count.value();
+        double const &sample_rate = this->_sample_rate.raw();
+        uint32_t const ch_count = this->_channel_count.raw();
 
         if (sample_rate > 0.0 && ch_count > 0) {
             audio::format format{{.sample_rate = sample_rate, .channel_count = ch_count}};
@@ -166,15 +166,15 @@ audio::engine::manager const &audio_renderer::manager() {
 }
 
 double audio_renderer::sample_rate() const {
-    return impl_ptr<impl>()->_sample_rate.value();
+    return impl_ptr<impl>()->_sample_rate.raw();
 }
 
 audio::pcm_format audio_renderer::pcm_format() const {
-    return impl_ptr<impl>()->_pcm_format.value();
+    return impl_ptr<impl>()->_pcm_format.raw();
 }
 
 uint32_t audio_renderer::channel_count() const {
-    return impl_ptr<impl>()->_channel_count.value();
+    return impl_ptr<impl>()->_channel_count.raw();
 }
 
 chaining::chain_sync_t<audio_configuration> audio_renderer::chain_configuration() const {

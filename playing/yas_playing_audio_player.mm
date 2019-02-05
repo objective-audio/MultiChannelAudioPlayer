@@ -16,7 +16,7 @@ using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
     url const _root_url;
-    chaining::holder<std::vector<int64_t>> _ch_mapping{std::vector<int64_t>{}};
+    chaining::value::holder<std::vector<int64_t>> _ch_mapping{std::vector<int64_t>{}};
 
     // ロックここから
     std::atomic<int64_t> _play_frame = 0;
@@ -73,8 +73,8 @@ struct audio_player::impl : base::impl {
 
     operation_queue _queue;
     audio_renderable _renderable;
-    chaining::holder<uint32_t> _ch_count{uint32_t(0)};
-    chaining::holder<std::optional<audio::format>> _format{std::nullopt};
+    chaining::value::holder<uint32_t> _ch_count{uint32_t(0)};
+    chaining::value::holder<std::optional<audio::format>> _format{std::nullopt};
     chaining::receiver<> _update_circular_buffers_receiver = nullptr;
 
     // ロックここから
@@ -198,12 +198,12 @@ struct audio_player::impl : base::impl {
     }
 
     void _update_circular_buffers() {
-        auto const &format = this->_format.value();
+        auto const &format = this->_format.raw();
         if (!format) {
             return;
         }
 
-        uint32_t const ch_count = this->_ch_count.value();
+        uint32_t const ch_count = this->_ch_count.raw();
         std::vector<int64_t> const ch_mapping = this->_current_ch_mapping();
 
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
@@ -253,7 +253,7 @@ struct audio_player::impl : base::impl {
     std::vector<int64_t> _current_ch_mapping() {
         std::vector<int64_t> mapped;
 
-        auto each = make_fast_each(this->_ch_count.value());
+        auto each = make_fast_each(this->_ch_count.raw());
         while (yas_each_next(each)) {
             mapped.push_back(this->_map_ch_idx(yas_each_index(each)));
         }
@@ -262,7 +262,7 @@ struct audio_player::impl : base::impl {
     }
 
     int64_t _map_ch_idx(int64_t ch_idx) {
-        auto const &mapping = this->_ch_mapping.value();
+        auto const &mapping = this->_ch_mapping.raw();
 
         if (ch_idx < mapping.size()) {
             return mapping.at(ch_idx);
@@ -301,7 +301,7 @@ url audio_player::root_url() const {
 }
 
 std::vector<int64_t> const &audio_player::ch_mapping() const {
-    return impl_ptr<impl>()->_ch_mapping.value();
+    return impl_ptr<impl>()->_ch_mapping.raw();
 }
 
 bool audio_player::is_playing() const {

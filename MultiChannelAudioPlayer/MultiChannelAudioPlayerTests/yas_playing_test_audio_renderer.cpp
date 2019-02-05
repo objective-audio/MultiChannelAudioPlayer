@@ -10,9 +10,9 @@ using namespace yas::playing;
 using namespace yas::playing::test_utils;
 
 struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
-    chaining::holder<double> _sample_rate{0.0};
-    chaining::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
-    chaining::holder<uint32_t> _channel_count{uint32_t(0)};
+    chaining::value::holder<double> _sample_rate{0.0};
+    chaining::value::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
+    chaining::value::holder<uint32_t> _channel_count{uint32_t(0)};
     std::atomic<bool> _is_rendering = false;
     audio_renderable::rendering_f _rendering_handler;
     std::recursive_mutex _rendering_mutex;

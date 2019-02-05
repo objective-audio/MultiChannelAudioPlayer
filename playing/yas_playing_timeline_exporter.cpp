@@ -19,19 +19,19 @@ struct timeline_exporter::impl : base::impl {
         this->_timeline = std::move(timeline);
 
         this->_pool += this->_timeline.chain()
-                           .perform([](proc::timeline_event_t const &event) {
-                               switch (event.type) {
-                                   case proc::timeline_event_type::fetched:
-                                   case proc::timeline_event_type::any:
+                           .perform([](proc::timeline::event_t const &event) {
+                               switch (event.type()) {
+                                   case proc::timeline::event_type_t::fetched:
+                                   case proc::timeline::event_type_t::any:
                                        // 全部or何処かが変わった
                                        break;
-                                   case proc::timeline_event_type::inserted:
+                                   case proc::timeline::event_type_t::inserted:
                                        break;
-                                   case proc::timeline_event_type::erased:
+                                   case proc::timeline::event_type_t::erased:
                                        break;
-                                   case proc::timeline_event_type::replaced:
+                                   case proc::timeline::event_type_t::replaced:
                                        break;
-                                   case proc::timeline_event_type::relayed:
+                                   case proc::timeline::event_type_t::relayed:
                                        break;
                                }
                            })

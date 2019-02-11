@@ -95,6 +95,7 @@ struct timeline_exporter::impl : base::impl {
                              for (auto &pair : tracks) {
                                  timeline.insert_track(pair.first, std::move(pair.second));
                              }
+                             // trackのフォルダを一旦消す？
                              // trackをexportする
                          }
                      },
@@ -102,6 +103,8 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void _erase_tracks(proc::timeline::erased_event_t const &event, timeline_exporter &exporter) {
+        // 同じtrackのexportをキャンセル
+
         auto track_indices =
             to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
         operation op{
@@ -116,8 +119,6 @@ struct timeline_exporter::impl : base::impl {
                 }
             },
             {.priority = playing::queue_priority::exporter}};
-        // 同じtrackのexportをキャンセル
-        // trackをoperation内で削除
     }
 
     void _insert_modules() {

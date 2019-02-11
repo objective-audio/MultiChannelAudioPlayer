@@ -73,13 +73,17 @@ struct timeline_exporter::impl : base::impl {
 
         auto tracks = proc::copy_tracks(event.elements);
         operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](auto const &) {
-
+                         if (auto exporter = weak_exporter.lock()) {
+                             auto exporter_impl = exporter.impl_ptr<impl>();
+                             //                exporter_impl->_timeline =
+                             //                proc::timeline{std::make_shared<impl>(std::move(tracks))};
+                         }
+                         // timelineを新規に作成してcopied_tracksをセットする
+                         // 全てをexportする
                      },
                      {.priority = playing::queue_priority::exporter}};
 
         this->_queue.push_back(std::move(op));
-        // timelineを新規に作成してcopied_tracksをセットする
-        // 全てをexportする
     }
 
     void _insert_tracks(proc::timeline::inserted_event_t const &event, timeline_exporter &exporter) {

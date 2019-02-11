@@ -21,43 +21,8 @@ struct timeline_exporter::impl : base::impl {
 
         this->_pool += this->_src_timeline.chain()
                            .perform([weak_exporter = to_weak(exporter)](proc::timeline::event_t const &event) {
-                               auto exporter = weak_exporter.lock();
-                               if (!exporter) {
-                                   return;
-                               }
-                               auto exporter_impl = exporter.impl_ptr<impl>();
-
-                               switch (event.type()) {
-                                   case proc::timeline::event_type_t::fetched:
-                                       exporter_impl->_queue.cancel_all();
-                                       break;
-                                   case proc::timeline::event_type_t::any:
-                                       exporter_impl->_queue.cancel_all();
-                                       // 全てのexportをキャンセル
-                                       // timelineをcopyしてoperationに渡す
-                                       // 全てをexportする
-                                       break;
-                                   case proc::timeline::event_type_t::inserted:
-                                       // trackが追加された
-                                       // 同じtrackのexportをキャンセル
-                                       // trackをcopyしてoperationに渡す
-                                       // trackをexportする
-                                       break;
-                                   case proc::timeline::event_type_t::erased:
-                                       // trackが削除された
-                                       // 同じtrackのexportをキャンセル
-                                       // trackをoperation内で削除
-                                       // ファイルを削除
-                                       break;
-                                   case proc::timeline::event_type_t::replaced:
-                                       // trackが置き換えられた
-                                       // 同じtrackのexportをキャンセル
-                                       // trackをcopyしてoperationに渡す
-                                       // trackをexportする
-                                       break;
-                                   case proc::timeline::event_type_t::relayed:
-                                       // trackの内部が編集された
-                                       break;
+                               if (auto exporter = weak_exporter.lock()) {
+                                   exporter.impl_ptr<impl>()->_src_timeline_event(event);
                                }
                            })
                            .sync();
@@ -67,6 +32,45 @@ struct timeline_exporter::impl : base::impl {
     proc::timeline _src_timeline = nullptr;
     proc::timeline _timeline;  // バックグラウンドからのみ触るようにする
     chaining::observer_pool _pool;
+
+    void _src_timeline_event(proc::timeline::event_t const &event) {
+        switch (event.type()) {
+            case proc::timeline::event_type_t::fetched: {
+                this->_queue.cancel_all();
+
+                auto fetched_event = event.get<proc::timeline::fetched_event_t>();
+
+            } break;
+            case proc::timeline::event_type_t::any: {
+                this->_queue.cancel_all();
+
+                auto any_event = event.get<proc::timeline::any_event_t>();
+                // timelineをcopyしてoperationに渡す
+                // 全てをexportする
+            } break;
+            case proc::timeline::event_type_t::inserted:
+                // trackが追加された
+                // 同じtrackのexportをキャンセル
+                // trackをcopyしてoperationに渡す
+                // trackをexportする
+                break;
+            case proc::timeline::event_type_t::erased:
+                // trackが削除された
+                // 同じtrackのexportをキャンセル
+                // trackをoperation内で削除
+                // ファイルを削除
+                break;
+            case proc::timeline::event_type_t::replaced:
+                // trackが置き換えられた
+                // 同じtrackのexportをキャンセル
+                // trackをcopyしてoperationに渡す
+                // trackをexportする
+                break;
+            case proc::timeline::event_type_t::relayed:
+                // trackの内部が編集された
+                break;
+        }
+    }
 };
 
 timeline_exporter::timeline_exporter(url const &root_url, operation_queue queue)

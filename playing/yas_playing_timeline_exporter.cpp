@@ -104,6 +104,18 @@ struct timeline_exporter::impl : base::impl {
     void _erase_tracks(proc::timeline::erased_event_t const &event, timeline_exporter &exporter) {
         auto track_indices =
             to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
+        operation op{
+            [track_indices = std::move(track_indices), weak_exporter = to_weak(exporter)](auto const &) mutable {
+                if (auto exporter = weak_exporter.lock()) {
+                    auto exporter_impl = exporter.impl_ptr<impl>();
+                    auto &timeline = exporter_impl->_timeline;
+                    for (auto const &trk_idx : track_indices) {
+                        timeline.erase_track(trk_idx);
+                    }
+                    // trackのフォルダをまるっと削除する
+                }
+            },
+            {.priority = playing::queue_priority::exporter}};
         // 同じtrackのexportをキャンセル
         // trackをoperation内で削除
     }

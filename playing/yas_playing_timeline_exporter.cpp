@@ -18,8 +18,8 @@ struct timeline_exporter::impl : base::impl {
 
     void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
         this->_src_timeline = std::move(timeline);
-        this->_timeline = proc::timeline{};
 
+        this->_pool.invalidate();
         this->_pool += this->_src_timeline.chain()
                            .perform([weak_exporter = to_weak(exporter)](proc::timeline::event_t const &event) {
                                if (auto exporter = weak_exporter.lock()) {

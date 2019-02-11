@@ -25,7 +25,7 @@ struct timeline_exporter::impl : base::impl {
         this->_pool += this->_src_timeline.chain()
                            .perform([weak_exporter = to_weak(exporter)](proc::timeline::event_t const &event) {
                                if (auto exporter = weak_exporter.lock()) {
-                                   exporter.impl_ptr<impl>()->_timeline_event(event);
+                                   exporter.impl_ptr<impl>()->_timeline_event(event, exporter);
                                }
                            })
                            .sync();
@@ -36,16 +36,16 @@ struct timeline_exporter::impl : base::impl {
     proc::timeline _timeline;  // バックグラウンドからのみ触るようにする
     chaining::observer_pool _pool;
 
-    void _timeline_event(proc::timeline::event_t const &event) {
+    void _timeline_event(proc::timeline::event_t const &event, timeline_exporter &exporter) {
         switch (event.type()) {
             case proc::timeline::event_type_t::fetched: {
-                this->_replace_timeline(event.get<proc::timeline::fetched_event_t>());
+                this->_replace_timeline(event.get<proc::timeline::fetched_event_t>(), exporter);
             } break;
             case proc::timeline::event_type_t::inserted: {
-                this->_insert_tracks(event.get<proc::timeline::inserted_event_t>());
+                this->_insert_tracks(event.get<proc::timeline::inserted_event_t>(), exporter);
             } break;
             case proc::timeline::event_type_t::erased: {
-                this->_erase_tracks(event.get<proc::timeline::erased_event_t>());
+                this->_erase_tracks(event.get<proc::timeline::erased_event_t>(), exporter);
             } break;
             case proc::timeline::event_type_t::relayed: {
                 this->_relayed_event(event.get<proc::timeline::relayed_event_t>());
@@ -68,30 +68,28 @@ struct timeline_exporter::impl : base::impl {
         }
     }
 
-    void _replace_timeline(proc::timeline::fetched_event_t const &event) {
+    void _replace_timeline(proc::timeline::fetched_event_t const &event, timeline_exporter &exporter) {
         this->_queue.cancel_all();
 
         auto tracks = proc::copy_tracks(event.elements);
-
-        operation op{[tracks = std::move(tracks)](auto const &) {
+        operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](auto const &) {
 
                      },
                      {.priority = playing::queue_priority::exporter}};
 
         this->_queue.push_back(std::move(op));
-        // copied_tracksをoperationに渡す
         // timelineを新規に作成してcopied_tracksをセットする
         // 全てをexportする
     }
 
-    void _insert_tracks(proc::timeline::inserted_event_t const &event) {
+    void _insert_tracks(proc::timeline::inserted_event_t const &event, timeline_exporter &exporter) {
         auto copied_tracks = proc::copy_tracks(event.elements);
         // 同じtrackのexportをキャンセル
         // trackをcopyしてoperationに渡す
         // trackをexportする
     }
 
-    void _erase_tracks(proc::timeline::erased_event_t const &event) {
+    void _erase_tracks(proc::timeline::erased_event_t const &event, timeline_exporter &exporter) {
         auto track_indices =
             to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
         // 同じtrackのexportをキャンセル

@@ -60,7 +60,7 @@ struct audio_exporter::impl : base::impl {
         operation op{[handler = std::move(handler)](operation const &operation) {
                          dispatch_async(dispatch_get_main_queue(), [handler = std::move(handler)] { handler(); });
                      },
-                     {.priority = audio_queue_priority::exporter}};
+                     {.priority = queue_priority::exporter}};
 
         this->_queue.push_back(std::move(op));
     }
@@ -187,7 +187,7 @@ struct audio_exporter::impl : base::impl {
 
                 result_handler(export_result);
             },
-            {.cancel_id = this->_all_cancel_id, .priority = audio_queue_priority::exporter}};
+            {.cancel_id = this->_all_cancel_id, .priority = queue_priority::exporter}};
         this->_queue.push_back(std::move(op));
     }
 
@@ -202,7 +202,7 @@ struct audio_exporter::impl : base::impl {
                     result_handler(clear_result_t{clear_error::remove_failed});
                 }
             },
-            {.priority = audio_queue_priority::exporter});
+            {.priority = queue_priority::exporter});
         this->_queue.push_back(std::move(op));
     }
 };

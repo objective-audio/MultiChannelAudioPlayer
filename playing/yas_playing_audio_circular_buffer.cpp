@@ -80,23 +80,22 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 
     auto file_url = playing::url_utils::caf_url(this->_ch_url, file_idx);
 
-    operation op{
-        [container_ptr, file_url = std::move(file_url), file_idx](operation const &) {
-            auto file_result = audio::make_opened_file(audio::file::open_args{
-                .file_url = file_url,
-                .pcm_format = container_ptr->format().pcm_format(),
-                .interleaved = false,
-            });
+    operation op{[container_ptr, file_url = std::move(file_url), file_idx](operation const &) {
+                     auto file_result = audio::make_opened_file(audio::file::open_args{
+                         .file_url = file_url,
+                         .pcm_format = container_ptr->format().pcm_format(),
+                         .interleaved = false,
+                     });
 
-            if (file_result.is_error()) {
-                return;
-            }
+                     if (file_result.is_error()) {
+                         return;
+                     }
 
-            auto &file = file_result.value();
+                     auto &file = file_result.value();
 
-            auto load_result = container_ptr->load_from_file(file, file_idx);
-        },
-        operation_option_t{.push_cancel_id = container_ptr->identifier, .priority = audio_queue_priority::player}};
+                     auto load_result = container_ptr->load_from_file(file, file_idx);
+                 },
+                 operation_option_t{.push_cancel_id = container_ptr->identifier, .priority = queue_priority::player}};
 
     this->_queue.push_back(std::move(op));
 }

@@ -5,7 +5,7 @@
 #pragma once
 
 namespace yas::playing {
-enum audio_queue_priority : std::size_t {
+enum queue_priority : std::size_t {
     player = 0,
     exporter = 1,
 };

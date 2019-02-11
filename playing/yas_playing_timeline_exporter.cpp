@@ -5,6 +5,7 @@
 #include "yas_playing_timeline_exporter.h"
 #include <chaining/yas_chaining_umbrella.h>
 #include <processing/yas_processing_umbrella.h>
+#include <cpp_utils/yas_operation.h>
 
 using namespace yas;
 using namespace yas::playing;
@@ -70,6 +71,10 @@ struct timeline_exporter::impl : base::impl {
         this->_queue.cancel_all();
 
         auto copied_tracks = proc::copy_tracks(event.elements);
+        
+        operation op {[](auto const &){
+            
+        }};
         // copied_tracksをoperationに渡す
         // timelineを新規に作成してcopied_tracksをセットする
         // 全てをexportする

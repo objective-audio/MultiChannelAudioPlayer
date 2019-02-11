@@ -91,7 +91,11 @@ struct timeline_exporter::impl : base::impl {
         operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
-                             // timelineにtrackをinsertする
+                             auto &timeline = exporter_impl->_timeline;
+                             for (auto &pair : tracks) {
+                                 // このコードでOK？
+                                 timeline.insert_track(pair.first, std::move(pair.second));
+                             }
                              // trackをexportする
                          }
                      },

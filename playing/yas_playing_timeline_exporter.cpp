@@ -16,9 +16,9 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void set_timeline(proc::timeline &&timeline) {
-        this->_timeline = std::move(timeline);
+        this->_source_timeline = std::move(timeline);
 
-        this->_pool += this->_timeline.chain()
+        this->_pool += this->_source_timeline.chain()
                            .perform([](proc::timeline::event_t const &event) {
                                switch (event.type()) {
                                    case proc::timeline::event_type_t::fetched:
@@ -39,7 +39,7 @@ struct timeline_exporter::impl : base::impl {
     }
 
    private:
-    proc::timeline _timeline = nullptr;
+    proc::timeline _source_timeline = nullptr;
     chaining::observer_pool _pool;
 };
 

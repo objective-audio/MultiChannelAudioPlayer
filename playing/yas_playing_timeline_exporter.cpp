@@ -16,22 +16,39 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void set_timeline(proc::timeline &&timeline) {
-        this->_source_timeline = std::move(timeline);
+        this->_src_timeline = std::move(timeline);
+        this->_timeline = timeline.copy();
 
-        this->_pool += this->_source_timeline.chain()
+        this->_pool += this->_src_timeline.chain()
                            .perform([](proc::timeline::event_t const &event) {
                                switch (event.type()) {
                                    case proc::timeline::event_type_t::fetched:
+                                       break;
                                    case proc::timeline::event_type_t::any:
-                                       // 全部or何処かが変わった
+                                       // 全てのexportをキャンセル
+                                       // timelineをcopyしてoperationに渡す
+                                       // 全てをexportする
                                        break;
                                    case proc::timeline::event_type_t::inserted:
+                                       // trackが追加された
+                                       // 同じtrackのexportをキャンセル
+                                       // trackをcopyしてoperationに渡す
+                                       // trackをexportする
                                        break;
                                    case proc::timeline::event_type_t::erased:
+                                       // trackが削除された
+                                       // 同じtrackのexportをキャンセル
+                                       // trackをoperation内で削除
+                                       // ファイルを削除
                                        break;
                                    case proc::timeline::event_type_t::replaced:
+                                       // trackが置き換えられた
+                                       // 同じtrackのexportをキャンセル
+                                       // trackをcopyしてoperationに渡す
+                                       // trackをexportする
                                        break;
                                    case proc::timeline::event_type_t::relayed:
+                                       // trackの内部が編集された
                                        break;
                                }
                            })
@@ -39,7 +56,9 @@ struct timeline_exporter::impl : base::impl {
     }
 
    private:
-    proc::timeline _source_timeline = nullptr;
+    proc::timeline _src_timeline = nullptr;
+    proc::timeline _timeline = nullptr;  // バックグラウンドからのみ触るようにする
+    std::recursive_mutex _timeline_mutex;
     chaining::observer_pool _pool;
 };
 

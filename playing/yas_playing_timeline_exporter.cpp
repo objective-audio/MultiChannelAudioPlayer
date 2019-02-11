@@ -58,7 +58,6 @@ struct timeline_exporter::impl : base::impl {
    private:
     proc::timeline _src_timeline = nullptr;
     proc::timeline _timeline = nullptr;  // バックグラウンドからのみ触るようにする
-    std::recursive_mutex _timeline_mutex;
     chaining::observer_pool _pool;
 };
 

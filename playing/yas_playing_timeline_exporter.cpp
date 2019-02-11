@@ -23,7 +23,7 @@ struct timeline_exporter::impl : base::impl {
         this->_pool += this->_src_timeline.chain()
                            .perform([weak_exporter = to_weak(exporter)](proc::timeline::event_t const &event) {
                                if (auto exporter = weak_exporter.lock()) {
-                                   exporter.impl_ptr<impl>()->_src_timeline_event(event);
+                                   exporter.impl_ptr<impl>()->_timeline_event(event);
                                }
                            })
                            .sync();
@@ -34,7 +34,7 @@ struct timeline_exporter::impl : base::impl {
     proc::timeline _timeline;  // バックグラウンドからのみ触るようにする
     chaining::observer_pool _pool;
 
-    void _src_timeline_event(proc::timeline::event_t const &event) {
+    void _timeline_event(proc::timeline::event_t const &event) {
         switch (event.type()) {
             case proc::timeline::event_type_t::fetched: {
                 this->_queue.cancel_all();
@@ -55,10 +55,25 @@ struct timeline_exporter::impl : base::impl {
             case proc::timeline::event_type_t::erased: {
                 // 同じtrackのexportをキャンセル
                 // trackをoperation内で削除
+                auto erased_event = event.get<proc::timeline::erased_event_t>();
+                auto copied_tracks = proc::copy_tracks(erased_event.elements);
                 // ファイルを削除
             } break;
             case proc::timeline::event_type_t::relayed: {
-                // trackの内部が編集された
+                this->_relayed_event(event.get<proc::timeline::relayed_event_t>());
+            } break;
+            default:
+                throw std::runtime_error("unreachable code.");
+        }
+    }
+
+    void _relayed_event(proc::timeline::relayed_event_t const &event) {
+        switch (event.relayed.type()) {
+            case proc::track::event_type_t::fetched: {
+            } break;
+            case proc::track::event_type_t::inserted: {
+            } break;
+            case proc::track::event_type_t::erased: {
             } break;
             default:
                 throw std::runtime_error("unreachable code.");

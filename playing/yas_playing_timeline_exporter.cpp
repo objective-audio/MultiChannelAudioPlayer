@@ -79,6 +79,21 @@ struct timeline_exporter::impl : base::impl {
                 throw std::runtime_error("unreachable code.");
         }
     }
+
+    void _replace_timeline(proc::timeline::track_map_t &&tracks) {
+    }
+
+    void _insert_tracks(proc::timeline::track_map_t &&tracks) {
+    }
+
+    void _erase_tracks(proc::timeline::track_map_t &&tracks) {
+    }
+
+    void _insert_modules() {
+    }
+
+    void _erase_modules() {
+    }
 };
 
 timeline_exporter::timeline_exporter(url const &root_url, operation_queue queue)

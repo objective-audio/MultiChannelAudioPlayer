@@ -93,7 +93,6 @@ struct timeline_exporter::impl : base::impl {
                              auto exporter_impl = exporter.impl_ptr<impl>();
                              auto &timeline = exporter_impl->_timeline;
                              for (auto &pair : tracks) {
-                                 // このコードでOK？
                                  timeline.insert_track(pair.first, std::move(pair.second));
                              }
                              // trackをexportする

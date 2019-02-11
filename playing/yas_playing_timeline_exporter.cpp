@@ -4,6 +4,7 @@
 
 #include "yas_playing_timeline_exporter.h"
 #include <chaining/yas_chaining_umbrella.h>
+#include <processing/yas_processing_umbrella.h>
 
 using namespace yas;
 using namespace yas::playing;
@@ -39,24 +40,26 @@ struct timeline_exporter::impl : base::impl {
                 this->_queue.cancel_all();
 
                 auto fetched_event = event.get<proc::timeline::fetched_event_t>();
-                // timelineをcopyしてoperationに渡す
+                auto copied_tracks = proc::copy_tracks(fetched_event.elements);
+                // copied_tracksをoperationに渡す
+                // timelineを新規に作成してcopied_tracksをセットする
                 // 全てをexportする
             } break;
-            case proc::timeline::event_type_t::inserted:
-                // trackが追加された
+            case proc::timeline::event_type_t::inserted: {
                 // 同じtrackのexportをキャンセル
                 // trackをcopyしてoperationに渡す
+                auto inserted_event = event.get<proc::timeline::inserted_event_t>();
+                auto copied_tracks = proc::copy_tracks(inserted_event.elements);
                 // trackをexportする
-                break;
-            case proc::timeline::event_type_t::erased:
-                // trackが削除された
+            } break;
+            case proc::timeline::event_type_t::erased: {
                 // 同じtrackのexportをキャンセル
                 // trackをoperation内で削除
                 // ファイルを削除
-                break;
-            case proc::timeline::event_type_t::relayed:
+            } break;
+            case proc::timeline::event_type_t::relayed: {
                 // trackの内部が編集された
-                break;
+            } break;
             default:
                 throw std::runtime_error("unreachable code.");
         }

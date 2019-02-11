@@ -71,7 +71,7 @@ struct timeline_exporter::impl : base::impl {
     void _replace_timeline(proc::timeline::fetched_event_t const &event, timeline_exporter &exporter) {
         this->_queue.cancel_all();
 
-        proc::timeline::track_map_t tracks = proc::copy_tracks(event.elements);
+        auto tracks = proc::copy_tracks(event.elements);
         operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
@@ -85,10 +85,17 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void _insert_tracks(proc::timeline::inserted_event_t const &event, timeline_exporter &exporter) {
-        auto copied_tracks = proc::copy_tracks(event.elements);
         // 同じtrackのexportをキャンセル
-        // trackをcopyしてoperationに渡す
-        // trackをexportする
+
+        auto tracks = proc::copy_tracks(event.elements);
+        operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](auto const &) mutable {
+                         if (auto exporter = weak_exporter.lock()) {
+                             auto exporter_impl = exporter.impl_ptr<impl>();
+                             // timelineにtrackをinsertする
+                             // trackをexportする
+                         }
+                     },
+                     {.priority = playing::queue_priority::exporter}};
     }
 
     void _erase_tracks(proc::timeline::erased_event_t const &event, timeline_exporter &exporter) {

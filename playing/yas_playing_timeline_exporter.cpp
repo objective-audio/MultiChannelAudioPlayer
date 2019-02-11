@@ -76,6 +76,7 @@ struct timeline_exporter::impl : base::impl {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
                              exporter_impl->_timeline = proc::timeline{std::move(tracks)};
+                             // timelineのフォルダを削除する？
                              // 全てをexportする
                          }
                      },

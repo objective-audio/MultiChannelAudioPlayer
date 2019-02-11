@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <audio/yas_audio_format.h>
+
 namespace yas::playing {
 enum queue_priority : std::size_t {
     player = 0,

@@ -39,12 +39,6 @@ struct timeline_exporter::impl : base::impl {
                 this->_queue.cancel_all();
 
                 auto fetched_event = event.get<proc::timeline::fetched_event_t>();
-
-            } break;
-            case proc::timeline::event_type_t::any: {
-                this->_queue.cancel_all();
-
-                auto any_event = event.get<proc::timeline::any_event_t>();
                 // timelineをcopyしてoperationに渡す
                 // 全てをexportする
             } break;
@@ -60,15 +54,11 @@ struct timeline_exporter::impl : base::impl {
                 // trackをoperation内で削除
                 // ファイルを削除
                 break;
-            case proc::timeline::event_type_t::replaced:
-                // trackが置き換えられた
-                // 同じtrackのexportをキャンセル
-                // trackをcopyしてoperationに渡す
-                // trackをexportする
-                break;
             case proc::timeline::event_type_t::relayed:
                 // trackの内部が編集された
                 break;
+            default:
+                throw std::runtime_error("unreachable code.");
         }
     }
 };

@@ -15,12 +15,12 @@ struct timeline_exporter::impl : base::impl {
     impl(url const &root_url, operation_queue &&queue) : _root_url(root_url), _queue(std::move(queue)) {
     }
 
-    void set_timeline(proc::timeline &&timeline) {
+    void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
         this->_src_timeline = std::move(timeline);
         this->_timeline = timeline.copy();
 
         this->_pool += this->_src_timeline.chain()
-                           .perform([](proc::timeline::event_t const &event) {
+                           .perform([weak_exporter = to_weak(exporter)](proc::timeline::event_t const &event) {
                                switch (event.type()) {
                                    case proc::timeline::event_type_t::fetched:
                                        break;
@@ -69,5 +69,5 @@ timeline_exporter::timeline_exporter(std::nullptr_t) : base(nullptr) {
 }
 
 void timeline_exporter::set_timeline(proc::timeline timeline) {
-    impl_ptr<impl>()->set_timeline(std::move(timeline));
+    impl_ptr<impl>()->set_timeline(std::move(timeline), *this);
 }

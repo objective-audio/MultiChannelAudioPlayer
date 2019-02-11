@@ -17,14 +17,22 @@ struct timeline_exporter::impl : base::impl {
 
     void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
         this->_src_timeline = std::move(timeline);
-        this->_timeline = timeline.copy();
+        this->_timeline = proc::timeline{};
 
         this->_pool += this->_src_timeline.chain()
                            .perform([weak_exporter = to_weak(exporter)](proc::timeline::event_t const &event) {
+                               auto exporter = weak_exporter.lock();
+                               if (!exporter) {
+                                   return;
+                               }
+                               auto exporter_impl = exporter.impl_ptr<impl>();
+
                                switch (event.type()) {
                                    case proc::timeline::event_type_t::fetched:
+                                       exporter_impl->_queue.cancel_all();
                                        break;
                                    case proc::timeline::event_type_t::any:
+                                       exporter_impl->_queue.cancel_all();
                                        // 全てのexportをキャンセル
                                        // timelineをcopyしてoperationに渡す
                                        // 全てをexportする
@@ -57,7 +65,7 @@ struct timeline_exporter::impl : base::impl {
 
    private:
     proc::timeline _src_timeline = nullptr;
-    proc::timeline _timeline = nullptr;  // バックグラウンドからのみ触るようにする
+    proc::timeline _timeline;  // バックグラウンドからのみ触るようにする
     chaining::observer_pool _pool;
 };
 

@@ -126,10 +126,14 @@ struct timeline_exporter::impl : base::impl {
 
     void _insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event,
                          timeline_exporter &exporter) {
+        // track内のmoduleを追加
+        // moduleの範囲をexportする
     }
 
     void _erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event,
                         timeline_exporter &exporter) {
+        // track内のmoduleを追加
+        // moduleの範囲を削除しexportする
     }
 };
 

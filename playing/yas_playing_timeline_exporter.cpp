@@ -126,14 +126,33 @@ struct timeline_exporter::impl : base::impl {
 
     void _insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event,
                          timeline_exporter &exporter) {
-        // track内のmoduleを追加
-        // moduleの範囲をexportする
+        auto modules = proc::copy_modules(event.elements);
+        operation op{[trk_idx, modules = std::move(modules), weak_exporter = to_weak(exporter)](auto const &) mutable {
+                         if (auto exporter = weak_exporter.lock()) {
+                             auto exporter_impl = exporter.impl_ptr<impl>();
+                             auto &timeline = exporter_impl->_timeline;
+                             for (auto &pair : modules) {
+                                 timeline.track(trk_idx).insert_module(pair.first, std::move(pair.second));
+                             }
+                             // moduleの範囲をexportする
+                         }
+                     },
+                     {.priority = playing::queue_priority::exporter}};
     }
 
     void _erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event,
                         timeline_exporter &exporter) {
-        // track内のmoduleを追加
-        // moduleの範囲を削除しexportする
+        auto modules = proc::copy_modules(event.elements);
+        operation op{[trk_idx, modules = std::move(modules), weak_exporter = to_weak(exporter)](auto const &) mutable {
+                         if (auto exporter = weak_exporter.lock()) {
+                             auto exporter_impl = exporter.impl_ptr<impl>();
+                             auto &timeline = exporter_impl->_timeline;
+                             // track内のmoduleを削除
+                             // 何かmoduleを一致させるidが必要では？
+                             // moduleの範囲を削除しexportする
+                         }
+                     },
+                     {.priority = playing::queue_priority::exporter}};
     }
 };
 

@@ -9,9 +9,17 @@
 using namespace yas;
 using namespace yas::playing;
 
-struct timeline_canceling_matcher::impl : base::impl {};
+struct timeline_canceling_matcher::impl : base::impl {
+    proc::track_index_t const trk_idx;
+    proc::time::range const range;
 
-timeline_canceling_matcher::timeline_canceling_matcher() : base(std::make_shared<impl>()) {
+    impl(proc::track_index_t const trk_idx, proc::time::range const &range) : trk_idx(trk_idx), range(range) {
+    }
+};
+
+timeline_canceling_matcher::timeline_canceling_matcher(proc::track_index_t const trk_idx,
+                                                       proc::time::range const &range)
+    : base(std::make_shared<impl>(trk_idx, range)) {
 }
 
 timeline_canceling_matcher::timeline_canceling_matcher(std::nullptr_t) : base(nullptr) {

@@ -57,8 +57,6 @@ struct timeline_exporter::impl : base::impl {
 
     void _relayed_event(proc::timeline::relayed_event_t const &event, timeline_exporter &exporter) {
         switch (event.relayed.type()) {
-            case proc::track::event_type_t::fetched: {
-            } break;
             case proc::track::event_type_t::inserted: {
                 this->_insert_modules(event.key, event.relayed.get<proc::track::inserted_event_t>(), exporter);
             } break;
@@ -107,7 +105,6 @@ struct timeline_exporter::impl : base::impl {
 
     void _erase_tracks(proc::timeline::erased_event_t const &event, timeline_exporter &exporter) {
         // 同じtrackのexportをキャンセル
-
         auto track_indices =
             to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
         operation op{
@@ -126,6 +123,7 @@ struct timeline_exporter::impl : base::impl {
 
     void _insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event,
                          timeline_exporter &exporter) {
+        // moduleの範囲に完全に含まれるoperationをキャンセル
         auto modules = proc::copy_modules(event.elements);
         operation op{[trk_idx, modules = std::move(modules), weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
@@ -134,7 +132,7 @@ struct timeline_exporter::impl : base::impl {
                              for (auto &pair : modules) {
                                  timeline.track(trk_idx).insert_module(pair.first, std::move(pair.second));
                              }
-                             // moduleの範囲をexportする
+                             // moduleの範囲を削除しexport（1秒単位が良い？）
                          }
                      },
                      {.priority = playing::queue_priority::exporter}};
@@ -142,6 +140,7 @@ struct timeline_exporter::impl : base::impl {
 
     void _erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event,
                         timeline_exporter &exporter) {
+        // moduleの範囲に完全に含まれるoperationをキャンセル
         auto modules = proc::copy_modules(event.elements);
         operation op{[trk_idx, modules = std::move(modules), weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
@@ -149,7 +148,7 @@ struct timeline_exporter::impl : base::impl {
                              auto &timeline = exporter_impl->_timeline;
                              // track内のmoduleを削除
                              // 何かmoduleを一致させるidが必要では？
-                             // moduleの範囲を削除しexportする
+                             // moduleの範囲を削除しexport（1秒単位が良い？）
                          }
                      },
                      {.priority = playing::queue_priority::exporter}};

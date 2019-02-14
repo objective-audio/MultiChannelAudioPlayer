@@ -38,7 +38,7 @@
 		B62879C721EB641C00566CC1 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879C621EB641C00566CC1 /* objc_utils.framework */; };
 		B62879C921EB641C00566CC1 /* processing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62879C821EB641C00566CC1 /* processing.framework */; };
 		B629BD822213A516008B2761 /* yas_playing_timeline_canceling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B629BD802213A516008B2761 /* yas_playing_timeline_canceling.cpp */; };
-		B629BD832213A516008B2761 /* yas_playing_timeline_canceling.h in Headers */ = {isa = PBXBuildFile; fileRef = B629BD812213A516008B2761 /* yas_playing_timeline_canceling.h */; };
+		B629BD832213A516008B2761 /* yas_playing_timeline_canceling.h in Headers */ = {isa = PBXBuildFile; fileRef = B629BD812213A516008B2761 /* yas_playing_timeline_canceling.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D4C60D21EC6455004A95A8 /* yas_playing_umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B62879BE21EB623F00566CC1 /* yas_playing_umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 

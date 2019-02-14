@@ -25,14 +25,14 @@ struct timeline_cancel_request : protocol {
 struct timeline_track_cancel_request_id : base {
     class impl;
 
-    timeline_track_cancel_request_id(proc::track_index_t const trk_idx);
+    explicit timeline_track_cancel_request_id(proc::track_index_t const trk_idx);
     timeline_track_cancel_request_id(std::nullptr_t);
 };
 
 struct timeline_range_cancel_request_id : base {
     class impl;
 
-    timeline_range_cancel_request_id(proc::time::range const &range);
+    explicit timeline_range_cancel_request_id(proc::time::range const &range);
     timeline_range_cancel_request_id(std::nullptr_t);
 };
 }  // namespace yas::playing

@@ -93,20 +93,36 @@ struct timeline_exporter::impl : base::impl {
             this->_queue.cancel_for_id(timeline_track_cancel_request_id(pair.first));
         }
 
-        operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](auto const &) mutable {
-                         if (auto exporter = weak_exporter.lock()) {
-                             auto exporter_impl = exporter.impl_ptr<impl>();
-                             auto &timeline = exporter_impl->_timeline;
-                             for (auto &pair : tracks) {
-                                 timeline.insert_track(pair.first, std::move(pair.second));
-                             }
-                             // trackのフォルダを一旦消す？
-                             // trackをexportする
-                         }
-                     },
-                     {.priority = playing::queue_priority::exporter}};
+        for (auto &pair : tracks) {
+            operation insert_op{
+                [trk_idx = pair.first, track = std::move(pair.second),
+                 weak_exporter = to_weak(exporter)](operation const &operation) mutable {
+                    if (operation.is_canceled()) {
+                        return;
+                    }
+                    if (auto exporter = weak_exporter.lock()) {
+                        exporter.impl_ptr<impl>()->_timeline.insert_track(trk_idx, std::move(track));
+                    }
+                },
+                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(pair.first)}};
 
-        this->_queue.push_back(std::move(op));
+            this->_queue.push_back(std::move(insert_op));
+        }
+
+        for (auto const &pair : tracks) {
+            operation export_op{
+                [trk_idx = pair.first, track = std::move(pair.second),
+                 weak_exporter = to_weak(exporter)](operation const &operation) mutable {
+                    if (operation.is_canceled()) {
+                        return;
+                    }
+                    // TODO トラックのフォルダを削除
+                    // TODO トラック全体をexport
+                },
+                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(pair.first)}};
+
+            this->_queue.push_back(std::move(export_op));
+        }
     }
 
     void _erase_tracks(proc::timeline::erased_event_t const &event, timeline_exporter &exporter) {
@@ -129,7 +145,7 @@ struct timeline_exporter::impl : base::impl {
                     // trackのフォルダをまるっと削除する
                 }
             },
-            {.priority = playing::queue_priority::exporter}};
+            {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id{}}};
 
         this->_queue.push_back(std::move(op));
     }

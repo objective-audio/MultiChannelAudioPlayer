@@ -10,11 +10,11 @@ using namespace yas::playing;
 #pragma mark - cancel_id
 
 struct timeline_cancel_matcher_id::impl : base::impl {
-    proc::track_index_t const trk_idx;
+    std::optional<proc::track_index_t> const trk_idx;
     std::optional<proc::time::range> const range;
 
-    impl(proc::track_index_t const trk_idx, std::optional<proc::time::range> &&range)
-        : trk_idx(trk_idx), range(std::move(range)) {
+    impl(std::optional<proc::track_index_t> &&trk_idx, std::optional<proc::time::range> &&range)
+        : trk_idx(std::move(trk_idx)), range(std::move(range)) {
     }
 
     bool is_equal(std::shared_ptr<base::impl> const &rhs) const override {
@@ -32,6 +32,9 @@ timeline_cancel_matcher_id::timeline_cancel_matcher_id(proc::track_index_t const
 
 timeline_cancel_matcher_id::timeline_cancel_matcher_id(proc::track_index_t const trk_idx)
     : base(std::make_shared<impl>(trk_idx, std::nullopt)) {
+}
+
+timeline_cancel_matcher_id::timeline_cancel_matcher_id() : base(std::make_shared<impl>(std::nullopt, std::nullopt)) {
 }
 
 timeline_cancel_matcher_id::timeline_cancel_matcher_id(std::nullptr_t) : base(nullptr) {

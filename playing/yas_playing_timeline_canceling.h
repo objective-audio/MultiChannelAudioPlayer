@@ -14,6 +14,7 @@ struct timeline_cancel_matcher_id : base {
 
     timeline_cancel_matcher_id(proc::track_index_t const trk_idx, proc::time::range const &range);
     timeline_cancel_matcher_id(proc::track_index_t const trk_idx);
+    timeline_cancel_matcher_id();
     timeline_cancel_matcher_id(std::nullptr_t);
 };
 

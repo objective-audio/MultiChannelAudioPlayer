@@ -96,10 +96,7 @@ struct timeline_exporter::impl : base::impl {
         for (auto &pair : tracks) {
             operation insert_op{
                 [trk_idx = pair.first, track = std::move(pair.second),
-                 weak_exporter = to_weak(exporter)](operation const &operation) mutable {
-                    if (operation.is_canceled()) {
-                        return;
-                    }
+                 weak_exporter = to_weak(exporter)](auto const &) mutable {
                     if (auto exporter = weak_exporter.lock()) {
                         exporter.impl_ptr<impl>()->_timeline.insert_track(trk_idx, std::move(track));
                     }
@@ -111,11 +108,7 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto const &pair : tracks) {
             operation export_op{
-                [trk_idx = pair.first, track = std::move(pair.second),
-                 weak_exporter = to_weak(exporter)](operation const &operation) mutable {
-                    if (operation.is_canceled()) {
-                        return;
-                    }
+                [trk_idx = pair.first, weak_exporter = to_weak(exporter)](auto const &) mutable {
                     // TODO トラックのフォルダを削除
                     // TODO トラック全体をexport
                 },
@@ -133,27 +126,38 @@ struct timeline_exporter::impl : base::impl {
             this->_queue.cancel_for_id(timeline_track_cancel_request_id(trk_idx));
         }
 
-        // eraseなのでキャンセルされてはいけない
-        operation op{
-            [track_indices = std::move(track_indices), weak_exporter = to_weak(exporter)](auto const &) mutable {
-                if (auto exporter = weak_exporter.lock()) {
-                    auto exporter_impl = exporter.impl_ptr<impl>();
-                    auto &timeline = exporter_impl->_timeline;
-                    for (auto const &trk_idx : track_indices) {
-                        timeline.erase_track(trk_idx);
+        for (auto &trk_idx : track_indices) {
+            operation op{
+                [trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
+                    if (auto exporter = weak_exporter.lock()) {
+                        exporter.impl_ptr<impl>()->_timeline.erase_track(trk_idx);
                     }
-                    // trackのフォルダをまるっと削除する
-                }
-            },
-            {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id{}}};
+                },
+                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(trk_idx)}};
 
-        this->_queue.push_back(std::move(op));
+            this->_queue.push_back(std::move(op));
+        }
+
+        for (auto &trk_idx : track_indices) {
+            operation op{
+                [trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
+                    // TODO トラックのフォルダを削除
+                },
+                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(trk_idx)}};
+
+            this->_queue.push_back(std::move(op));
+        }
     }
 
     void _insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event,
                          timeline_exporter &exporter) {
-        // moduleの範囲に完全に含まれるoperationをキャンセル
         auto modules = proc::copy_modules(event.elements);
+
+        for (auto const &pair : modules) {
+            this->_queue.cancel_for_id(timeline_range_cancel_request_id(pair.first));
+        }
+
+        // TODO トラックと同じようにoperationを分ける
         operation op{[trk_idx, modules = std::move(modules), weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
@@ -171,8 +175,11 @@ struct timeline_exporter::impl : base::impl {
 
     void _erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event,
                         timeline_exporter &exporter) {
-        // moduleの範囲に完全に含まれるoperationをキャンセル
         auto modules = proc::copy_modules(event.elements);
+
+        // TODO moduleの範囲に完全に含まれるoperationをキャンセル
+
+        // TODO トラックと同じようにoperationを分ける
         operation op{[trk_idx, modules = std::move(modules), weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();

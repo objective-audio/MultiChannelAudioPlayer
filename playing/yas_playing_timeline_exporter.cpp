@@ -160,8 +160,7 @@ struct timeline_exporter::impl : base::impl {
         // TODO トラックと同じようにoperationを分ける
         operation op{[trk_idx, modules = std::move(modules), weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
-                             auto exporter_impl = exporter.impl_ptr<impl>();
-                             auto &timeline = exporter_impl->_timeline;
+                             auto &timeline = exporter.impl_ptr<impl>()->_timeline;
                              for (auto &pair : modules) {
                                  timeline.track(trk_idx).insert_module(pair.first, std::move(pair.second));
                              }
@@ -182,8 +181,7 @@ struct timeline_exporter::impl : base::impl {
         // TODO トラックと同じようにoperationを分ける
         operation op{[trk_idx, modules = std::move(modules), weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
-                             auto exporter_impl = exporter.impl_ptr<impl>();
-                             auto &timeline = exporter_impl->_timeline;
+                             auto &timeline = exporter.impl_ptr<impl>()->_timeline;
                              // track内のmoduleを削除
                              // 何かmoduleを一致させるidが必要では？
                              // moduleの範囲を削除しexport（1秒単位が良い？）

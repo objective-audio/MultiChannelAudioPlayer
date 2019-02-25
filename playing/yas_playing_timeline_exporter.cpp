@@ -7,6 +7,7 @@
 #include <cpp_utils/yas_operation.h>
 #include <processing/yas_processing_umbrella.h>
 #include "yas_playing_audio_types.h"
+#include "yas_playing_timeline_canceling.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -86,9 +87,12 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void _insert_tracks(proc::timeline::inserted_event_t const &event, timeline_exporter &exporter) {
-        // 同じtrackのexportをキャンセル
-
         auto tracks = proc::copy_tracks(event.elements);
+
+        for (auto const &pair : tracks) {
+            this->_queue.cancel_for_id(timeline_track_cancel_request_id(pair.first));
+        }
+
         operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
@@ -101,12 +105,19 @@ struct timeline_exporter::impl : base::impl {
                          }
                      },
                      {.priority = playing::queue_priority::exporter}};
+
+        this->_queue.push_back(std::move(op));
     }
 
     void _erase_tracks(proc::timeline::erased_event_t const &event, timeline_exporter &exporter) {
-        // 同じtrackのexportをキャンセル
         auto track_indices =
             to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
+
+        for (auto const &trk_idx : track_indices) {
+            this->_queue.cancel_for_id(timeline_track_cancel_request_id(trk_idx));
+        }
+
+        // eraseなのでキャンセルされてはいけない
         operation op{
             [track_indices = std::move(track_indices), weak_exporter = to_weak(exporter)](auto const &) mutable {
                 if (auto exporter = weak_exporter.lock()) {
@@ -119,6 +130,8 @@ struct timeline_exporter::impl : base::impl {
                 }
             },
             {.priority = playing::queue_priority::exporter}};
+
+        this->_queue.push_back(std::move(op));
     }
 
     void _insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event,
@@ -136,6 +149,8 @@ struct timeline_exporter::impl : base::impl {
                          }
                      },
                      {.priority = playing::queue_priority::exporter}};
+
+        this->_queue.push_back(std::move(op));
     }
 
     void _erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event,
@@ -152,6 +167,8 @@ struct timeline_exporter::impl : base::impl {
                          }
                      },
                      {.priority = playing::queue_priority::exporter}};
+
+        this->_queue.push_back(std::move(op));
     }
 };
 

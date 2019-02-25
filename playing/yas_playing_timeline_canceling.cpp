@@ -11,9 +11,10 @@ using namespace yas::playing;
 
 struct timeline_cancel_matcher_id::impl : base::impl {
     proc::track_index_t const trk_idx;
-    proc::time::range const range;
+    std::optional<proc::time::range> const range;
 
-    impl(proc::track_index_t const trk_idx, proc::time::range const &range) : trk_idx(trk_idx), range(range) {
+    impl(proc::track_index_t const trk_idx, std::optional<proc::time::range> &&range)
+        : trk_idx(trk_idx), range(std::move(range)) {
     }
 
     bool is_equal(std::shared_ptr<base::impl> const &rhs) const override {
@@ -26,7 +27,11 @@ struct timeline_cancel_matcher_id::impl : base::impl {
 
 timeline_cancel_matcher_id::timeline_cancel_matcher_id(proc::track_index_t const trk_idx,
                                                        proc::time::range const &range)
-    : base(std::make_shared<impl>(trk_idx, range)) {
+    : base(std::make_shared<impl>(trk_idx, std::make_optional(range))) {
+}
+
+timeline_cancel_matcher_id::timeline_cancel_matcher_id(proc::track_index_t const trk_idx)
+    : base(std::make_shared<impl>(trk_idx, std::nullopt)) {
 }
 
 timeline_cancel_matcher_id::timeline_cancel_matcher_id(std::nullptr_t) : base(nullptr) {
@@ -68,7 +73,11 @@ struct timeline_range_cancel_request_id::impl : base::impl, timeline_cancel_requ
     }
 
     bool is_match(timeline_cancel_matcher_id::impl const &matcher_impl) const override {
-        return this->range.is_contain(matcher_impl.range);
+        if (matcher_impl.range.has_value()) {
+            return this->range.is_contain(*matcher_impl.range);
+        } else {
+            return false;
+        }
     }
 
     bool is_equal(std::shared_ptr<base::impl> const &rhs) const override {

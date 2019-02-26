@@ -157,39 +157,72 @@ struct timeline_exporter::impl : base::impl {
             this->_queue.cancel_for_id(timeline_range_cancel_request_id(pair.first));
         }
 
-        // TODO トラックと同じようにoperationを分ける
-        operation op{[trk_idx, modules = std::move(modules), weak_exporter = to_weak(exporter)](auto const &) mutable {
-                         if (auto exporter = weak_exporter.lock()) {
-                             auto &timeline = exporter.impl_ptr<impl>()->_timeline;
-                             for (auto &pair : modules) {
-                                 timeline.track(trk_idx).insert_module(pair.first, std::move(pair.second));
+        for (auto &pair : modules) {
+            auto const &range = pair.first;
+            operation op{[trk_idx, range = range, module = std::move(pair.second),
+                          weak_exporter = to_weak(exporter)](auto const &) mutable {
+                             if (auto exporter = weak_exporter.lock()) {
+                                 exporter.impl_ptr<impl>()->_timeline.track(trk_idx).insert_module(range,
+                                                                                                   std::move(module));
                              }
-                             // moduleの範囲を削除しexport（1秒単位が良い？）
-                         }
-                     },
-                     {.priority = playing::queue_priority::exporter}};
+                         },
+                         {.priority = playing::queue_priority::exporter,
+                          .cancel_id = timeline_cancel_matcher_id(trk_idx, range)}};
 
-        this->_queue.push_back(std::move(op));
+            this->_queue.push_back(std::move(op));
+        }
+
+        for (auto const &pair : modules) {
+            auto const &range = pair.first;
+            operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](auto const &) mutable {
+                             if (auto exporter = weak_exporter.lock()) {
+                                 // moduleの範囲を削除しexport（1秒単位が良い？）
+                             }
+                         },
+                         {.priority = playing::queue_priority::exporter,
+                          .cancel_id = timeline_cancel_matcher_id(trk_idx, range)}};
+
+            this->_queue.push_back(std::move(op));
+        }
     }
 
     void _erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event,
                         timeline_exporter &exporter) {
         auto modules = proc::copy_modules(event.elements);
 
-        // TODO moduleの範囲に完全に含まれるoperationをキャンセル
+        for (auto const &pair : modules) {
+            this->_queue.cancel_for_id(timeline_range_cancel_request_id(pair.first));
+        }
 
-        // TODO トラックと同じようにoperationを分ける
-        operation op{[trk_idx, modules = std::move(modules), weak_exporter = to_weak(exporter)](auto const &) mutable {
-                         if (auto exporter = weak_exporter.lock()) {
-                             auto &timeline = exporter.impl_ptr<impl>()->_timeline;
-                             // track内のmoduleを削除
-                             // 何かmoduleを一致させるidが必要では？
-                             // moduleの範囲を削除しexport（1秒単位が良い？）
-                         }
-                     },
-                     {.priority = playing::queue_priority::exporter}};
+        for (auto &pair : modules) {
+            auto const &range = pair.first;
+            operation op{[trk_idx, range = range, module = std::move(pair.second),
+                          weak_exporter = to_weak(exporter)](auto const &) mutable {
+                             if (auto exporter = weak_exporter.lock()) {
+                                 // track内のmoduleを削除
+                                 // 何かmoduleを一致させるidが必要では？
+                                 //                    exporter.impl_ptr<impl>()->_timeline.track(trk_idx).insert_module(range,
+                                 //                                                                                      std::move(module));
+                             }
+                         },
+                         {.priority = playing::queue_priority::exporter,
+                          .cancel_id = timeline_cancel_matcher_id(trk_idx, range)}};
 
-        this->_queue.push_back(std::move(op));
+            this->_queue.push_back(std::move(op));
+        }
+
+        for (auto const &pair : modules) {
+            auto const &range = pair.first;
+            operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](auto const &) mutable {
+                             if (auto exporter = weak_exporter.lock()) {
+                                 // moduleの範囲を削除（1秒単位が良い？）
+                             }
+                         },
+                         {.priority = playing::queue_priority::exporter,
+                          .cancel_id = timeline_cancel_matcher_id(trk_idx, range)}};
+
+            this->_queue.push_back(std::move(op));
+        }
     }
 };
 

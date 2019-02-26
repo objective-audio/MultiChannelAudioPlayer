@@ -109,8 +109,8 @@ struct timeline_exporter::impl : base::impl {
         for (auto const &pair : tracks) {
             operation export_op{
                 [trk_idx = pair.first, weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    // TODO トラックのフォルダを削除
-                    // TODO トラック全体をexport
+                    // TODO 差し替え前のトラックに関連するチャンネルのフォルダを削除
+                    // TODO トラックに関連するチャンネル全体をexport
                 },
                 {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(pair.first)}};
 
@@ -141,7 +141,8 @@ struct timeline_exporter::impl : base::impl {
         for (auto &trk_idx : track_indices) {
             operation op{
                 [trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    // TODO トラックのフォルダを削除
+                    // TODO 差し替え前のトラックに関連するチャンネルのフォルダを削除
+                    // TODO 差し替え前のトラックに関連するチャンネルの範囲をexport
                 },
                 {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(trk_idx)}};
 
@@ -214,7 +215,7 @@ struct timeline_exporter::impl : base::impl {
             auto const &range = pair.first;
             operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
-                                 // moduleの範囲を削除（1秒単位が良い？）
+                                 // moduleの範囲を削除しexport（1秒単位が良い？）
                              }
                          },
                          {.priority = playing::queue_priority::exporter,

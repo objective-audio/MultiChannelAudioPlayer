@@ -201,8 +201,7 @@ struct timeline_exporter::impl : base::impl {
                              if (auto exporter = weak_exporter.lock()) {
                                  // track内のmoduleを削除
                                  // 何かmoduleを一致させるidが必要では？
-                                 //                    exporter.impl_ptr<impl>()->_timeline.track(trk_idx).insert_module(range,
-                                 //                                                                                      std::move(module));
+                                 // exporter.impl_ptr<impl>()->_timeline.track(trk_idx).
                              }
                          },
                          {.priority = playing::queue_priority::exporter,

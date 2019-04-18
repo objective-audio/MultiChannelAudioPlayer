@@ -152,7 +152,7 @@ struct timeline_exporter::impl : base::impl {
 
     void _insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event,
                          timeline_exporter &exporter) {
-        auto modules = proc::copy_modules(event.elements);
+        auto modules = proc::copy_to_modules(event.elements);
 
         for (auto const &pair : modules) {
             this->_queue.cancel_for_id(timeline_range_cancel_request_id(pair.first));
@@ -160,7 +160,7 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto &pair : modules) {
             auto const &range = pair.first;
-            operation op{[trk_idx, range = range, module = std::move(pair.second),
+            operation op{[trk_idx, range = range, modules = std::move(pair.second),
                           weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
                                  exporter.impl_ptr<impl>()->_timeline.track(trk_idx).insert_module(range,
@@ -189,7 +189,7 @@ struct timeline_exporter::impl : base::impl {
 
     void _erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event,
                         timeline_exporter &exporter) {
-        auto modules = proc::copy_modules(event.elements);
+        auto modules = proc::copy_to_modules(event.elements);
 
         for (auto const &pair : modules) {
             this->_queue.cancel_for_id(timeline_range_cancel_request_id(pair.first));

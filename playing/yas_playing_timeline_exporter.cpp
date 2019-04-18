@@ -163,8 +163,10 @@ struct timeline_exporter::impl : base::impl {
             operation op{[trk_idx, range = range, modules = std::move(pair.second),
                           weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
-                                 exporter.impl_ptr<impl>()->_timeline.track(trk_idx).insert_module(range,
-                                                                                                   std::move(module));
+                                 auto &track = exporter.impl_ptr<impl>()->_timeline.track(trk_idx);
+                                 for (auto &module : modules) {
+                                     track.insert_module(range, std::move(module));
+                                 }
                              }
                          },
                          {.priority = playing::queue_priority::exporter,

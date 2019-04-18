@@ -95,7 +95,7 @@ struct audio_player::impl : base::impl {
             }
         }};
 
-        this->_pool += this->_ch_mapping.chain().to_null().receive(this->_update_circular_buffers_receiver).sync();
+        this->_pool += this->_ch_mapping.chain().to_null().send_to(this->_update_circular_buffers_receiver).sync();
 
         this->_pool +=
             this->_renderable.chain_sample_rate()
@@ -110,15 +110,15 @@ struct audio_player::impl : base::impl {
                         return std::optional<audio::format>{std::nullopt};
                     }
                 })
-                .receive(this->_format.receiver())
+                .send_to(this->_format.receiver())
                 .sync();
 
-        this->_pool += this->_renderable.chain_channel_count().receive(this->_ch_count.receiver()).sync();
+        this->_pool += this->_renderable.chain_channel_count().send_to(this->_ch_count.receiver()).sync();
 
         this->_pool += this->_format.chain()
                            .combine(this->_ch_count.chain())
                            .to_null()
-                           .receive(this->_update_circular_buffers_receiver)
+                           .send_to(this->_update_circular_buffers_receiver)
                            .sync();
     }
 

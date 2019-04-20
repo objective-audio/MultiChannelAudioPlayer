@@ -93,8 +93,8 @@ struct timeline_exporter::impl : base::impl {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
                              exporter_impl->_timeline = proc::timeline{std::move(tracks)};
-                             // timelineのフォルダを削除する？
-                             // 全てをexportする
+#warning todo timelineのフォルダを削除する？
+#warning todo 全てをexportする
                          }
                      },
                      {.priority = playing::queue_priority::exporter}};
@@ -125,8 +125,8 @@ struct timeline_exporter::impl : base::impl {
         for (auto const &pair : tracks) {
             operation export_op{
                 [trk_idx = pair.first, weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    // TODO 差し替え前のトラックに関連するチャンネルのフォルダを削除
-                    // TODO トラックに関連するチャンネル全体をexport
+#warning todo 差し替え前のトラックに関連するチャンネルのフォルダを削除
+#warning todo トラックに関連するチャンネル全体をexport
                 },
                 {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(pair.first)}};
 
@@ -157,8 +157,8 @@ struct timeline_exporter::impl : base::impl {
         for (auto &trk_idx : track_indices) {
             operation op{
                 [trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    // TODO 差し替え前のトラックに関連するチャンネルのフォルダを削除
-                    // TODO 差し替え前のトラックに関連するチャンネルの範囲をexport
+#warning todo 差し替え前のトラックに関連するチャンネルのフォルダを削除
+#warning todo 差し替え前のトラックに関連するチャンネルの範囲をexport
                 },
                 {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(trk_idx)}};
 
@@ -195,7 +195,7 @@ struct timeline_exporter::impl : base::impl {
             auto const &range = pair.first;
             operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
-                                 // moduleの範囲を削除しexport（1秒単位が良い？）
+#warning todo moduleの範囲を削除しexport（1秒単位が良い？）
                              }
                          },
                          {.priority = playing::queue_priority::exporter,
@@ -218,7 +218,7 @@ struct timeline_exporter::impl : base::impl {
             operation op{[trk_idx, range = range, module = std::move(pair.second),
                           weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
-                                 // track内のmoduleを削除
+#warning todo track内のmoduleを削除
                                  // 何かmoduleを一致させるidが必要では？
                                  // exporter.impl_ptr<impl>()->_timeline.track(trk_idx).
                              }
@@ -233,7 +233,7 @@ struct timeline_exporter::impl : base::impl {
             auto const &range = pair.first;
             operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
-                                 // moduleの範囲を削除しexport（1秒単位が良い？）
+#warning todo moduleの範囲を削除しexport（1秒単位が良い？）
                              }
                          },
                          {.priority = playing::queue_priority::exporter,

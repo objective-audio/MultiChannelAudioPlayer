@@ -248,12 +248,12 @@ struct timeline_exporter::impl : base::impl {
 
     void _insert_module(proc::track_index_t const trk_idx, proc::time::range const range,
                         proc::module_vector::inserted_event_t const &event, timeline_exporter &exporter) {
-#warning todo
+#warning todo moduleがvectorに追加された場合
     }
 
     void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
                        proc::module_vector::erased_event_t const &event, timeline_exporter &exporter) {
-#warning todo
+#warning todo moudleがvectorから削除された場合
     }
 };
 

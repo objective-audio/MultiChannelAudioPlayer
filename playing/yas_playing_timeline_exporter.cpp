@@ -49,14 +49,14 @@ struct timeline_exporter::impl : base::impl {
                 this->_erase_tracks(event.get<proc::timeline::erased_event_t>(), exporter);
             } break;
             case proc::timeline::event_type_t::relayed: {
-                this->_relayed_event(event.get<proc::timeline::relayed_event_t>(), exporter);
+                this->_relayed_timeline_event(event.get<proc::timeline::relayed_event_t>(), exporter);
             } break;
             default:
                 throw std::runtime_error("unreachable code.");
         }
     }
 
-    void _relayed_event(proc::timeline::relayed_event_t const &event, timeline_exporter &exporter) {
+    void _relayed_timeline_event(proc::timeline::relayed_event_t const &event, timeline_exporter &exporter) {
         switch (event.relayed.type()) {
             case proc::track::event_type_t::inserted: {
                 this->_insert_modules(event.key, event.relayed.get<proc::track::inserted_event_t>(), exporter);

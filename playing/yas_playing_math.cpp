@@ -21,7 +21,7 @@ int64_t math::floor_int(int64_t const value, uint64_t const interval) {
     }
 }
 
-int64_t ceil_int(int64_t const value, uint64_t const interval) {
+int64_t math::ceil_int(int64_t const value, uint64_t const interval) {
     if (interval == 0) {
         return value;
     } else if (value == 0) {

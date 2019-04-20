@@ -19,9 +19,10 @@ using namespace yas::playing;
 namespace yas::playing::sample {
 struct view_controller_cpp {
     url root_url{system_url_utils::directory_url(system_url_utils::dir::document).appending("sample")};
+    proc::sync_source sync_source{48000, 1024};
     audio_coordinator coordinator{this->root_url};
 #warning queueを共通にするかは後で考える
-    playing::timeline_exporter timeline_exporter{this->root_url, yas::operation_queue{}};
+    playing::timeline_exporter timeline_exporter{this->root_url, yas::operation_queue{}, this->sync_source};
 };
 }
 

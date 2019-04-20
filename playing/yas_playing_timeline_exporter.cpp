@@ -4,6 +4,7 @@
 
 #include "yas_playing_timeline_exporter.h"
 #include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_file_manager.h>
 #include <cpp_utils/yas_operation.h>
 #include <processing/yas_processing_umbrella.h>
 #include "yas_playing_audio_types.h"
@@ -16,7 +17,8 @@ struct timeline_exporter::impl : base::impl {
     url const _root_url;
     operation_queue _queue;
 
-    impl(url const &root_url, operation_queue &&queue) : _root_url(root_url), _queue(std::move(queue)) {
+    impl(url const &root_url, operation_queue &&queue, proc::sync_source &&sync_source)
+        : _root_url(root_url), _queue(std::move(queue)), _sync_source(sync_source) {
     }
 
     void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
@@ -35,6 +37,7 @@ struct timeline_exporter::impl : base::impl {
    private:
     proc::timeline _src_timeline = nullptr;
     proc::timeline _timeline;  // バックグラウンドからのみ触るようにする
+    proc::sync_source const _sync_source;
     chaining::observer_pool _pool;
 
     void _timeline_event(proc::timeline::event_t const &event, timeline_exporter &exporter) {
@@ -92,11 +95,36 @@ struct timeline_exporter::impl : base::impl {
         this->_queue.cancel_all();
 
         auto tracks = proc::copy_tracks(event.elements);
-        operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](auto const &) mutable {
+        operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](operation const &op) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
                              exporter_impl->_timeline = proc::timeline{std::move(tracks)};
-#warning todo timelineのフォルダを削除する？
+
+                             auto const &root_url = exporter_impl->_root_url;
+
+                             if (op.is_canceled()) {
+                                 return;
+                             }
+
+                             auto result = file_manager::remove_file(root_url.path());
+                             if (!result) {
+                                 std::runtime_error("remove timeline root directory failed.");
+                             }
+
+                             if (op.is_canceled()) {
+                                 return;
+                             }
+
+                             proc::timeline &timeline = exporter_impl->_timeline;
+                             auto total_range = timeline.total_range();
+                             if (!total_range.has_value()) {
+                                 return;
+                             }
+
+                             proc::sync_source const &sync_source = exporter_impl->_sync_source;
+
+                             timeline.process(*total_range, sync_source,
+                                              [](proc::time::range const &, proc::stream const &, bool &stop) {});
 #warning todo 全てをexportする
                          }
                      },
@@ -257,8 +285,8 @@ struct timeline_exporter::impl : base::impl {
     }
 };
 
-timeline_exporter::timeline_exporter(url const &root_url, operation_queue queue)
-    : base(std::make_shared<impl>(root_url, std::move(queue))) {
+timeline_exporter::timeline_exporter(url const &root_url, operation_queue queue, proc::sync_source sync_source)
+    : base(std::make_shared<impl>(root_url, std::move(queue), std::move(sync_source))) {
 }
 
 timeline_exporter::timeline_exporter(std::nullptr_t) : base(nullptr) {

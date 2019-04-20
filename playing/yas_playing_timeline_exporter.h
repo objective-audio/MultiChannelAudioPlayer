@@ -13,7 +13,7 @@ namespace yas::playing {
 struct timeline_exporter : base {
     class impl;
 
-    timeline_exporter(url const &root_url, operation_queue, proc::sync_source);
+    timeline_exporter(url const &root_url, operation_queue, proc::sample_rate_t const);
     timeline_exporter(std::nullptr_t);
 
     void set_timeline(proc::timeline);

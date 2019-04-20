@@ -17,8 +17,8 @@ struct timeline_exporter::impl : base::impl {
     url const _root_url;
     operation_queue _queue;
 
-    impl(url const &root_url, operation_queue &&queue, proc::sync_source &&sync_source)
-        : _root_url(root_url), _queue(std::move(queue)), _sync_source(sync_source) {
+    impl(url const &root_url, operation_queue &&queue, proc::sample_rate_t const sample_rate)
+        : _root_url(root_url), _queue(std::move(queue)), _sync_source(proc::sync_source{sample_rate, sample_rate}) {
     }
 
     void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
@@ -121,10 +121,18 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
+#warning total_rangeを1秒単位の区切りにしたい
+
                              proc::sync_source const &sync_source = exporter_impl->_sync_source;
 
-                             timeline.process(*total_range, sync_source,
-                                              [](proc::time::range const &, proc::stream const &, bool &stop) {});
+                             timeline.process(
+                                 *total_range, sync_source,
+                                 [&op](proc::time::range const &range, proc::stream const &stream, bool &stop) {
+                                     if (op.is_canceled()) {
+                                         stop = true;
+                                         return;
+                                     }
+                                 });
 #warning todo 全てをexportする
                          }
                      },
@@ -285,8 +293,8 @@ struct timeline_exporter::impl : base::impl {
     }
 };
 
-timeline_exporter::timeline_exporter(url const &root_url, operation_queue queue, proc::sync_source sync_source)
-    : base(std::make_shared<impl>(root_url, std::move(queue), std::move(sync_source))) {
+timeline_exporter::timeline_exporter(url const &root_url, operation_queue queue, proc::sample_rate_t const sample_rate)
+    : base(std::make_shared<impl>(root_url, std::move(queue), sample_rate)) {
 }
 
 timeline_exporter::timeline_exporter(std::nullptr_t) : base(nullptr) {

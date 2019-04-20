@@ -64,6 +64,22 @@ struct timeline_exporter::impl : base::impl {
             case proc::track::event_type_t::erased: {
                 this->_erase_modules(event.key, event.relayed.get<proc::track::erased_event_t>(), exporter);
             } break;
+            case proc::track::event_type_t::relayed: {
+                this->_relayed_track_event(event.relayed.get<proc::track::relayed_event_t>(), exporter);
+            } break;
+            default:
+                throw std::runtime_error("unreachable code.");
+        }
+    }
+
+    void _relayed_track_event(proc::track::relayed_event_t const &event, timeline_exporter &exporter) {
+        switch (event.relayed.type()) {
+            case chaining::event_type::inserted:
+#warning todo
+                break;
+            case chaining::event_type::erased:
+#warning todo
+                break;
             default:
                 throw std::runtime_error("unreachable code.");
         }

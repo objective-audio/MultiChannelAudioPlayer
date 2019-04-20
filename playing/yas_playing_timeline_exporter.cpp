@@ -65,20 +65,23 @@ struct timeline_exporter::impl : base::impl {
                 this->_erase_modules(event.key, event.relayed.get<proc::track::erased_event_t>(), exporter);
             } break;
             case proc::track::event_type_t::relayed: {
-                this->_relayed_track_event(event.relayed.get<proc::track::relayed_event_t>(), exporter);
+                this->_relayed_track_event(event.relayed.get<proc::track::relayed_event_t>(), event.key, exporter);
             } break;
             default:
                 throw std::runtime_error("unreachable code.");
         }
     }
 
-    void _relayed_track_event(proc::track::relayed_event_t const &event, timeline_exporter &exporter) {
+    void _relayed_track_event(proc::track::relayed_event_t const &event, proc::track_index_t const trk_idx,
+                              timeline_exporter &exporter) {
         switch (event.relayed.type()) {
-            case chaining::event_type::inserted:
-#warning todo
+            case proc::module_vector::event_type_t::inserted:
+                this->_insert_module(trk_idx, event.key, event.relayed.get<proc::module_vector::inserted_event_t>(),
+                                     exporter);
                 break;
-            case chaining::event_type::erased:
-#warning todo
+            case proc::module_vector::event_type_t::erased:
+                this->_erase_module(trk_idx, event.key, event.relayed.get<proc::module_vector::erased_event_t>(),
+                                    exporter);
                 break;
             default:
                 throw std::runtime_error("unreachable code.");
@@ -241,6 +244,16 @@ struct timeline_exporter::impl : base::impl {
 
             this->_queue.push_back(std::move(op));
         }
+    }
+
+    void _insert_module(proc::track_index_t const trk_idx, proc::time::range const range,
+                        proc::module_vector::inserted_event_t const &event, timeline_exporter &exporter) {
+#warning todo
+    }
+
+    void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
+                       proc::module_vector::erased_event_t const &event, timeline_exporter &exporter) {
+#warning todo
     }
 };
 

@@ -8,6 +8,7 @@
 #include <cpp_utils/yas_operation.h>
 #include <processing/yas_processing_umbrella.h>
 #include "yas_playing_audio_types.h"
+#include "yas_playing_math.h"
 #include "yas_playing_timeline_canceling.h"
 
 using namespace yas;
@@ -95,49 +96,53 @@ struct timeline_exporter::impl : base::impl {
         this->_queue.cancel_all();
 
         auto tracks = proc::copy_tracks(event.elements);
-        operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](operation const &op) mutable {
-                         if (auto exporter = weak_exporter.lock()) {
-                             auto exporter_impl = exporter.impl_ptr<impl>();
-                             exporter_impl->_timeline = proc::timeline{std::move(tracks)};
+        operation op{
+            [tracks = std::move(tracks), weak_exporter = to_weak(exporter)](operation const &op) mutable {
+                if (auto exporter = weak_exporter.lock()) {
+                    auto exporter_impl = exporter.impl_ptr<impl>();
+                    exporter_impl->_timeline = proc::timeline{std::move(tracks)};
 
-                             auto const &root_url = exporter_impl->_root_url;
+                    auto const &root_url = exporter_impl->_root_url;
 
-                             if (op.is_canceled()) {
-                                 return;
-                             }
+                    if (op.is_canceled()) {
+                        return;
+                    }
 
-                             auto result = file_manager::remove_file(root_url.path());
-                             if (!result) {
-                                 std::runtime_error("remove timeline root directory failed.");
-                             }
+                    auto result = file_manager::remove_file(root_url.path());
+                    if (!result) {
+                        std::runtime_error("remove timeline root directory failed.");
+                    }
 
-                             if (op.is_canceled()) {
-                                 return;
-                             }
+                    if (op.is_canceled()) {
+                        return;
+                    }
 
-                             proc::timeline &timeline = exporter_impl->_timeline;
-                             auto total_range = timeline.total_range();
-                             if (!total_range.has_value()) {
-                                 return;
-                             }
+                    proc::timeline &timeline = exporter_impl->_timeline;
+
+                    auto total_range = timeline.total_range();
+                    if (!total_range.has_value()) {
+                        return;
+                    }
+
+                    proc::sync_source const &sync_source = exporter_impl->_sync_source;
 
 #warning total_rangeを1秒区切りの始まりにしたい
-                             proc::time::range range = *total_range;
+                    auto const frame = math::floor_int(total_range->frame, sync_source.sample_rate);
+                    auto const next_frame = math::ceil_int(total_range->next_frame(), sync_source.sample_rate);
+                    proc::time::range range{frame, static_cast<proc::length_t>(next_frame - frame)};
 
-                             proc::sync_source const &sync_source = exporter_impl->_sync_source;
+                    timeline.process(range, sync_source,
+                                     [&op](proc::time::range const &range, proc::stream const &stream, bool &stop) {
+                                         if (op.is_canceled()) {
+                                             stop = true;
+                                             return;
+                                         }
 
-                             timeline.process(
-                                 range, sync_source,
-                                 [&op](proc::time::range const &range, proc::stream const &stream, bool &stop) {
-                                     if (op.is_canceled()) {
-                                         stop = true;
-                                         return;
-                                     }
-                                 });
 #warning todo 全てをexportする
-                         }
-                     },
-                     {.priority = playing::queue_priority::exporter}};
+                                     });
+                }
+            },
+            {.priority = playing::queue_priority::exporter}};
 
         this->_queue.push_back(std::move(op));
     }

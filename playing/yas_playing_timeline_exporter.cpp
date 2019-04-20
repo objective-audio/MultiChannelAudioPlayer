@@ -121,12 +121,13 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
-#warning total_rangeを1秒単位の区切りにしたい
+#warning total_rangeを1秒区切りの始まりにしたい
+                             proc::time::range range = *total_range;
 
                              proc::sync_source const &sync_source = exporter_impl->_sync_source;
 
                              timeline.process(
-                                 *total_range, sync_source,
+                                 range, sync_source,
                                  [&op](proc::time::range const &range, proc::stream const &stream, bool &stop) {
                                      if (op.is_canceled()) {
                                          stop = true;

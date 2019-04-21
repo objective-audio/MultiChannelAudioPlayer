@@ -10,6 +10,7 @@
 #include "yas_playing_audio_types.h"
 #include "yas_playing_math.h"
 #include "yas_playing_timeline_canceling.h"
+#include "yas_playing_timeline_utils.h"
 #include "yas_playing_url_utils.h"
 
 using namespace yas;
@@ -138,9 +139,8 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
-                             auto const frame = math::floor_int(total_range->frame, sync_source.sample_rate);
-                             auto const next_frame = math::ceil_int(total_range->next_frame(), sync_source.sample_rate);
-                             proc::time::range range{frame, static_cast<proc::length_t>(next_frame - frame)};
+                             proc::time::range const range =
+                                 timeline_utils::fragment_range(*total_range, sync_source.sample_rate);
 
                              timeline.process(range, sync_source,
                                               [&op, &exporter_impl](proc::time::range const &range,
@@ -179,6 +179,8 @@ struct timeline_exporter::impl : base::impl {
             for (auto const &event_pair : channel.filtered_events<Float32, proc::signal_event>()) {
                 proc::time::range const &range = event_pair.first;
                 proc::signal_event const &event = event_pair.second;
+
+#warning todo
             }
         }
     }
@@ -276,6 +278,10 @@ struct timeline_exporter::impl : base::impl {
             auto const &range = pair.first;
             operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
+                                 auto exporter_impl = exporter.impl_ptr<impl>();
+
+//                                 exporter_impl->_export_fragments(<#const proc::time::range &range#>, <#const
+//                                 proc::stream &stream#>)
 #warning todo moduleの範囲を削除しexport（1秒単位が良い？）
                              }
                          },

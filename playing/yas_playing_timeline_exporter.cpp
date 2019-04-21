@@ -44,8 +44,12 @@ struct timeline_exporter::impl : base::impl {
     proc::timeline _src_timeline = nullptr;
     proc::sample_rate_t _sample_rate;
     chaining::observer_pool _pool;
-    proc::timeline _timeline;                       // バックグラウンドからのみ触るようにする
-    std::optional<proc::sync_source> _sync_source;  // バックグラウンドからのみ触るようにする
+
+    struct background {
+        proc::timeline timeline;
+        std::optional<proc::sync_source> sync_source;
+    };
+    background _bg;
 
     void _timeline_event(proc::timeline::event_t const &event, timeline_exporter &exporter) {
         switch (event.type()) {
@@ -106,7 +110,7 @@ struct timeline_exporter::impl : base::impl {
                       weak_exporter = to_weak(exporter)](operation const &op) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
-                             exporter_impl->_timeline = proc::timeline{std::move(tracks)};
+                             exporter_impl->_bg.timeline = proc::timeline{std::move(tracks)};
 
                              if (op.is_canceled()) {
                                  return;
@@ -123,17 +127,13 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
-                             exporter_impl->_sync_source.emplace(sample_rate, sample_rate);
-                             auto const sync_source = *exporter_impl->_sync_source;
+                             exporter_impl->_bg.sync_source.emplace(sample_rate, sample_rate);
+                             auto const sync_source = *exporter_impl->_bg.sync_source;
 
-                             proc::timeline &timeline = exporter_impl->_timeline;
+                             proc::timeline &timeline = exporter_impl->_bg.timeline;
 
                              auto total_range = timeline.total_range();
                              if (!total_range.has_value()) {
-                                 return;
-                             }
-
-                             if (!exporter_impl->_sync_source.has_value()) {
                                  return;
                              }
 
@@ -175,7 +175,7 @@ struct timeline_exporter::impl : base::impl {
                 [trk_idx = pair.first, track = std::move(pair.second),
                  weak_exporter = to_weak(exporter)](auto const &) mutable {
                     if (auto exporter = weak_exporter.lock()) {
-                        exporter.impl_ptr<impl>()->_timeline.insert_track(trk_idx, std::move(track));
+                        exporter.impl_ptr<impl>()->_bg.timeline.insert_track(trk_idx, std::move(track));
                     }
                 },
                 {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(pair.first)}};
@@ -207,7 +207,7 @@ struct timeline_exporter::impl : base::impl {
             operation op{
                 [trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
                     if (auto exporter = weak_exporter.lock()) {
-                        exporter.impl_ptr<impl>()->_timeline.erase_track(trk_idx);
+                        exporter.impl_ptr<impl>()->_bg.timeline.erase_track(trk_idx);
                     }
                 },
                 {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(trk_idx)}};
@@ -240,7 +240,7 @@ struct timeline_exporter::impl : base::impl {
             operation op{[trk_idx, range = range, modules = std::move(pair.second),
                           weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
-                                 auto &track = exporter.impl_ptr<impl>()->_timeline.track(trk_idx);
+                                 auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
                                  for (auto &module : modules) {
                                      track.insert_module(range, std::move(module));
                                  }
@@ -281,7 +281,7 @@ struct timeline_exporter::impl : base::impl {
                              if (auto exporter = weak_exporter.lock()) {
 #warning todo track内のmoduleを削除
                                  // 何かmoduleを一致させるidが必要では？
-                                 // exporter.impl_ptr<impl>()->_timeline.track(trk_idx).
+                                 // exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx).
                              }
                          },
                          {.priority = playing::queue_priority::exporter,

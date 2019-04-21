@@ -125,7 +125,6 @@ struct timeline_exporter::impl : base::impl {
 
                              proc::sync_source const &sync_source = exporter_impl->_sync_source;
 
-#warning total_rangeを1秒区切りの始まりにしたい
                              auto const frame = math::floor_int(total_range->frame, sync_source.sample_rate);
                              auto const next_frame = math::ceil_int(total_range->next_frame(), sync_source.sample_rate);
                              proc::time::range range{frame, static_cast<proc::length_t>(next_frame - frame)};
@@ -138,7 +137,12 @@ struct timeline_exporter::impl : base::impl {
                                          return;
                                      }
 
-#warning todo 全てをexportする
+                                     for (auto const &pair : stream.channels()) {
+                                         auto const &ch_idx = pair.first;
+                                         auto const &channel = pair.second;
+                                         
+#warning channelごとのデータを書き出す
+                                     }
                                  });
                          }
                      },

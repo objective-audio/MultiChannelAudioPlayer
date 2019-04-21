@@ -19,7 +19,7 @@ struct timeline_exporter::impl : base::impl {
     operation_queue _queue;
 
     impl(url const &root_url, operation_queue &&queue, proc::sample_rate_t const sample_rate)
-        : _root_url(root_url), _queue(std::move(queue)), _sync_source(proc::sync_source{sample_rate, sample_rate}) {
+        : _root_url(root_url), _queue(std::move(queue)), _sample_rate(sample_rate) {
     }
 
     void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
@@ -35,16 +35,23 @@ struct timeline_exporter::impl : base::impl {
                            .sync();
     }
 
+    void set_sample_rate(proc::sample_rate_t const sample_rate, timeline_exporter &exporter) {
+        this->_sample_rate = sample_rate;
+        this->_update_timeline(proc::copy_tracks(this->_src_timeline.tracks()), exporter);
+    }
+
    private:
     proc::timeline _src_timeline = nullptr;
-    proc::timeline _timeline;  // バックグラウンドからのみ触るようにする
-    proc::sync_source const _sync_source;
+    proc::sample_rate_t _sample_rate;
     chaining::observer_pool _pool;
+    proc::timeline _timeline;                       // バックグラウンドからのみ触るようにする
+    std::optional<proc::sync_source> _sync_source;  // バックグラウンドからのみ触るようにする
 
     void _timeline_event(proc::timeline::event_t const &event, timeline_exporter &exporter) {
         switch (event.type()) {
             case proc::timeline::event_type_t::fetched: {
-                this->_replace_timeline(event.get<proc::timeline::fetched_event_t>(), exporter);
+                auto const fetched_event = event.get<proc::timeline::fetched_event_t>();
+                this->_update_timeline(proc::copy_tracks(fetched_event.elements), exporter);
             } break;
             case proc::timeline::event_type_t::inserted: {
                 this->_insert_tracks(event.get<proc::timeline::inserted_event_t>(), exporter);
@@ -92,20 +99,20 @@ struct timeline_exporter::impl : base::impl {
         }
     }
 
-    void _replace_timeline(proc::timeline::fetched_event_t const &event, timeline_exporter &exporter) {
+    void _update_timeline(proc::timeline::track_map_t &&tracks, timeline_exporter &exporter) {
         this->_queue.cancel_all();
 
-        auto tracks = proc::copy_tracks(event.elements);
-        operation op{[tracks = std::move(tracks), weak_exporter = to_weak(exporter)](operation const &op) mutable {
+        operation op{[tracks = std::move(tracks), sample_rate = this->_sample_rate,
+                      weak_exporter = to_weak(exporter)](operation const &op) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
                              exporter_impl->_timeline = proc::timeline{std::move(tracks)};
 
-                             auto const &root_url = exporter_impl->_root_url;
-
                              if (op.is_canceled()) {
                                  return;
                              }
+
+                             auto const &root_url = exporter_impl->_root_url;
 
                              auto result = file_manager::remove_file(root_url.path());
                              if (!result) {
@@ -116,6 +123,9 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
+                             exporter_impl->_sync_source.emplace(sample_rate, sample_rate);
+                             auto const sync_source = *exporter_impl->_sync_source;
+
                              proc::timeline &timeline = exporter_impl->_timeline;
 
                              auto total_range = timeline.total_range();
@@ -123,7 +133,9 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
-                             proc::sync_source const &sync_source = exporter_impl->_sync_source;
+                             if (!exporter_impl->_sync_source.has_value()) {
+                                 return;
+                             }
 
                              auto const frame = math::floor_int(total_range->frame, sync_source.sample_rate);
                              auto const next_frame = math::ceil_int(total_range->next_frame(), sync_source.sample_rate);
@@ -140,7 +152,7 @@ struct timeline_exporter::impl : base::impl {
                                      for (auto const &pair : stream.channels()) {
                                          auto const &ch_idx = pair.first;
                                          auto const &channel = pair.second;
-                                         
+
 #warning channelごとのデータを書き出す
                                      }
                                  });
@@ -312,4 +324,8 @@ timeline_exporter::timeline_exporter(std::nullptr_t) : base(nullptr) {
 
 void timeline_exporter::set_timeline(proc::timeline timeline) {
     impl_ptr<impl>()->set_timeline(std::move(timeline), *this);
+}
+
+void timeline_exporter::set_sample_rate(proc::sample_rate_t const sample_rate) {
+    impl_ptr<impl>()->set_sample_rate(sample_rate, *this);
 }

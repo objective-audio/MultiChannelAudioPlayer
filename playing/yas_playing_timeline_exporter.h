@@ -17,5 +17,6 @@ struct timeline_exporter : base {
     timeline_exporter(std::nullptr_t);
 
     void set_timeline(proc::timeline);
+    void set_sample_rate(proc::sample_rate_t const);
 };
 }  // namespace yas::playing

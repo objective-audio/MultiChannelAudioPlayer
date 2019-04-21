@@ -142,33 +142,43 @@ struct timeline_exporter::impl : base::impl {
                              auto const next_frame = math::ceil_int(total_range->next_frame(), sync_source.sample_rate);
                              proc::time::range range{frame, static_cast<proc::length_t>(next_frame - frame)};
 
-                             timeline.process(
-                                 range, sync_source,
-                                 [&op, &exporter_impl](proc::time::range const &range, proc::stream const &stream, bool &stop) {
-                                     if (op.is_canceled()) {
-                                         stop = true;
-                                         return;
-                                     }
+                             timeline.process(range, sync_source,
+                                              [&op, &exporter_impl](proc::time::range const &range,
+                                                                    proc::stream const &stream, bool &stop) {
+                                                  if (op.is_canceled()) {
+                                                      stop = true;
+                                                      return;
+                                                  }
 
-                                     exporter_impl->_export(range, stream);
-                                 });
+                                                  exporter_impl->_export_fragments(range, stream);
+                                              });
                          }
                      },
                      {.priority = playing::queue_priority::exporter}};
 
         this->_queue.push_back(std::move(op));
     }
-    
-    void _export(proc::time::range const &range, proc::stream const &stream) {
+
+    void _export_fragments(proc::time::range const &range, proc::stream const &stream) {
         for (auto const &ch_pair : stream.channels()) {
             auto const &ch_idx = ch_pair.first;
             auto const &channel = ch_pair.second;
-            
+
+            auto const fragment_path = url_utils::fragment_url(this->_root_url, ch_idx, range.frame).path();
+
+            auto remove_result = file_manager::remove_file(fragment_path);
+            if (!remove_result) {
+                std::runtime_error("remove directory failed");
+            }
+
+            auto create_result = file_manager::create_directory_if_not_exists(fragment_path);
+            if (!create_result) {
+                std::runtime_error("create directory failed");
+            }
+
             for (auto const &event_pair : channel.filtered_events<Float32, proc::signal_event>()) {
                 proc::time::range const &range = event_pair.first;
                 proc::signal_event const &event = event_pair.second;
-                
-                
             }
         }
     }

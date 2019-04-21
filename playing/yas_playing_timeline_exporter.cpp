@@ -294,6 +294,7 @@ struct timeline_exporter::impl : base::impl {
                                      [&op, &exporter_impl](proc::time::range const &range, proc::stream const &stream,
                                                            bool &stop) {
                                          if (op.is_canceled()) {
+                                             stop = true;
                                              return;
                                          }
 
@@ -321,6 +322,9 @@ struct timeline_exporter::impl : base::impl {
             operation op{[trk_idx, range = range, module = std::move(pair.second),
                           weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
+                                 auto exporter_impl = exporter.impl_ptr<impl>();
+                                 
+//                                 exporter_impl->_bg.timeline.track(trk_idx).erase
 #warning todo track内のmoduleを削除
                                  // 何かmoduleを一致させるidが必要では？
                                  // exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx).

@@ -10,6 +10,7 @@
 #include "yas_playing_audio_types.h"
 #include "yas_playing_math.h"
 #include "yas_playing_timeline_canceling.h"
+#include "yas_playing_url_utils.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -143,24 +144,33 @@ struct timeline_exporter::impl : base::impl {
 
                              timeline.process(
                                  range, sync_source,
-                                 [&op](proc::time::range const &range, proc::stream const &stream, bool &stop) {
+                                 [&op, &exporter_impl](proc::time::range const &range, proc::stream const &stream, bool &stop) {
                                      if (op.is_canceled()) {
                                          stop = true;
                                          return;
                                      }
 
-                                     for (auto const &pair : stream.channels()) {
-                                         auto const &ch_idx = pair.first;
-                                         auto const &channel = pair.second;
-
-#warning channelごとのデータを書き出す
-                                     }
+                                     exporter_impl->_export(range, stream);
                                  });
                          }
                      },
                      {.priority = playing::queue_priority::exporter}};
 
         this->_queue.push_back(std::move(op));
+    }
+    
+    void _export(proc::time::range const &range, proc::stream const &stream) {
+        for (auto const &ch_pair : stream.channels()) {
+            auto const &ch_idx = ch_pair.first;
+            auto const &channel = ch_pair.second;
+            
+            for (auto const &event_pair : channel.filtered_events<Float32, proc::signal_event>()) {
+                proc::time::range const &range = event_pair.first;
+                proc::signal_event const &event = event_pair.second;
+                
+                
+            }
+        }
     }
 
     void _insert_tracks(proc::timeline::inserted_event_t const &event, timeline_exporter &exporter) {

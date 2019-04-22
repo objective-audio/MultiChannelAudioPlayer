@@ -168,12 +168,12 @@ struct timeline_exporter::impl : base::impl {
 
             auto remove_result = file_manager::remove_file(fragment_path);
             if (!remove_result) {
-                std::runtime_error("remove directory failed");
+                throw std::runtime_error("remove directory failed");
             }
 
             auto create_result = file_manager::create_directory_if_not_exists(fragment_path);
             if (!create_result) {
-                std::runtime_error("create directory failed");
+                throw std::runtime_error("create directory failed");
             }
 
             for (auto const &event_pair : channel.filtered_events<Float32, proc::signal_event>()) {

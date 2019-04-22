@@ -46,7 +46,7 @@ struct audio_exporter::impl : base::impl {
           _root_url(root_url),
           _queue(std::move(queue)) {
         if (auto result = file_manager::create_directory_if_not_exists(this->_root_url.path()); result.is_error()) {
-            std::runtime_error(to_string(result.error()));
+            throw std::runtime_error(to_string(result.error()));
         }
     }
 

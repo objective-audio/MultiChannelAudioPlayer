@@ -48,14 +48,14 @@ struct view_controller_cpp {
         timeline.insert_track(trk_idx++, track);
         proc::module module = proc::make_signal_module<Float32>(proc::generator::kind::second, 0);
         module.connect_output(proc::to_connector_index(proc::generator::output::value), 0);
-        track.insert_module(process_range, std::move(module));
+        track.push_back_module(std::move(module), process_range);
     }
 
     if (auto track = proc::track{}) {
         timeline.insert_track(trk_idx++, track);
         proc::module module = proc::make_signal_module<Float32>(audio::math::two_pi * 1000.0);
         module.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
-        track.insert_module(process_range, std::move(module));
+        track.push_back_module(std::move(module), process_range);
     }
 
     if (auto track = proc::track{}) {
@@ -64,7 +64,7 @@ struct view_controller_cpp {
         module.connect_input(proc::to_connector_index(proc::math2::input::left), 0);
         module.connect_input(proc::to_connector_index(proc::math2::input::right), 1);
         module.connect_output(proc::to_connector_index(proc::math2::output::result), 0);
-        track.insert_module(process_range, std::move(module));
+        track.push_back_module(std::move(module), process_range);
     }
 
     if (auto track = proc::track{}) {
@@ -72,14 +72,14 @@ struct view_controller_cpp {
         proc::module module = proc::make_signal_module<Float32>(proc::math1::kind::sin);
         module.connect_input(proc::to_connector_index(proc::math1::input::parameter), 0);
         module.connect_output(proc::to_connector_index(proc::math1::output::result), 0);
-        track.insert_module(process_range, std::move(module));
+        track.push_back_module(std::move(module), process_range);
     }
 
     if (auto track = proc::track{}) {
         timeline.insert_track(trk_idx++, track);
         auto module = proc::make_signal_module<Float32>(0.1f);
         module.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
-        track.insert_module(process_range, std::move(module));
+        track.push_back_module(std::move(module), process_range);
     }
 
     if (auto track = proc::track{}) {
@@ -88,7 +88,7 @@ struct view_controller_cpp {
         module.connect_input(proc::to_connector_index(proc::math2::input::left), 0);
         module.connect_input(proc::to_connector_index(proc::math2::input::right), 1);
         module.connect_output(proc::to_connector_index(proc::math2::output::result), 0);
-        track.insert_module(process_range, std::move(module));
+        track.push_back_module(std::move(module), process_range);
     }
 
     proc::sync_source sync_src{proc::sample_rate_t(sample_rate), process_range.length};

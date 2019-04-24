@@ -264,7 +264,7 @@ struct timeline_exporter::impl : base::impl {
                              if (auto exporter = weak_exporter.lock()) {
                                  auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
                                  for (auto &module : modules) {
-                                     track.insert_module(range, std::move(module));
+                                     track.push_back_module(std::move(module), range);
                                  }
                              }
                          },
@@ -323,7 +323,7 @@ struct timeline_exporter::impl : base::impl {
                           weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
                                  auto exporter_impl = exporter.impl_ptr<impl>();
-                                 
+
 //                                 exporter_impl->_bg.timeline.track(trk_idx).erase
 #warning todo track内のmoduleを削除
                                  // 何かmoduleを一致させるidが必要では？

@@ -176,7 +176,7 @@ struct timeline_exporter::impl : base::impl {
                 throw std::runtime_error("create directory failed");
             }
 
-            for (auto const &event_pair : channel.filtered_events<Float32, proc::signal_event>()) {
+            for (auto const &event_pair : channel.filtered_events<proc::signal_event>()) {
                 proc::time::range const &range = event_pair.first;
                 proc::signal_event const &event = event_pair.second;
 

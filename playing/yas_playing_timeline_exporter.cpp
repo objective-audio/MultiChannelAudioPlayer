@@ -182,6 +182,13 @@ struct timeline_exporter::impl : base::impl {
 
 #warning todo
             }
+
+            for (auto const &event_pair : channel.filtered_events<proc::number_event>()) {
+                proc::time::frame::type const &frame = event_pair.first;
+                proc::number_event const &event = event_pair.second;
+
+#warning todo json的なので保存する？
+            }
         }
     }
 

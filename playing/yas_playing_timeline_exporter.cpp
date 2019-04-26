@@ -6,6 +6,7 @@
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_file_manager.h>
 #include <cpp_utils/yas_operation.h>
+#include <cpp_utils/yas_thread.h>
 #include <processing/yas_processing_umbrella.h>
 #include "yas_playing_audio_types.h"
 #include "yas_playing_math.h"
@@ -25,6 +26,8 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
+        assert(thread::is_main());
+
         this->_src_timeline = std::move(timeline);
 
         this->_pool.invalidate();
@@ -38,6 +41,8 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void set_sample_rate(proc::sample_rate_t const sample_rate, timeline_exporter &exporter) {
+        assert(thread::is_main());
+
         this->_sample_rate = sample_rate;
         this->_update_timeline(proc::copy_tracks(this->_src_timeline.tracks()), exporter);
     }
@@ -160,6 +165,8 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void _export_fragments(proc::time::range const &range, proc::stream const &stream) {
+        assert(!thread::is_main());
+
         for (auto const &ch_pair : stream.channels()) {
             auto const &ch_idx = ch_pair.first;
             auto const &channel = ch_pair.second;

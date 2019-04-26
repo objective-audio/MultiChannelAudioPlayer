@@ -34,7 +34,7 @@ struct timeline_exporter::impl : base::impl {
         this->_pool += this->_src_timeline.chain()
                            .perform([weak_exporter = to_weak(exporter)](proc::timeline::event_t const &event) {
                                if (auto exporter = weak_exporter.lock()) {
-                                   exporter.impl_ptr<impl>()->_timeline_event(event, exporter);
+                                   exporter.impl_ptr<impl>()->_receive_timeline_event(event, exporter);
                                }
                            })
                            .sync();
@@ -58,7 +58,7 @@ struct timeline_exporter::impl : base::impl {
     };
     background _bg;
 
-    void _timeline_event(proc::timeline::event_t const &event, timeline_exporter &exporter) {
+    void _receive_timeline_event(proc::timeline::event_t const &event, timeline_exporter &exporter) {
         switch (event.type()) {
             case proc::timeline::event_type_t::fetched: {
                 auto const fetched_event = event.get<proc::timeline::fetched_event_t>();
@@ -71,14 +71,14 @@ struct timeline_exporter::impl : base::impl {
                 this->_erase_tracks(event.get<proc::timeline::erased_event_t>(), exporter);
             } break;
             case proc::timeline::event_type_t::relayed: {
-                this->_relayed_timeline_event(event.get<proc::timeline::relayed_event_t>(), exporter);
+                this->_receive_relayed_timeline_event(event.get<proc::timeline::relayed_event_t>(), exporter);
             } break;
             default:
                 throw std::runtime_error("unreachable code.");
         }
     }
 
-    void _relayed_timeline_event(proc::timeline::relayed_event_t const &event, timeline_exporter &exporter) {
+    void _receive_relayed_timeline_event(proc::timeline::relayed_event_t const &event, timeline_exporter &exporter) {
         switch (event.relayed.type()) {
             case proc::track::event_type_t::inserted: {
                 this->_insert_modules(event.key, event.relayed.get<proc::track::inserted_event_t>(), exporter);
@@ -87,15 +87,16 @@ struct timeline_exporter::impl : base::impl {
                 this->_erase_modules(event.key, event.relayed.get<proc::track::erased_event_t>(), exporter);
             } break;
             case proc::track::event_type_t::relayed: {
-                this->_relayed_track_event(event.relayed.get<proc::track::relayed_event_t>(), event.key, exporter);
+                this->_receive_relayed_track_event(event.relayed.get<proc::track::relayed_event_t>(), event.key,
+                                                   exporter);
             } break;
             default:
                 throw std::runtime_error("unreachable code.");
         }
     }
 
-    void _relayed_track_event(proc::track::relayed_event_t const &event, proc::track_index_t const trk_idx,
-                              timeline_exporter &exporter) {
+    void _receive_relayed_track_event(proc::track::relayed_event_t const &event, proc::track_index_t const trk_idx,
+                                      timeline_exporter &exporter) {
         switch (event.relayed.type()) {
             case proc::module_vector::event_type_t::inserted:
                 this->_insert_module(trk_idx, event.key, event.relayed.get<proc::module_vector::inserted_event_t>(),

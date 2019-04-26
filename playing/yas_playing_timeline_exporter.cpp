@@ -303,10 +303,7 @@ struct timeline_exporter::impl : base::impl {
                              if (auto exporter = weak_exporter.lock()) {
                                  auto exporter_impl = exporter.impl_ptr<impl>();
 
-//                                 exporter_impl->_bg.timeline.track(trk_idx).erase
-#warning todo track内のmoduleを削除
-                                 // 何かmoduleを一致させるidが必要では？
-                                 // exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx).
+                                 exporter_impl->_bg.timeline.track(trk_idx).erase_modules_for_range(range);
                              }
                          },
                          {.priority = playing::queue_priority::exporter,

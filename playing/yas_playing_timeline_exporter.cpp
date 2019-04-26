@@ -164,41 +164,6 @@ struct timeline_exporter::impl : base::impl {
         this->_queue.push_back(std::move(op));
     }
 
-    void _export_fragments(proc::time::range const &range, proc::stream const &stream) {
-        assert(!thread::is_main());
-
-        for (auto const &ch_pair : stream.channels()) {
-            auto const &ch_idx = ch_pair.first;
-            auto const &channel = ch_pair.second;
-
-            auto const fragment_path = url_utils::fragment_url(this->_root_url, ch_idx, range.frame).path();
-
-            auto remove_result = file_manager::remove_content(fragment_path);
-            if (!remove_result) {
-                throw std::runtime_error("remove directory failed");
-            }
-
-            auto create_result = file_manager::create_directory_if_not_exists(fragment_path);
-            if (!create_result) {
-                throw std::runtime_error("create directory failed");
-            }
-
-            for (auto const &event_pair : channel.filtered_events<proc::signal_event>()) {
-                proc::time::range const &range = event_pair.first;
-                proc::signal_event const &event = event_pair.second;
-
-#warning todo
-            }
-
-            for (auto const &event_pair : channel.filtered_events<proc::number_event>()) {
-                proc::time::frame::type const &frame = event_pair.first;
-                proc::number_event const &event = event_pair.second;
-
-#warning todo json的なので保存する？
-            }
-        }
-    }
-
     void _insert_tracks(proc::timeline::inserted_event_t const &event, timeline_exporter &exporter) {
         auto tracks = proc::copy_tracks(event.elements);
 
@@ -372,6 +337,41 @@ struct timeline_exporter::impl : base::impl {
     void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
                        proc::module_vector::erased_event_t const &event, timeline_exporter &exporter) {
 #warning todo moduleがvectorから削除された場合
+    }
+
+    void _export_fragments(proc::time::range const &range, proc::stream const &stream) {
+        assert(!thread::is_main());
+
+        for (auto const &ch_pair : stream.channels()) {
+            auto const &ch_idx = ch_pair.first;
+            auto const &channel = ch_pair.second;
+
+            auto const fragment_path = url_utils::fragment_url(this->_root_url, ch_idx, range.frame).path();
+
+            auto remove_result = file_manager::remove_content(fragment_path);
+            if (!remove_result) {
+                throw std::runtime_error("remove directory failed");
+            }
+
+            auto create_result = file_manager::create_directory_if_not_exists(fragment_path);
+            if (!create_result) {
+                throw std::runtime_error("create directory failed");
+            }
+
+            for (auto const &event_pair : channel.filtered_events<proc::signal_event>()) {
+                proc::time::range const &range = event_pair.first;
+                proc::signal_event const &event = event_pair.second;
+
+#warning todo
+            }
+
+            for (auto const &event_pair : channel.filtered_events<proc::number_event>()) {
+                proc::time::frame::type const &frame = event_pair.first;
+                proc::number_event const &event = event_pair.second;
+
+#warning todo json的なので保存する？
+            }
+        }
     }
 };
 

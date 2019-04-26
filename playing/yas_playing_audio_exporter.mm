@@ -115,7 +115,7 @@ struct audio_exporter::impl : base::impl {
                         }
 
                         // ファイルがあれば消す
-                        if (auto result = file_manager::remove_file(file_url.path()); result.is_error()) {
+                        if (auto result = file_manager::remove_content(file_url.path()); result.is_error()) {
                             export_result = export_result_t{export_error::erase_file_failed};
                             break;
                         }
@@ -196,7 +196,7 @@ struct audio_exporter::impl : base::impl {
 
         operation op(
             [result_handler, root_url = this->_root_url](operation const &) {
-                if (auto result = file_manager::remove_file(root_url.path())) {
+                if (auto result = file_manager::remove_content(root_url.path())) {
                     result_handler(clear_result_t{nullptr});
                 } else {
                     result_handler(clear_result_t{clear_error::remove_failed});

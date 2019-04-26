@@ -100,7 +100,7 @@ using namespace yas::playing;
     {
         auto url = root_url.appending("0/-1.caf");
 
-        auto const exists_result = file_manager::file_exists(url.path());
+        auto const exists_result = file_manager::content_exists(url.path());
         XCTAssertTrue(exists_result);
         XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
@@ -110,7 +110,7 @@ using namespace yas::playing;
     {
         auto url = root_url.appending("0/0.caf");
 
-        auto const exists_result = file_manager::file_exists(url.path());
+        auto const exists_result = file_manager::content_exists(url.path());
         XCTAssertTrue(exists_result);
         XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
@@ -120,7 +120,7 @@ using namespace yas::playing;
     {
         auto url = root_url.appending("0/1.caf");
 
-        auto const exists_result = file_manager::file_exists(url.path());
+        auto const exists_result = file_manager::content_exists(url.path());
         XCTAssertTrue(exists_result);
         XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
@@ -148,7 +148,7 @@ using namespace yas::playing;
     {
         auto url = root_url.appending("0/-1.caf");
 
-        auto const exists_result = file_manager::file_exists(url.path());
+        auto const exists_result = file_manager::content_exists(url.path());
         XCTAssertTrue(exists_result);
         XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
@@ -158,7 +158,7 @@ using namespace yas::playing;
     {
         auto url = root_url.appending("0/0.caf");
 
-        auto const exists_result = file_manager::file_exists(url.path());
+        auto const exists_result = file_manager::content_exists(url.path());
         XCTAssertTrue(exists_result);
         XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
@@ -168,7 +168,7 @@ using namespace yas::playing;
     {
         auto url = root_url.appending("0/1.caf");
 
-        auto const exists_result = file_manager::file_exists(url.path());
+        auto const exists_result = file_manager::content_exists(url.path());
         XCTAssertTrue(exists_result);
         XCTAssertEqual(exists_result.value(), file_manager::content_kind::file);
 
@@ -184,7 +184,7 @@ using namespace yas::playing;
 
     [self waitForExpectations:@[clearExp] timeout:10.0];
 
-    XCTAssertFalse(file_manager::file_exists(root_url.path()));
+    XCTAssertFalse(file_manager::content_exists(root_url.path()));
 }
 
 - (void)test_update_format {
@@ -222,8 +222,8 @@ using namespace yas::playing;
 
         XCTAssertEqual(file.file_length(), 3);
 
-        XCTAssertFalse(file_manager::file_exists(root_url.appending("0/-1.caf").path()));
-        XCTAssertFalse(file_manager::file_exists(root_url.appending("0/1.caf").path()));
+        XCTAssertFalse(file_manager::content_exists(root_url.appending("0/-1.caf").path()));
+        XCTAssertFalse(file_manager::content_exists(root_url.appending("0/1.caf").path()));
     }
 
     XCTestExpectation *updateExp = [self expectationWithDescription:@"update_format"];
@@ -232,7 +232,7 @@ using namespace yas::playing;
 
     [self waitForExpectations:@[updateExp] timeout:10.0];
 
-    XCTAssertFalse(file_manager::file_exists(root_url.path()));
+    XCTAssertFalse(file_manager::content_exists(root_url.path()));
 
     XCTestExpectation *secondExp = [self expectationWithDescription:@"export_second"];
 
@@ -261,8 +261,8 @@ using namespace yas::playing;
 
         XCTAssertEqual(file.file_length(), 4);
 
-        XCTAssertFalse(file_manager::file_exists(root_url.appending("0/-1.caf").path()));
-        XCTAssertFalse(file_manager::file_exists(root_url.appending("0/1.caf").path()));
+        XCTAssertFalse(file_manager::content_exists(root_url.appending("0/-1.caf").path()));
+        XCTAssertFalse(file_manager::content_exists(root_url.appending("0/1.caf").path()));
     }
 }
 

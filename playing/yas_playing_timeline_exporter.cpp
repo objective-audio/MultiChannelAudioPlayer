@@ -120,7 +120,7 @@ struct timeline_exporter::impl : base::impl {
 
                              auto const &root_url = exporter_impl->_root_url;
 
-                             auto result = file_manager::remove_file(root_url.path());
+                             auto result = file_manager::remove_content(root_url.path());
                              if (!result) {
                                  std::runtime_error("remove timeline root directory failed.");
                              }
@@ -166,7 +166,7 @@ struct timeline_exporter::impl : base::impl {
 
             auto const fragment_path = url_utils::fragment_url(this->_root_url, ch_idx, range.frame).path();
 
-            auto remove_result = file_manager::remove_file(fragment_path);
+            auto remove_result = file_manager::remove_content(fragment_path);
             if (!remove_result) {
                 throw std::runtime_error("remove directory failed");
             }

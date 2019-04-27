@@ -241,26 +241,7 @@ struct timeline_exporter::impl : base::impl {
                              if (auto exporter = weak_exporter.lock()) {
                                  auto exporter_impl = exporter.impl_ptr<impl>();
 
-                                 if (!exporter_impl->_bg.sync_source.has_value()) {
-                                     return;
-                                 }
-
-                                 proc::sync_source const sync_source = *exporter_impl->_bg.sync_source;
-
-                                 proc::time::range const range =
-                                     timeline_utils::fragments_range(range, sync_source.sample_rate);
-
-                                 exporter_impl->_bg.timeline.process(
-                                     range, sync_source,
-                                     [&op, &exporter_impl](proc::time::range const &range, proc::stream const &stream,
-                                                           bool &stop) {
-                                         if (op.is_canceled()) {
-                                             stop = true;
-                                             return;
-                                         }
-
-                                         exporter_impl->_export_fragments(range, stream);
-                                     });
+                                 exporter_impl->_export_range(range, op);
                              }
                          },
                          {.priority = playing::queue_priority::exporter}};
@@ -335,6 +316,9 @@ struct timeline_exporter::impl : base::impl {
 
                                        this->_export_fragments(range, stream);
                                    });
+    }
+
+    void _remove_fragments(proc::time::range const &range) {
     }
 
     void _export_fragments(proc::time::range const &range, proc::stream const &stream) {

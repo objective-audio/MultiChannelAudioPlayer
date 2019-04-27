@@ -34,6 +34,10 @@ timeline_cancel_matcher_id::timeline_cancel_matcher_id(proc::track_index_t const
     : base(std::make_shared<impl>(trk_idx, std::nullopt)) {
 }
 
+timeline_cancel_matcher_id::timeline_cancel_matcher_id(proc::time::range const &range)
+    : base(std::make_shared<impl>(std::nullopt, std::make_optional(range))) {
+}
+
 timeline_cancel_matcher_id::timeline_cancel_matcher_id() : base(std::make_shared<impl>(std::nullopt, std::nullopt)) {
 }
 

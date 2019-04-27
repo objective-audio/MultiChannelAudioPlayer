@@ -314,14 +314,14 @@ struct timeline_exporter::impl : base::impl {
                                            return;
                                        }
 
-                                       this->_export_fragments(range, stream);
+                                       this->_export_fragment(range, stream);
                                    });
     }
 
     void _remove_fragments(proc::time::range const &range) {
     }
 
-    void _export_fragments(proc::time::range const &range, proc::stream const &stream) {
+    void _export_fragment(proc::time::range const &range, proc::stream const &stream) {
         assert(!thread::is_main());
 
         for (auto const &ch_pair : stream.channels()) {

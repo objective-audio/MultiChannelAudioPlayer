@@ -20,9 +20,9 @@ using namespace yas;
 }
 
 - (void)test_track_cancel_request {
-    playing::timeline_cancel_matcher_id matcher{1, {0, 2}};
-    playing::timeline_track_cancel_request_id track_request_1{1};
-    playing::timeline_track_cancel_request_id track_request_2{2};
+    playing::timeline_cancel_matcher matcher{1, {0, 2}};
+    playing::timeline_track_cancel_request track_request_1{1};
+    playing::timeline_track_cancel_request track_request_2{2};
 
     XCTAssertEqual(matcher, track_request_1);
     XCTAssertEqual(track_request_1, matcher);
@@ -31,10 +31,10 @@ using namespace yas;
 }
 
 - (void)test_range_cancel_request {
-    playing::timeline_cancel_matcher_id matcher{1, {1, 2}};
-    playing::timeline_range_cancel_request_id range_request_a{{1, 2}};
-    playing::timeline_range_cancel_request_id range_request_b{{0, 3}};
-    playing::timeline_range_cancel_request_id range_request_c{{1, 3}};
+    playing::timeline_cancel_matcher matcher{1, {1, 2}};
+    playing::timeline_range_cancel_request range_request_a{{1, 2}};
+    playing::timeline_range_cancel_request range_request_b{{0, 3}};
+    playing::timeline_range_cancel_request range_request_c{{1, 3}};
 
     XCTAssertEqual(matcher, range_request_a);
     XCTAssertEqual(matcher, range_request_b);
@@ -43,10 +43,10 @@ using namespace yas;
     XCTAssertEqual(range_request_b, matcher);
     XCTAssertEqual(range_request_c, matcher);
 
-    playing::timeline_range_cancel_request_id range_request_d{{1, 1}};
-    playing::timeline_range_cancel_request_id range_request_e{{2, 1}};
-    playing::timeline_range_cancel_request_id range_request_f{{0, 2}};
-    playing::timeline_range_cancel_request_id range_request_g{{2, 2}};
+    playing::timeline_range_cancel_request range_request_d{{1, 1}};
+    playing::timeline_range_cancel_request range_request_e{{2, 1}};
+    playing::timeline_range_cancel_request range_request_f{{0, 2}};
+    playing::timeline_range_cancel_request range_request_g{{2, 2}};
 
     XCTAssertNotEqual(matcher, range_request_d);
     XCTAssertNotEqual(matcher, range_request_e);

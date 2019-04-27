@@ -346,11 +346,13 @@ struct timeline_exporter::impl : base::impl {
 #warning todo
             }
 
-            for (auto const &event_pair : channel.filtered_events<proc::number_event>()) {
-                proc::time::frame::type const &frame = event_pair.first;
-                proc::number_event const &event = event_pair.second;
+            if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
+                for (auto const &event_pair : number_events) {
+                    proc::time::frame::type const &frame = event_pair.first;
+                    proc::number_event const &event = event_pair.second;
 
 #warning todo json的なので保存する？
+                }
             }
         }
     }
@@ -378,12 +380,9 @@ struct timeline_exporter::impl : base::impl {
             while (yas_each_next(each)) {
                 auto const &frag_idx = yas_each_index(each);
                 auto const frag_path = url_utils::fragment_url(root_url, std::stoll(ch_name), frag_idx).path();
-                if (auto const exists_result = file_manager::content_exists(frag_path);
-                    exists_result.value() == file_manager::content_kind::directory) {
-                    auto const remove_result = file_manager::remove_content(frag_path);
-                    if (!remove_result) {
-                        throw std::runtime_error("remove directory failed");
-                    }
+                auto const remove_result = file_manager::remove_content(frag_path);
+                if (!remove_result) {
+                    throw std::runtime_error("remove directory failed");
                 }
             }
         }

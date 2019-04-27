@@ -146,7 +146,7 @@ struct timeline_exporter::impl : base::impl {
                              }
 
                              proc::time::range const range =
-                                 timeline_utils::fragment_range(*total_range, sync_source.sample_rate);
+                                 timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
 
                              timeline.process(range, sync_source,
                                               [&op, &exporter_impl](proc::time::range const &range,
@@ -263,7 +263,7 @@ struct timeline_exporter::impl : base::impl {
                                  proc::sync_source const sync_source = *exporter_impl->_bg.sync_source;
 
                                  proc::time::range const range =
-                                     timeline_utils::fragment_range(range, sync_source.sample_rate);
+                                     timeline_utils::fragments_range(range, sync_source.sample_rate);
 
                                  exporter_impl->_bg.timeline.process(
                                      range, sync_source,
@@ -339,7 +339,7 @@ struct timeline_exporter::impl : base::impl {
 
         auto const &sync_source = *this->_bg.sync_source;
 
-        proc::time::range const process_range = timeline_utils::fragment_range(range, sync_source.sample_rate);
+        proc::time::range const process_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
         this->_bg.timeline.process(process_range, sync_source,
                                    [&op, this](proc::time::range const &range, proc::stream const &stream, bool &stop) {

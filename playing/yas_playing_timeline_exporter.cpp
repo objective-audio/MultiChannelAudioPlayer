@@ -135,9 +135,6 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
-                             exporter_impl->_bg.sync_source.emplace(sample_rate, sample_rate);
-                             auto const sync_source = *exporter_impl->_bg.sync_source;
-
                              proc::timeline &timeline = exporter_impl->_bg.timeline;
 
                              auto total_range = timeline.total_range();
@@ -145,19 +142,7 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
-                             proc::time::range const range =
-                                 timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
-
-                             timeline.process(range, sync_source,
-                                              [&op, &exporter_impl](proc::time::range const &range,
-                                                                    proc::stream const &stream, bool &stop) {
-                                                  if (op.is_canceled()) {
-                                                      stop = true;
-                                                      return;
-                                                  }
-
-                                                  exporter_impl->_export_fragments(range, stream);
-                                              });
+                             exporter_impl->_export_range(*total_range, op);
                          }
                      },
                      {.priority = playing::queue_priority::exporter}};
@@ -330,7 +315,7 @@ struct timeline_exporter::impl : base::impl {
 #warning todo moduleがvectorから削除された場合
     }
 
-    void _export_range(proc::time::range const &range, operation &op) {
+    void _export_range(proc::time::range const &range, operation const &op) {
         assert(!thread::is_main());
 
         if (!this->_bg.sync_source.has_value()) {

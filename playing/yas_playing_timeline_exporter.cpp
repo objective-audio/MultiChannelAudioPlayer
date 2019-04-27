@@ -169,11 +169,11 @@ struct timeline_exporter::impl : base::impl {
         }
 
         if (total_range) {
-            operation export_op{[range = *total_range, weak_exporter = to_weak(exporter)](auto const &) {
+            operation export_op{[range = *total_range, weak_exporter = to_weak(exporter)](operation const &op) {
                                     if (auto exporter = weak_exporter.lock()) {
                                         auto exporter_impl = exporter.impl_ptr<impl>();
-
-#warning todo 関連する範囲内をexport
+                                        exporter_impl->_remove_fragments_in_range(range, op);
+                                        exporter_impl->_export_range(range, op);
                                     }
                                 },
                                 {.priority = playing::queue_priority::exporter}};
@@ -185,10 +185,6 @@ struct timeline_exporter::impl : base::impl {
     void _erase_tracks(proc::timeline::erased_event_t const &event, timeline_exporter &exporter) {
         auto track_indices =
             to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
-
-        for (auto const &trk_idx : track_indices) {
-            this->_queue.cancel_for_id(timeline_track_cancel_request(trk_idx));
-        }
 
         for (auto &trk_idx : track_indices) {
             operation op{[trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
@@ -215,10 +211,6 @@ struct timeline_exporter::impl : base::impl {
     void _insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event,
                          timeline_exporter &exporter) {
         auto modules = proc::copy_to_modules(event.elements);
-
-        for (auto const &pair : modules) {
-            this->_queue.cancel_for_id(timeline_range_cancel_request(pair.first));
-        }
 
         for (auto &pair : modules) {
             auto const &range = pair.first;
@@ -254,10 +246,6 @@ struct timeline_exporter::impl : base::impl {
     void _erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event,
                         timeline_exporter &exporter) {
         auto modules = proc::copy_to_modules(event.elements);
-
-        for (auto const &pair : modules) {
-            this->_queue.cancel_for_id(timeline_range_cancel_request(pair.first));
-        }
 
         for (auto &pair : modules) {
             auto const &range = pair.first;
@@ -356,7 +344,7 @@ struct timeline_exporter::impl : base::impl {
         }
     }
 
-    void _remove_fragments(proc::time::range const &range) {
+    void _remove_fragments_in_range(proc::time::range const &range, operation const &op) {
         auto const &root_url = this->_root_url;
 
         auto ch_paths_result = file_manager::content_paths_in_directory(root_url.path());
@@ -371,6 +359,10 @@ struct timeline_exporter::impl : base::impl {
         auto const end_frag_idx = range.next_frame() / this->_sample_rate;
 
         for (auto const &ch_name : ch_names) {
+            if (op.is_canceled()) {
+                return;
+            }
+
             auto each = make_fast_each(begin_frag_idx, end_frag_idx);
             while (yas_each_next(each)) {
                 auto const &frag_idx = yas_each_index(each);

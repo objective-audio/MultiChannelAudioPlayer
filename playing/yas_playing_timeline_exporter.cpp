@@ -183,8 +183,16 @@ struct timeline_exporter::impl : base::impl {
         }
 
         if (total_range) {
-#warning todo 関連する範囲内の全Chフォルダを削除
+            operation export_op{[range = *total_range, weak_exporter = to_weak(exporter)](auto const &) {
+                                    if (auto exporter = weak_exporter.lock()) {
+                                        auto exporter_impl = exporter.impl_ptr<impl>();
+
 #warning todo 関連する範囲内をexport
+                                    }
+                                },
+                                {.priority = playing::queue_priority::exporter}};
+
+            this->_queue.push_back(std::move(export_op));
         }
     }
 
@@ -320,6 +328,28 @@ struct timeline_exporter::impl : base::impl {
     void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
                        proc::module_vector::erased_event_t const &event, timeline_exporter &exporter) {
 #warning todo moduleがvectorから削除された場合
+    }
+
+    void _export_range(proc::time::range const &range, operation &op) {
+        assert(!thread::is_main());
+
+        if (!this->_bg.sync_source.has_value()) {
+            return;
+        }
+
+        auto const &sync_source = *this->_bg.sync_source;
+
+        proc::time::range const process_range = timeline_utils::fragment_range(range, sync_source.sample_rate);
+
+        this->_bg.timeline.process(process_range, sync_source,
+                                   [&op, this](proc::time::range const &range, proc::stream const &stream, bool &stop) {
+                                       if (op.is_canceled()) {
+                                           stop = true;
+                                           return;
+                                       }
+
+                                       this->_export_fragments(range, stream);
+                                   });
     }
 
     void _export_fragments(proc::time::range const &range, proc::stream const &stream) {

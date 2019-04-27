@@ -168,19 +168,7 @@ struct timeline_exporter::impl : base::impl {
     void _insert_tracks(proc::timeline::inserted_event_t const &event, timeline_exporter &exporter) {
         auto tracks = proc::copy_tracks(event.elements);
 
-        std::optional<proc::time::range> total_range;
-
-        for (auto const &pair : tracks) {
-            this->_queue.cancel_for_id(timeline_track_cancel_request_id(pair.first));
-
-            if (auto range = pair.second.total_range()) {
-                if (!total_range) {
-                    total_range = range;
-                } else {
-                    total_range = (*total_range).combined(*range);
-                }
-            }
-        }
+        std::optional<proc::time::range> total_range = proc::total_range(tracks);
 
         for (auto &pair : tracks) {
             operation insert_op{

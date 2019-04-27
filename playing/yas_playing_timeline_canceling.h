@@ -25,6 +25,7 @@ struct timeline_cancel_request : protocol {
     };
 };
 
+// requestのトラックと一致したらキャンセルさせる
 struct timeline_track_cancel_request_id : base {
     class impl;
 
@@ -32,6 +33,7 @@ struct timeline_track_cancel_request_id : base {
     timeline_track_cancel_request_id(std::nullptr_t);
 };
 
+// requestの範囲に完全に含まれていたらキャンセルさせる
 struct timeline_range_cancel_request_id : base {
     class impl;
 

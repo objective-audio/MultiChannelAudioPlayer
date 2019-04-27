@@ -4,6 +4,7 @@
 
 #include "yas_playing_timeline_exporter.h"
 #include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_fast_each.h>
 #include <cpp_utils/yas_file_manager.h>
 #include <cpp_utils/yas_operation.h>
 #include <cpp_utils/yas_thread.h>
@@ -318,17 +319,16 @@ struct timeline_exporter::impl : base::impl {
                                    });
     }
 
-    void _remove_fragments(proc::time::range const &range) {
-    }
-
     void _export_fragment(proc::time::range const &range, proc::stream const &stream) {
         assert(!thread::is_main());
+
+        auto const frag_idx = range.frame / this->_sample_rate;
 
         for (auto const &ch_pair : stream.channels()) {
             auto const &ch_idx = ch_pair.first;
             auto const &channel = ch_pair.second;
 
-            auto const fragment_path = url_utils::fragment_url(this->_root_url, ch_idx, range.frame).path();
+            auto const fragment_path = url_utils::fragment_url(this->_root_url, ch_idx, frag_idx).path();
 
             auto remove_result = file_manager::remove_content(fragment_path);
             if (!remove_result) {
@@ -352,6 +352,23 @@ struct timeline_exporter::impl : base::impl {
                 proc::number_event const &event = event_pair.second;
 
 #warning todo json的なので保存する？
+            }
+        }
+    }
+
+    void _remove_fragments(proc::time::range const &range) {
+        auto ch_paths_result = file_manager::content_paths_in_directory(this->_root_url.path());
+        if (!ch_paths_result) {
+            return;
+        }
+
+        auto const &ch_paths = ch_paths_result.value();
+        auto const begin_frag_idx = range.frame / this->_sample_rate;
+        auto const end_frag_idx = range.next_frame() / this->_sample_rate;
+
+        for (auto const &ch_path : ch_paths) {
+            auto each = make_fast_each(begin_frag_idx, end_frag_idx);
+            while (yas_each_next(each)) {
             }
         }
     }

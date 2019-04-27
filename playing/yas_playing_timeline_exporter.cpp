@@ -168,8 +168,18 @@ struct timeline_exporter::impl : base::impl {
     void _insert_tracks(proc::timeline::inserted_event_t const &event, timeline_exporter &exporter) {
         auto tracks = proc::copy_tracks(event.elements);
 
+        std::optional<proc::time::range> total_range;
+
         for (auto const &pair : tracks) {
             this->_queue.cancel_for_id(timeline_track_cancel_request_id(pair.first));
+
+            if (auto range = pair.second.total_range()) {
+                if (!total_range) {
+                    total_range = range;
+                } else {
+                    total_range = (*total_range).combined(*range);
+                }
+            }
         }
 
         for (auto &pair : tracks) {
@@ -185,15 +195,13 @@ struct timeline_exporter::impl : base::impl {
             this->_queue.push_back(std::move(insert_op));
         }
 
-        for (auto const &pair : tracks) {
-            operation export_op{
-                [trk_idx = pair.first, weak_exporter = to_weak(exporter)](auto const &) mutable {
-#warning todo 差し替え前のトラックに関連するチャンネルのフォルダを削除
-#warning todo トラックに関連するチャンネル全体をexport
-                },
-                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher_id(pair.first)}};
-
-            this->_queue.push_back(std::move(export_op));
+        if (total_range) {
+#warning todo 関連する範囲内の全Chフォルダを削除
+#warning todo 関連する範囲内をexport
+            //            operation erase_op {
+            //                [](auto const &){}, {.priority = playing::queue_priority::exporter, .cancel_id =
+            //                timeline_cancel_matcher_id(*erase_range)}
+            //            };
         }
     }
 

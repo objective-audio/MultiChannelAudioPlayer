@@ -171,14 +171,13 @@ struct timeline_exporter::impl : base::impl {
         std::optional<proc::time::range> total_range = proc::total_range(tracks);
 
         for (auto &pair : tracks) {
-            operation insert_op{
-                [trk_idx = pair.first, track = std::move(pair.second),
-                 weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    if (auto exporter = weak_exporter.lock()) {
-                        exporter.impl_ptr<impl>()->_bg.timeline.insert_track(trk_idx, std::move(track));
-                    }
-                },
-                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher(pair.first)}};
+            operation insert_op{[trk_idx = pair.first, track = std::move(pair.second),
+                                 weak_exporter = to_weak(exporter)](auto const &) mutable {
+                                    if (auto exporter = weak_exporter.lock()) {
+                                        exporter.impl_ptr<impl>()->_bg.timeline.insert_track(trk_idx, std::move(track));
+                                    }
+                                },
+                                {.priority = playing::queue_priority::exporter}};
 
             this->_queue.push_back(std::move(insert_op));
         }
@@ -186,10 +185,6 @@ struct timeline_exporter::impl : base::impl {
         if (total_range) {
 #warning todo 関連する範囲内の全Chフォルダを削除
 #warning todo 関連する範囲内をexport
-            //            operation erase_op {
-            //                [](auto const &){}, {.priority = playing::queue_priority::exporter, .cancel_id =
-            //                timeline_cancel_matcher_id(*erase_range)}
-            //            };
         }
     }
 
@@ -202,24 +197,22 @@ struct timeline_exporter::impl : base::impl {
         }
 
         for (auto &trk_idx : track_indices) {
-            operation op{
-                [trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    if (auto exporter = weak_exporter.lock()) {
-                        exporter.impl_ptr<impl>()->_bg.timeline.erase_track(trk_idx);
-                    }
-                },
-                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher(trk_idx)}};
+            operation op{[trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
+                             if (auto exporter = weak_exporter.lock()) {
+                                 exporter.impl_ptr<impl>()->_bg.timeline.erase_track(trk_idx);
+                             }
+                         },
+                         {.priority = playing::queue_priority::exporter}};
 
             this->_queue.push_back(std::move(op));
         }
 
         for (auto &trk_idx : track_indices) {
-            operation op{
-                [trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
+            operation op{[trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
 #warning todo 差し替え前のトラックに関連するチャンネルのフォルダを削除
 #warning todo 差し替え前のトラックに関連するチャンネルの範囲をexport
-                },
-                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher(trk_idx)}};
+                         },
+                         {.priority = playing::queue_priority::exporter}};
 
             this->_queue.push_back(std::move(op));
         }
@@ -235,50 +228,49 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto &pair : modules) {
             auto const &range = pair.first;
-            operation op{
-                [trk_idx, range = range, modules = std::move(pair.second),
-                 weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    if (auto exporter = weak_exporter.lock()) {
-                        auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
-                        for (auto &module : modules) {
-                            track.push_back_module(std::move(module), range);
-                        }
-                    }
-                },
-                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher(trk_idx, range)}};
+            operation op{[trk_idx, range = range, modules = std::move(pair.second),
+                          weak_exporter = to_weak(exporter)](auto const &) mutable {
+                             if (auto exporter = weak_exporter.lock()) {
+                                 auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
+                                 for (auto &module : modules) {
+                                     track.push_back_module(std::move(module), range);
+                                 }
+                             }
+                         },
+                         {.priority = playing::queue_priority::exporter}};
 
             this->_queue.push_back(std::move(op));
         }
 
         for (auto const &pair : modules) {
             auto const &range = pair.first;
-            operation op{
-                [trk_idx, range = range, weak_exporter = to_weak(exporter)](operation const &op) mutable {
-                    if (auto exporter = weak_exporter.lock()) {
-                        auto exporter_impl = exporter.impl_ptr<impl>();
+            operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](operation const &op) mutable {
+                             if (auto exporter = weak_exporter.lock()) {
+                                 auto exporter_impl = exporter.impl_ptr<impl>();
 
-                        if (!exporter_impl->_bg.sync_source.has_value()) {
-                            return;
-                        }
+                                 if (!exporter_impl->_bg.sync_source.has_value()) {
+                                     return;
+                                 }
 
-                        proc::sync_source const sync_source = *exporter_impl->_bg.sync_source;
+                                 proc::sync_source const sync_source = *exporter_impl->_bg.sync_source;
 
-                        proc::time::range const range = timeline_utils::fragment_range(range, sync_source.sample_rate);
+                                 proc::time::range const range =
+                                     timeline_utils::fragment_range(range, sync_source.sample_rate);
 
-                        exporter_impl->_bg.timeline.process(
-                            range, sync_source,
-                            [&op, &exporter_impl](proc::time::range const &range, proc::stream const &stream,
-                                                  bool &stop) {
-                                if (op.is_canceled()) {
-                                    stop = true;
-                                    return;
-                                }
+                                 exporter_impl->_bg.timeline.process(
+                                     range, sync_source,
+                                     [&op, &exporter_impl](proc::time::range const &range, proc::stream const &stream,
+                                                           bool &stop) {
+                                         if (op.is_canceled()) {
+                                             stop = true;
+                                             return;
+                                         }
 
-                                exporter_impl->_export_fragments(range, stream);
-                            });
-                    }
-                },
-                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher(trk_idx, range)}};
+                                         exporter_impl->_export_fragments(range, stream);
+                                     });
+                             }
+                         },
+                         {.priority = playing::queue_priority::exporter}};
 
             this->_queue.push_back(std::move(op));
         }
@@ -294,29 +286,27 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto &pair : modules) {
             auto const &range = pair.first;
-            operation op{
-                [trk_idx, range = range, module = std::move(pair.second),
-                 weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    if (auto exporter = weak_exporter.lock()) {
-                        auto exporter_impl = exporter.impl_ptr<impl>();
+            operation op{[trk_idx, range = range, module = std::move(pair.second),
+                          weak_exporter = to_weak(exporter)](auto const &) mutable {
+                             if (auto exporter = weak_exporter.lock()) {
+                                 auto exporter_impl = exporter.impl_ptr<impl>();
 
-                        exporter_impl->_bg.timeline.track(trk_idx).erase_modules_for_range(range);
-                    }
-                },
-                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher(trk_idx, range)}};
+                                 exporter_impl->_bg.timeline.track(trk_idx).erase_modules_for_range(range);
+                             }
+                         },
+                         {.priority = playing::queue_priority::exporter}};
 
             this->_queue.push_back(std::move(op));
         }
 
         for (auto const &pair : modules) {
             auto const &range = pair.first;
-            operation op{
-                [trk_idx, range = range, weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    if (auto exporter = weak_exporter.lock()) {
+            operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](auto const &) mutable {
+                             if (auto exporter = weak_exporter.lock()) {
 #warning todo moduleの範囲を削除しexport（1秒単位が良い？）
-                    }
-                },
-                {.priority = playing::queue_priority::exporter, .cancel_id = timeline_cancel_matcher(trk_idx, range)}};
+                             }
+                         },
+                         {.priority = playing::queue_priority::exporter}};
 
             this->_queue.push_back(std::move(op));
         }

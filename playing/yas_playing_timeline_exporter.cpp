@@ -357,18 +357,31 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void _remove_fragments(proc::time::range const &range) {
-        auto ch_paths_result = file_manager::content_paths_in_directory(this->_root_url.path());
+        auto const &root_url = this->_root_url;
+
+        auto ch_paths_result = file_manager::content_paths_in_directory(root_url.path());
         if (!ch_paths_result) {
             return;
         }
 
-        auto const &ch_paths = ch_paths_result.value();
+        auto const ch_names = to_vector<std::string>(ch_paths_result.value(),
+                                                     [](auto const &path) { return url{path}.last_path_component(); });
+
         auto const begin_frag_idx = range.frame / this->_sample_rate;
         auto const end_frag_idx = range.next_frame() / this->_sample_rate;
 
-        for (auto const &ch_path : ch_paths) {
+        for (auto const &ch_name : ch_names) {
             auto each = make_fast_each(begin_frag_idx, end_frag_idx);
             while (yas_each_next(each)) {
+                auto const &frag_idx = yas_each_index(each);
+                auto const frag_path = url_utils::fragment_url(root_url, std::stoll(ch_name), frag_idx).path();
+                if (auto const exists_result = file_manager::content_exists(frag_path);
+                    exists_result.value() == file_manager::content_kind::directory) {
+                    auto const remove_result = file_manager::remove_content(frag_path);
+                    if (!remove_result) {
+                        throw std::runtime_error("remove directory failed");
+                    }
+                }
             }
         }
     }

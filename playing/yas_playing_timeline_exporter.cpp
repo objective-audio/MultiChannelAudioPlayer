@@ -186,25 +186,30 @@ struct timeline_exporter::impl : base::impl {
         auto track_indices =
             to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
 
-        for (auto &trk_idx : track_indices) {
-            operation op{[trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
-                             if (auto exporter = weak_exporter.lock()) {
-                                 exporter.impl_ptr<impl>()->_bg.timeline.erase_track(trk_idx);
-                             }
-                         },
-                         {.priority = playing::queue_priority::exporter}};
+        std::optional<proc::time::range> total_range = proc::total_range(event.elements);
 
-            this->_queue.push_back(std::move(op));
+        for (auto &trk_idx : track_indices) {
+            operation erase_op{[trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
+                                   if (auto exporter = weak_exporter.lock()) {
+                                       exporter.impl_ptr<impl>()->_bg.timeline.erase_track(trk_idx);
+                                   }
+                               },
+                               {.priority = playing::queue_priority::exporter}};
+
+            this->_queue.push_back(std::move(erase_op));
         }
 
-        for (auto &trk_idx : track_indices) {
-            operation op{[trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
-#warning todo 差し替え前のトラックに関連するチャンネルのフォルダを削除
-#warning todo 差し替え前のトラックに関連するチャンネルの範囲をexport
-                         },
-                         {.priority = playing::queue_priority::exporter}};
+        if (total_range) {
+            operation export_op{[range = *total_range, weak_exporter = to_weak(exporter)](operation const &op) {
+                                    if (auto exporter = weak_exporter.lock()) {
+                                        auto exporter_impl = exporter.impl_ptr<impl>();
+                                        exporter_impl->_remove_fragments_in_range(range, op);
+                                        exporter_impl->_export_range(range, op);
+                                    }
+                                },
+                                {.priority = playing::queue_priority::exporter}};
 
-            this->_queue.push_back(std::move(op));
+            this->_queue.push_back(std::move(export_op));
         }
     }
 
@@ -234,6 +239,7 @@ struct timeline_exporter::impl : base::impl {
                              if (auto exporter = weak_exporter.lock()) {
                                  auto exporter_impl = exporter.impl_ptr<impl>();
 
+                                 exporter_impl->_remove_fragments_in_range(range, op);
                                  exporter_impl->_export_range(range, op);
                              }
                          },
@@ -318,9 +324,14 @@ struct timeline_exporter::impl : base::impl {
 
             auto const fragment_path = url_utils::fragment_url(this->_root_url, ch_idx, frag_idx).path();
 
+#warning todo 事前に消すからいらなそう
             auto remove_result = file_manager::remove_content(fragment_path);
             if (!remove_result) {
                 throw std::runtime_error("remove directory failed");
+            }
+
+            if (channel.events().size() == 0) {
+                return;
             }
 
             auto create_result = file_manager::create_directory_if_not_exists(fragment_path);

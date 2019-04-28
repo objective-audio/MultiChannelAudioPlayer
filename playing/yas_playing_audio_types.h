@@ -12,7 +12,7 @@ enum queue_priority : std::size_t {
     exporter = 1,
 };
 
-std::size_t const audio_queue_priority_count = 2;
+std::size_t const queue_priority_count = 2;
 
 struct audio_configuration {
     double sample_rate;

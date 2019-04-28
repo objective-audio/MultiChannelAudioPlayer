@@ -26,7 +26,7 @@ using namespace yas::playing;
 - (void)setUp {
     test_utils::remove_all_document_files();
 
-    self->_queue = operation_queue{audio_queue_priority_count};
+    self->_queue = operation_queue{queue_priority_count};
 
     self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
                                                                 [self root_url], self -> _queue);

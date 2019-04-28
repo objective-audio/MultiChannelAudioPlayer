@@ -24,7 +24,7 @@ using namespace yas::playing;
 - (void)setUp {
     test_utils::remove_all_document_files();
 
-    self->_queue = operation_queue{audio_queue_priority_count};
+    self->_queue = operation_queue{queue_priority_count};
 }
 
 - (void)tearDown {

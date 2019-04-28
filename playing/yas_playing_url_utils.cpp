@@ -7,12 +7,20 @@
 
 using namespace yas::playing;
 
+std::string url_utils::channel_name(int64_t const ch_idx) {
+    return std::to_string(ch_idx);
+}
+
+std::string url_utils::fragment_name(int64_t const frag_idx) {
+    return std::to_string(frag_idx);
+}
+
 yas::url url_utils::channel_url(yas::url const &root_url, int64_t const ch_idx) {
-    return root_url.appending(std::to_string(ch_idx));
+    return root_url.appending(channel_name(ch_idx));
 }
 
 yas::url url_utils::fragment_url(yas::url const &root_url, int64_t const ch_idx, int64_t const frg_idx) {
-    return url_utils::channel_url(root_url, ch_idx).appending(std::to_string(frg_idx));
+    return url_utils::channel_url(root_url, ch_idx).appending(fragment_name(frg_idx));
 }
 
 yas::url url_utils::caf_url(yas::url const &ch_url, int64_t const file_idx) {

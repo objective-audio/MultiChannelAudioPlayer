@@ -303,7 +303,7 @@ struct timeline_exporter::impl : base::impl {
             [trk_idx, range, module_idx = event.index, weak_exporter = to_weak(exporter)](auto const &) mutable {
                 if (auto exporter = weak_exporter.lock()) {
                     auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
-#warning todo erase_at
+                    track.erase_module_at(module_idx, range);
                 }
             },
             {.priority = playing::queue_priority::exporter}};

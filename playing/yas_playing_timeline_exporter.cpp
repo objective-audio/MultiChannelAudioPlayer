@@ -365,6 +365,11 @@ struct timeline_exporter::impl : base::impl {
                 proc::time::range const &range = event_pair.first;
                 proc::signal_event const &event = event_pair.second;
 
+                audio::pcm_format const pcm_format = timeline_utils::to_pcm_format(event.sample_type());
+                if (pcm_format == audio::pcm_format::other) {
+                    continue;
+                }
+
 #warning todo
             }
 

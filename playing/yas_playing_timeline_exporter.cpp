@@ -113,6 +113,8 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void _update_timeline(proc::timeline::track_map_t &&tracks, timeline_exporter &exporter) {
+        assert(thread::is_main());
+
         this->_queue.cancel_all();
 
         operation op{[tracks = std::move(tracks), sample_rate = this->_sample_rate,
@@ -152,6 +154,8 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void _insert_tracks(proc::timeline::inserted_event_t const &event, timeline_exporter &exporter) {
+        assert(thread::is_main());
+
         auto tracks = proc::copy_tracks(event.elements);
 
         std::optional<proc::time::range> total_range = proc::total_range(tracks);
@@ -183,6 +187,8 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void _erase_tracks(proc::timeline::erased_event_t const &event, timeline_exporter &exporter) {
+        assert(thread::is_main());
+
         auto track_indices =
             to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
 
@@ -215,6 +221,8 @@ struct timeline_exporter::impl : base::impl {
 
     void _insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event,
                          timeline_exporter &exporter) {
+        assert(thread::is_main());
+
         auto modules = proc::copy_to_modules(event.elements);
 
         for (auto &pair : modules) {
@@ -250,6 +258,8 @@ struct timeline_exporter::impl : base::impl {
 
     void _erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event,
                         timeline_exporter &exporter) {
+        assert(thread::is_main());
+
         auto modules = proc::copy_to_modules(event.elements);
 
         for (auto &pair : modules) {
@@ -284,6 +294,8 @@ struct timeline_exporter::impl : base::impl {
 
     void _insert_module(proc::track_index_t const trk_idx, proc::time::range const range,
                         proc::module_vector::inserted_event_t const &event, timeline_exporter &exporter) {
+        assert(thread::is_main());
+
         operation op{[trk_idx, range, module_idx = event.index, module = event.element.copy(),
                       weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
@@ -300,6 +312,8 @@ struct timeline_exporter::impl : base::impl {
 
     void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
                        proc::module_vector::erased_event_t const &event, timeline_exporter &exporter) {
+        assert(thread::is_main());
+
         operation op{
             [trk_idx, range, module_idx = event.index, weak_exporter = to_weak(exporter)](auto const &) mutable {
                 if (auto exporter = weak_exporter.lock()) {

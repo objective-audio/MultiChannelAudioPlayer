@@ -215,6 +215,7 @@ struct timeline_exporter::impl : base::impl {
                           weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
                                  auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
+                                 assert(track.modules().count(range) == 0);
                                  for (auto &module : modules) {
                                      track.push_back_module(std::move(module), range);
                                  }
@@ -243,8 +244,9 @@ struct timeline_exporter::impl : base::impl {
                           weak_exporter = to_weak(exporter)](auto const &) mutable {
                              if (auto exporter = weak_exporter.lock()) {
                                  auto exporter_impl = exporter.impl_ptr<impl>();
-
-                                 exporter_impl->_bg.timeline.track(trk_idx).erase_modules_for_range(range);
+                                 auto &track = exporter_impl->_bg.timeline.track(trk_idx);
+                                 assert(track.modules().count(range) > 0);
+                                 track.erase_modules_for_range(range);
                              }
                          },
                          {.priority = playing::queue_priority::exporter}};
@@ -266,6 +268,7 @@ struct timeline_exporter::impl : base::impl {
                       weak_exporter = to_weak(exporter)](auto const &) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
+                             assert(track.modules().count(range) > 0);
                              track.insert_module(std::move(module), module_idx, range);
                          }
                      },
@@ -284,6 +287,7 @@ struct timeline_exporter::impl : base::impl {
             [trk_idx, range, module_idx = event.index, weak_exporter = to_weak(exporter)](auto const &) mutable {
                 if (auto exporter = weak_exporter.lock()) {
                     auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
+                    assert(track.modules().count(range) > 0);
                     track.erase_module_at(module_idx, range);
                 }
             },

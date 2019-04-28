@@ -173,16 +173,7 @@ struct timeline_exporter::impl : base::impl {
         }
 
         if (total_range) {
-            operation export_op{[range = *total_range, weak_exporter = to_weak(exporter)](operation const &op) {
-                                    if (auto exporter = weak_exporter.lock()) {
-                                        auto exporter_impl = exporter.impl_ptr<impl>();
-                                        exporter_impl->_remove_fragments_in_range(range, op);
-                                        exporter_impl->_export_range(range, op);
-                                    }
-                                },
-                                {.priority = playing::queue_priority::exporter}};
-
-            this->_queue.push_back(std::move(export_op));
+            this->_push_export_operation_in_range(*total_range, exporter);
         }
     }
 
@@ -206,16 +197,7 @@ struct timeline_exporter::impl : base::impl {
         }
 
         if (total_range) {
-            operation export_op{[range = *total_range, weak_exporter = to_weak(exporter)](operation const &op) {
-                                    if (auto exporter = weak_exporter.lock()) {
-                                        auto exporter_impl = exporter.impl_ptr<impl>();
-                                        exporter_impl->_remove_fragments_in_range(range, op);
-                                        exporter_impl->_export_range(range, op);
-                                    }
-                                },
-                                {.priority = playing::queue_priority::exporter}};
-
-            this->_queue.push_back(std::move(export_op));
+            this->_push_export_operation_in_range(*total_range, exporter);
         }
     }
 
@@ -243,16 +225,7 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto const &pair : modules) {
             auto const &range = pair.first;
-            operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](operation const &op) mutable {
-                             if (auto exporter = weak_exporter.lock()) {
-                                 auto exporter_impl = exporter.impl_ptr<impl>();
-                                 exporter_impl->_remove_fragments_in_range(range, op);
-                                 exporter_impl->_export_range(range, op);
-                             }
-                         },
-                         {.priority = playing::queue_priority::exporter}};
-
-            this->_queue.push_back(std::move(op));
+            this->_push_export_operation_in_range(range, exporter);
         }
     }
 
@@ -279,16 +252,7 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto const &pair : modules) {
             auto const &range = pair.first;
-            operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](operation const &op) mutable {
-                             if (auto exporter = weak_exporter.lock()) {
-                                 auto exporter_impl = exporter.impl_ptr<impl>();
-                                 exporter_impl->_remove_fragments_in_range(range, op);
-                                 exporter_impl->_export_range(range, op);
-                             }
-                         },
-                         {.priority = playing::queue_priority::exporter}};
-
-            this->_queue.push_back(std::move(op));
+            this->_push_export_operation_in_range(range, exporter);
         }
     }
 
@@ -324,6 +288,19 @@ struct timeline_exporter::impl : base::impl {
             {.priority = playing::queue_priority::exporter}};
 
 #warning todo export
+    }
+
+    void _push_export_operation_in_range(proc::time::range const &range, timeline_exporter &exporter) {
+        operation export_op{[range, weak_exporter = to_weak(exporter)](operation const &op) {
+                                if (auto exporter = weak_exporter.lock()) {
+                                    auto exporter_impl = exporter.impl_ptr<impl>();
+                                    exporter_impl->_remove_fragments_in_range(range, op);
+                                    exporter_impl->_export_range(range, op);
+                                }
+                            },
+                            {.priority = playing::queue_priority::exporter}};
+
+        this->_queue.push_back(std::move(export_op));
     }
 
     void _export_range(proc::time::range const &range, operation const &op) {

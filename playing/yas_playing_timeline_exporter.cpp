@@ -299,7 +299,16 @@ struct timeline_exporter::impl : base::impl {
 
     void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
                        proc::module_vector::erased_event_t const &event, timeline_exporter &exporter) {
-#warning todo moduleがvectorから削除された場合
+        operation op{
+            [trk_idx, range, module_idx = event.index, weak_exporter = to_weak(exporter)](auto const &) mutable {
+                if (auto exporter = weak_exporter.lock()) {
+                    auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
+#warning todo erase_at
+                }
+            },
+            {.priority = playing::queue_priority::exporter}};
+
+#warning todo export
     }
 
     void _export_range(proc::time::range const &range, operation const &op) {

@@ -44,8 +44,10 @@ struct timeline_exporter::impl : base::impl {
     void set_sample_rate(proc::sample_rate_t const sample_rate, timeline_exporter &exporter) {
         assert(thread::is_main());
 
-        this->_sample_rate = sample_rate;
-        this->_update_timeline(proc::copy_tracks(this->_src_timeline.tracks()), exporter);
+        if (this->_sample_rate != sample_rate) {
+            this->_sample_rate = sample_rate;
+            this->_update_timeline(proc::copy_tracks(this->_src_timeline.tracks()), exporter);
+        }
     }
 
    private:

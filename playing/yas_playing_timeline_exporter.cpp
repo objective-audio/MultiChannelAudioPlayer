@@ -283,7 +283,18 @@ struct timeline_exporter::impl : base::impl {
 
     void _insert_module(proc::track_index_t const trk_idx, proc::time::range const range,
                         proc::module_vector::inserted_event_t const &event, timeline_exporter &exporter) {
-#warning todo moduleがvectorに追加された場合
+        operation op{[trk_idx, range, module_idx = event.index, module = event.element.copy(),
+                      weak_exporter = to_weak(exporter)](auto const &) mutable {
+                         if (auto exporter = weak_exporter.lock()) {
+                             auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
+                             track.insert_module(std::move(module), module_idx, range);
+                         }
+                     },
+                     {.priority = playing::queue_priority::exporter}};
+
+        this->_queue.push_back(std::move(op));
+
+#warning todo export
     }
 
     void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,

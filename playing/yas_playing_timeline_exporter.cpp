@@ -60,11 +60,6 @@ struct timeline_exporter::impl : base::impl {
     struct background {
         proc::timeline timeline;
         std::optional<proc::sync_source> sync_source;
-
-        std::optional<audio::pcm_buffer> float32_buffer;
-        std::optional<audio::pcm_buffer> float64_buffer;
-        std::optional<audio::pcm_buffer> int32_buffer;
-        std::optional<audio::pcm_buffer> int16_buffer;
     };
     background _bg;
 
@@ -133,10 +128,6 @@ struct timeline_exporter::impl : base::impl {
                              auto &bg = exporter_impl->_bg;
                              bg.timeline = proc::timeline{std::move(tracks)};
                              bg.sync_source.emplace(sample_rate, sample_rate);
-                             bg.float32_buffer = std::nullopt;
-                             bg.float64_buffer = std::nullopt;
-                             bg.int32_buffer = std::nullopt;
-                             bg.int16_buffer = std::nullopt;
 
                              if (op.is_canceled()) {
                                  return;

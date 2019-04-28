@@ -15,6 +15,10 @@ std::string url_utils::fragment_name(int64_t const frag_idx) {
     return std::to_string(frag_idx);
 }
 
+std::string url_utils::signal_file_name(proc::time::range const &range) {
+    return "signal_" + std::to_string(range.frame) + "_" + std::to_string(range.length) + "_";
+}
+
 yas::url url_utils::channel_url(yas::url const &root_url, int64_t const ch_idx) {
     return root_url.appending(channel_name(ch_idx));
 }

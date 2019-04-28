@@ -147,7 +147,7 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
-                             exporter_impl->_export_range(*total_range, op);
+                             exporter_impl->_export_fragments(*total_range, op);
                          }
                      },
                      {.priority = playing::queue_priority::exporter}};
@@ -175,7 +175,7 @@ struct timeline_exporter::impl : base::impl {
         }
 
         if (total_range) {
-            this->_push_export_operation_in_range(*total_range, exporter);
+            this->_push_export_operation(*total_range, exporter);
         }
     }
 
@@ -199,7 +199,7 @@ struct timeline_exporter::impl : base::impl {
         }
 
         if (total_range) {
-            this->_push_export_operation_in_range(*total_range, exporter);
+            this->_push_export_operation(*total_range, exporter);
         }
     }
 
@@ -227,7 +227,7 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto const &pair : modules) {
             auto const &range = pair.first;
-            this->_push_export_operation_in_range(range, exporter);
+            this->_push_export_operation(range, exporter);
         }
     }
 
@@ -254,7 +254,7 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto const &pair : modules) {
             auto const &range = pair.first;
-            this->_push_export_operation_in_range(range, exporter);
+            this->_push_export_operation(range, exporter);
         }
     }
 
@@ -273,7 +273,7 @@ struct timeline_exporter::impl : base::impl {
 
         this->_queue.push_back(std::move(op));
 
-        this->_push_export_operation_in_range(range, exporter);
+        this->_push_export_operation(range, exporter);
     }
 
     void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
@@ -289,15 +289,15 @@ struct timeline_exporter::impl : base::impl {
             },
             {.priority = playing::queue_priority::exporter}};
 
-        this->_push_export_operation_in_range(range, exporter);
+        this->_push_export_operation(range, exporter);
     }
 
-    void _push_export_operation_in_range(proc::time::range const &range, timeline_exporter &exporter) {
+    void _push_export_operation(proc::time::range const &range, timeline_exporter &exporter) {
         operation export_op{[range, weak_exporter = to_weak(exporter)](operation const &op) {
                                 if (auto exporter = weak_exporter.lock()) {
                                     auto exporter_impl = exporter.impl_ptr<impl>();
-                                    exporter_impl->_remove_fragments_in_range(range, op);
-                                    exporter_impl->_export_range(range, op);
+                                    exporter_impl->_remove_fragments(range, op);
+                                    exporter_impl->_export_fragments(range, op);
                                 }
                             },
                             {.priority = playing::queue_priority::exporter}};
@@ -305,7 +305,7 @@ struct timeline_exporter::impl : base::impl {
         this->_queue.push_back(std::move(export_op));
     }
 
-    void _export_range(proc::time::range const &range, operation const &op) {
+    void _export_fragments(proc::time::range const &range, operation const &op) {
         assert(!thread::is_main());
 
         if (!this->_bg.sync_source.has_value()) {
@@ -371,7 +371,7 @@ struct timeline_exporter::impl : base::impl {
         }
     }
 
-    void _remove_fragments_in_range(proc::time::range const &range, operation const &op) {
+    void _remove_fragments(proc::time::range const &range, operation const &op) {
         auto const &root_url = this->_root_url;
 
         auto ch_paths_result = file_manager::content_paths_in_directory(root_url.path());

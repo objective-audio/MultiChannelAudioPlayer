@@ -238,7 +238,6 @@ struct timeline_exporter::impl : base::impl {
             operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](operation const &op) mutable {
                              if (auto exporter = weak_exporter.lock()) {
                                  auto exporter_impl = exporter.impl_ptr<impl>();
-
                                  exporter_impl->_remove_fragments_in_range(range, op);
                                  exporter_impl->_export_range(range, op);
                              }
@@ -270,9 +269,11 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto const &pair : modules) {
             auto const &range = pair.first;
-            operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](auto const &) mutable {
+            operation op{[trk_idx, range = range, weak_exporter = to_weak(exporter)](operation const &op) mutable {
                              if (auto exporter = weak_exporter.lock()) {
-#warning todo moduleの範囲を削除しexport（1秒単位が良い？）
+                                 auto exporter_impl = exporter.impl_ptr<impl>();
+                                 exporter_impl->_remove_fragments_in_range(range, op);
+                                 exporter_impl->_export_range(range, op);
                              }
                          },
                          {.priority = playing::queue_priority::exporter}};

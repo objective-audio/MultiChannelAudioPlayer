@@ -345,7 +345,7 @@ struct timeline_exporter::impl : base::impl {
 #warning todo 事前に消すからいらなそう
             auto remove_result = file_manager::remove_content(fragment_path);
             if (!remove_result) {
-                throw std::runtime_error("remove directory failed");
+                throw std::runtime_error("remove fragment directory failed");
             }
 
             if (channel.events().size() == 0) {
@@ -400,7 +400,7 @@ struct timeline_exporter::impl : base::impl {
                 auto const frag_path = url_utils::fragment_url(root_url, std::stoll(ch_name), frag_idx).path();
                 auto const remove_result = file_manager::remove_content(frag_path);
                 if (!remove_result) {
-                    throw std::runtime_error("remove directory failed");
+                    throw std::runtime_error("remove fragment directory failed");
                 }
             }
         }

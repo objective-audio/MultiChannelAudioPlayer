@@ -3,6 +3,8 @@
 //
 
 #include "yas_playing_timeline_exporter.h"
+#include <audio/yas_audio_file.h>
+#include <audio/yas_audio_pcm_buffer.h>
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_fast_each.h>
 #include <cpp_utils/yas_file_manager.h>
@@ -58,6 +60,11 @@ struct timeline_exporter::impl : base::impl {
     struct background {
         proc::timeline timeline;
         std::optional<proc::sync_source> sync_source;
+
+        std::optional<audio::pcm_buffer> float32_buffer;
+        std::optional<audio::pcm_buffer> float64_buffer;
+        std::optional<audio::pcm_buffer> int32_buffer;
+        std::optional<audio::pcm_buffer> int16_buffer;
     };
     background _bg;
 
@@ -123,7 +130,13 @@ struct timeline_exporter::impl : base::impl {
                       weak_exporter = to_weak(exporter)](operation const &op) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
-                             exporter_impl->_bg.timeline = proc::timeline{std::move(tracks)};
+                             auto &bg = exporter_impl->_bg;
+                             bg.timeline = proc::timeline{std::move(tracks)};
+                             bg.sync_source.emplace(sample_rate, sample_rate);
+                             bg.float32_buffer = std::nullopt;
+                             bg.float64_buffer = std::nullopt;
+                             bg.int32_buffer = std::nullopt;
+                             bg.int16_buffer = std::nullopt;
 
                              if (op.is_canceled()) {
                                  return;

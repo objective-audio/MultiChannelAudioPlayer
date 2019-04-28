@@ -273,7 +273,7 @@ struct timeline_exporter::impl : base::impl {
 
         this->_queue.push_back(std::move(op));
 
-#warning todo export
+        this->_push_export_operation_in_range(range, exporter);
     }
 
     void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
@@ -289,7 +289,7 @@ struct timeline_exporter::impl : base::impl {
             },
             {.priority = playing::queue_priority::exporter}};
 
-#warning todo export
+        this->_push_export_operation_in_range(range, exporter);
     }
 
     void _push_export_operation_in_range(proc::time::range const &range, timeline_exporter &exporter) {

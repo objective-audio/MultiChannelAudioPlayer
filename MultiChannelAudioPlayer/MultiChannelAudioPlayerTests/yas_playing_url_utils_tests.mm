@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <cpp_utils/yas_boolean.h>
 #import <playing/yas_playing_url_utils.h>
 
 using namespace yas;
@@ -45,6 +46,7 @@ using namespace yas::playing;
     XCTAssertEqual(url_utils::sample_type_name(typeid(uint16_t)), "u16");
     XCTAssertEqual(url_utils::sample_type_name(typeid(int8_t)), "i8");
     XCTAssertEqual(url_utils::sample_type_name(typeid(uint8_t)), "u8");
+    XCTAssertEqual(url_utils::sample_type_name(typeid(boolean)), "b");
 
     XCTAssertEqual(url_utils::sample_type_name(typeid(std::string)), "");
 }

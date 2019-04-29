@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_url_utils.h"
+#include <cpp_utils/yas_boolean.h>
 #include "yas_playing_math.h"
 
 using namespace yas::playing;
@@ -36,6 +37,8 @@ std::string url_utils::sample_type_name(std::type_info const &type_info) {
         return "i8";
     } else if (type_info == typeid(uint8_t)) {
         return "u8";
+    } else if (type_info == typeid(boolean)) {
+        return "b";
     } else {
         return "";
     }

@@ -42,8 +42,8 @@ std::string url_utils::sample_type_name(std::type_info const &type_info) {
 }
 
 std::string url_utils::signal_file_name(proc::time::range const &range, std::type_info const &type_info) {
-    return std::to_string(range.frame) + "_" + std::to_string(range.length) + "_" + sample_type_name(type_info) +
-           ".signal";
+    return "signal_" + std::to_string(range.frame) + "_" + std::to_string(range.length) + "_" +
+           sample_type_name(type_info);
 }
 
 yas::url url_utils::channel_url(yas::url const &root_url, int64_t const ch_idx) {

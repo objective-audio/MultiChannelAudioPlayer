@@ -387,16 +387,21 @@ struct timeline_exporter::impl : base::impl {
                     throw std::runtime_error("open stream failed.");
                 }
 
-                stream << "{";
+                stream << "[";
+
+                std::vector<std::string> jsons;
 
                 for (auto const &event_pair : number_events) {
                     proc::time::frame::type const &frame = event_pair.first;
                     proc::number_event const &event = event_pair.second;
 
-#warning todo json的なので保存する？
+                    std::string json =
+                        "{\"frame\":" + std::to_string(frame) + ",\"value\":" + timeline_utils::to_string(event) + "}";
+                    jsons.emplace_back(std::move(json));
                 }
 
-                stream << "}";
+                stream << joined(jsons, ",");
+                stream << "]";
                 stream.close();
             }
         }

@@ -155,7 +155,7 @@ struct timeline_exporter::impl : base::impl {
                              exporter_impl->_export_fragments(*total_range, op);
                          }
                      },
-                     {.priority = playing::queue_priority::exporter}};
+                     {.priority = playing::queue_priority::timeline}};
 
         this->_queue.push_back(std::move(op));
     }
@@ -174,7 +174,7 @@ struct timeline_exporter::impl : base::impl {
                                         exporter.impl_ptr<impl>()->_bg.timeline.insert_track(trk_idx, std::move(track));
                                     }
                                 },
-                                {.priority = playing::queue_priority::exporter}};
+                                {.priority = playing::queue_priority::timeline}};
 
             this->_queue.push_back(std::move(insert_op));
         }
@@ -198,7 +198,7 @@ struct timeline_exporter::impl : base::impl {
                                        exporter.impl_ptr<impl>()->_bg.timeline.erase_track(trk_idx);
                                    }
                                },
-                               {.priority = playing::queue_priority::exporter}};
+                               {.priority = playing::queue_priority::timeline}};
 
             this->_queue.push_back(std::move(erase_op));
         }
@@ -226,7 +226,7 @@ struct timeline_exporter::impl : base::impl {
                                  }
                              }
                          },
-                         {.priority = playing::queue_priority::exporter}};
+                         {.priority = playing::queue_priority::timeline}};
 
             this->_queue.push_back(std::move(op));
         }
@@ -254,7 +254,7 @@ struct timeline_exporter::impl : base::impl {
                                  track.erase_modules_for_range(range);
                              }
                          },
-                         {.priority = playing::queue_priority::exporter}};
+                         {.priority = playing::queue_priority::timeline}};
 
             this->_queue.push_back(std::move(op));
         }
@@ -277,7 +277,7 @@ struct timeline_exporter::impl : base::impl {
                              track.insert_module(std::move(module), module_idx, range);
                          }
                      },
-                     {.priority = playing::queue_priority::exporter}};
+                     {.priority = playing::queue_priority::timeline}};
 
         this->_queue.push_back(std::move(op));
 
@@ -296,7 +296,7 @@ struct timeline_exporter::impl : base::impl {
                     track.erase_module_at(module_idx, range);
                 }
             },
-            {.priority = playing::queue_priority::exporter}};
+            {.priority = playing::queue_priority::timeline}};
 
         this->_push_export_operation(range, exporter);
     }
@@ -309,7 +309,7 @@ struct timeline_exporter::impl : base::impl {
                                     exporter_impl->_export_fragments(range, op);
                                 }
                             },
-                            {.priority = playing::queue_priority::exporter}};
+                            {.priority = playing::queue_priority::exporting}};
 
         this->_queue.push_back(std::move(export_op));
     }

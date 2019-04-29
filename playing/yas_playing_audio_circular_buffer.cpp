@@ -95,7 +95,7 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 
                      auto load_result = container_ptr->load_from_file(file, file_idx);
                  },
-                 operation_option_t{.push_cancel_id = container_ptr->identifier, .priority = queue_priority::player}};
+                 operation_option_t{.push_cancel_id = container_ptr->identifier, .priority = queue_priority::playing}};
 
     this->_queue.push_back(std::move(op));
 }

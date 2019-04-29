@@ -8,11 +8,12 @@
 
 namespace yas::playing {
 enum queue_priority : std::size_t {
-    player = 0,
-    exporter = 1,
+    playing = 0,
+    timeline = 1,
+    exporting = 2,
 };
 
-std::size_t const queue_priority_count = 2;
+std::size_t const queue_priority_count = 3;
 
 struct audio_configuration {
     double sample_rate;

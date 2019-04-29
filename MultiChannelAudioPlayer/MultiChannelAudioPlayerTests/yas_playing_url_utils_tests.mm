@@ -68,6 +68,13 @@ using namespace yas::playing;
     XCTAssertEqual(frg_url.path(), "/root/1/2");
 }
 
+- (void)test_signal_file_url {
+    auto root_url = url::file_url("/root");
+    auto signal_url = url_utils::signal_file_url(root_url, 1, 2, {10, 11}, typeid(int64_t));
+
+    XCTAssertEqual(signal_url.path(), "/root/1/2/signal_10_11_i64");
+}
+
 - (void)test_caf_url_with_file_idx {
     auto ch_url = url_utils::channel_url(yas::url::file_url("/root"), 1);
 

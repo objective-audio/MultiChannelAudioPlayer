@@ -365,21 +365,23 @@ struct timeline_exporter::impl : base::impl {
                 proc::time::range const &range = event_pair.first;
                 proc::signal_event const &event = event_pair.second;
 
-                audio::pcm_format const pcm_format = timeline_utils::to_pcm_format(event.sample_type());
-                if (pcm_format == audio::pcm_format::other) {
-                    continue;
-                }
+                auto const signal_url =
+                    url_utils::signal_file_url(this->_root_url, ch_idx, frag_idx, range, event.sample_type());
 
-#warning todo
+#warning todo そのまんまデータをファイルに保存
             }
 
             if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
+                std::vector<std::string> json_array;
+
                 for (auto const &event_pair : number_events) {
                     proc::time::frame::type const &frame = event_pair.first;
                     proc::number_event const &event = event_pair.second;
 
 #warning todo json的なので保存する？
                 }
+
+                auto const number_url = url_utils::number_file_url(this->_root_url, ch_idx, frag_idx);
             }
         }
     }

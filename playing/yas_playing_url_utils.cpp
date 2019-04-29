@@ -54,8 +54,8 @@ yas::url url_utils::fragment_url(yas::url const &root_url, int64_t const ch_idx,
     return channel_url(root_url, ch_idx).appending(fragment_name(frg_idx));
 }
 
-yas::url url_utils::file_url(yas::url const &root_url, int64_t const ch_idx, int64_t const frg_idx,
-                             proc::time::range const &range, std::type_info const &type_info) {
+yas::url url_utils::signal_file_url(yas::url const &root_url, int64_t const ch_idx, int64_t const frg_idx,
+                                    proc::time::range const &range, std::type_info const &type_info) {
     return fragment_url(root_url, ch_idx, frg_idx).appending(signal_file_name(range, type_info));
 }
 

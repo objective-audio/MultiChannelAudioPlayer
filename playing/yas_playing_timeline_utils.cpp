@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_timeline_utils.h"
+#include <cpp_utils/yas_boolean.h>
 #include "yas_playing_math.h"
 
 using namespace yas;
@@ -15,16 +16,32 @@ proc::time::range timeline_utils::fragments_range(proc::time::range const &range
     return proc::time::range{frame, static_cast<proc::length_t>(next_frame - frame)};
 }
 
-audio::pcm_format timeline_utils::to_pcm_format(std::type_info const &type) {
-    if (type == typeid(Float64)) {
-        return audio::pcm_format::float64;
-    } else if (type == typeid(Float32)) {
-        return audio::pcm_format::float32;
-    } else if (type == typeid(int16_t)) {
-        return audio::pcm_format::int16;
+std::string timeline_utils::to_string(proc::number_event const &event) {
+    auto const &type = event.sample_type();
+
+    if (type == typeid(double)) {
+        return std::to_string(event.get<double>());
+    } else if (type == typeid(float)) {
+        return std::to_string(event.get<float>());
+    } else if (type == typeid(int64_t)) {
+        return std::to_string(event.get<int64_t>());
+    } else if (type == typeid(uint64_t)) {
+        return std::to_string(event.get<uint64_t>());
     } else if (type == typeid(int32_t)) {
-        return audio::pcm_format::fixed824;
+        return std::to_string(event.get<int32_t>());
+    } else if (type == typeid(uint32_t)) {
+        return std::to_string(event.get<uint32_t>());
+    } else if (type == typeid(int16_t)) {
+        return std::to_string(event.get<int16_t>());
+    } else if (type == typeid(uint16_t)) {
+        return std::to_string(event.get<uint16_t>());
+    } else if (type == typeid(int8_t)) {
+        return std::to_string(event.get<int8_t>());
+    } else if (type == typeid(uint8_t)) {
+        return std::to_string(event.get<uint8_t>());
+    } else if (type == typeid(boolean)) {
+        return to_string(event.get<boolean>());
     } else {
-        return audio::pcm_format::other;
+        return "";
     }
 }

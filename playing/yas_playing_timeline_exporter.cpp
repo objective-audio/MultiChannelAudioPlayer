@@ -11,6 +11,7 @@
 #include <cpp_utils/yas_operation.h>
 #include <cpp_utils/yas_thread.h>
 #include <processing/yas_processing_umbrella.h>
+#include <fstream>
 #include "yas_playing_audio_types.h"
 #include "yas_playing_math.h"
 #include "yas_playing_timeline_canceling.h"
@@ -368,11 +369,22 @@ struct timeline_exporter::impl : base::impl {
                 auto const signal_url =
                     url_utils::signal_file_url(this->_root_url, ch_idx, frag_idx, range, event.sample_type());
 
-#warning todo そのまんまデータをファイルに保存
+                std::ofstream stream{signal_url.path(), std::ios_base::out | std::ios_base::binary};
+                if (!stream) {
+                    throw std::runtime_error("open stream failed.");
+                }
+
+                stream.write(event.data<char>(), event.byte_size());
+
+                stream.close();
             }
 
             if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
-                std::vector<std::string> json_array;
+                auto const number_url = url_utils::number_file_url(this->_root_url, ch_idx, frag_idx);
+
+                std::ofstream stream{number_url.path()};
+
+                stream << "{";
 
                 for (auto const &event_pair : number_events) {
                     proc::time::frame::type const &frame = event_pair.first;
@@ -381,7 +393,8 @@ struct timeline_exporter::impl : base::impl {
 #warning todo json的なので保存する？
                 }
 
-                auto const number_url = url_utils::number_file_url(this->_root_url, ch_idx, frag_idx);
+                stream << "}";
+                stream.close();
             }
         }
     }

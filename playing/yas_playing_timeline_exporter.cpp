@@ -383,6 +383,9 @@ struct timeline_exporter::impl : base::impl {
                 auto const number_url = url_utils::number_file_url(this->_root_url, ch_idx, frag_idx);
 
                 std::ofstream stream{number_url.path()};
+                if (!stream) {
+                    throw std::runtime_error("open stream failed.");
+                }
 
                 stream << "{";
 

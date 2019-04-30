@@ -45,3 +45,33 @@ std::string timeline_utils::to_string(proc::number_event const &event) {
         return "";
     }
 }
+
+char const *timeline_utils::char_data(proc::signal_event const &event) {
+    auto const &type = event.sample_type();
+
+    if (type == typeid(double)) {
+        return reinterpret_cast<char const *>(event.data<double>());
+    } else if (type == typeid(float)) {
+        return reinterpret_cast<char const *>(event.data<float>());
+    } else if (type == typeid(int64_t)) {
+        return reinterpret_cast<char const *>(event.data<int64_t>());
+    } else if (type == typeid(uint64_t)) {
+        return reinterpret_cast<char const *>(event.data<uint64_t>());
+    } else if (type == typeid(int32_t)) {
+        return reinterpret_cast<char const *>(event.data<int32_t>());
+    } else if (type == typeid(uint32_t)) {
+        return reinterpret_cast<char const *>(event.data<uint32_t>());
+    } else if (type == typeid(int16_t)) {
+        return reinterpret_cast<char const *>(event.data<int16_t>());
+    } else if (type == typeid(uint16_t)) {
+        return reinterpret_cast<char const *>(event.data<uint16_t>());
+    } else if (type == typeid(int8_t)) {
+        return reinterpret_cast<char const *>(event.data<int8_t>());
+    } else if (type == typeid(uint8_t)) {
+        return reinterpret_cast<char const *>(event.data<uint8_t>());
+    } else if (type == typeid(boolean)) {
+        return reinterpret_cast<char const *>(event.data<boolean>());
+    } else {
+        return nullptr;
+    }
+}

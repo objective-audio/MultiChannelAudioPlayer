@@ -374,7 +374,9 @@ struct timeline_exporter::impl : base::impl {
                     throw std::runtime_error("open stream failed.");
                 }
 
-                stream.write(event.data<char>(), event.byte_size());
+                if (char const *data = timeline_utils::char_data(event)) {
+                    stream.write(data, event.byte_size());
+                }
 
                 stream.close();
             }

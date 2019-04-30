@@ -6,6 +6,9 @@
 #import <cpp_utils/cpp_utils.h>
 #import <playing/playing.h>
 #import <processing/processing.h>
+#import <fstream>
+
+#import <iostream>
 
 using namespace yas;
 using namespace yas::playing;
@@ -92,6 +95,35 @@ struct yas_playing_timeline_exporter_test_cpp {
         file_manager::content_exists(url_utils::signal_file_url(root_url, 0, 1, {2, 1}, typeid(int64_t)).path()));
 
     XCTAssertTrue(url_utils::number_file_url(root_url, 1, 5));
+
+    char buf[256];
+
+    if (auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, -1, {-2, 2}, typeid(int64_t)).path(),
+                                    std::ios_base::in | std::ios_base::binary};
+        stream.is_open()) {
+        XCTAssertFalse(stream.fail());
+        auto size = stream.readsome(buf, 256);
+        XCTAssertEqual(size, sizeof(int64_t) * 2);
+    }
+
+    if (auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, 0, {0, 2}, typeid(int64_t)).path(),
+                                    std::ios_base::in | std::ios_base::binary};
+        stream.is_open()) {
+        auto size = stream.readsome(buf, 256);
+        XCTAssertEqual(size, sizeof(int64_t) * 2);
+    }
+
+    if (auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, 1, {2, 1}, typeid(int64_t)).path(),
+                                    std::ios_base::in | std::ios_base::binary};
+        stream.is_open()) {
+        auto size = stream.readsome(buf, 256);
+        XCTAssertEqual(size, sizeof(int64_t));
+    }
+
+    if (auto stream = std::ifstream{url_utils::number_file_url(root_url, 1, 5).path()}; stream.is_open()) {
+        std::string str((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+        XCTAssertEqual(str, "10,11,");
+    }
 }
 
 - (void)test_set_sample_rate {

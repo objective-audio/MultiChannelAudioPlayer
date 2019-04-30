@@ -100,44 +100,50 @@ struct yas_playing_timeline_exporter_test_cpp {
 
     values[0] = values[1] = 0;
 
-    if (auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, -1, {-2, 2}, typeid(int64_t)).path(),
+    {
+        auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, -1, {-2, 2}, typeid(int64_t)).path(),
                                     std::ios_base::in | std::ios_base::binary};
-        stream.is_open()) {
         XCTAssertFalse(stream.fail());
         stream.read((char *)values, sizeof(values));
+        XCTAssertEqual(stream.gcount(), sizeof(values));
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 10);
         stream.read((char *)values, sizeof(values));
+        XCTAssertEqual(stream.gcount(), 0);
         XCTAssertTrue(stream.eof());
     }
 
     values[0] = values[1] = 0;
 
-    if (auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, 0, {0, 2}, typeid(int64_t)).path(),
+    {
+        auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, 0, {0, 2}, typeid(int64_t)).path(),
                                     std::ios_base::in | std::ios_base::binary};
-        stream.is_open()) {
         XCTAssertFalse(stream.fail());
         stream.read((char *)values, sizeof(values));
+        XCTAssertEqual(stream.gcount(), sizeof(values));
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 10);
         stream.read((char *)values, sizeof(values));
+        XCTAssertEqual(stream.gcount(), 0);
         XCTAssertTrue(stream.eof());
     }
-
     values[0] = values[1] = 0;
 
-    if (auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, 1, {2, 1}, typeid(int64_t)).path(),
+    {
+        auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, 1, {2, 1}, typeid(int64_t)).path(),
                                     std::ios_base::in | std::ios_base::binary};
-        stream.is_open()) {
         XCTAssertFalse(stream.fail());
         stream.read((char *)values, sizeof(values));
+        XCTAssertEqual(stream.gcount(), sizeof(int64_t));
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 0);
         stream.read((char *)values, sizeof(values));
+        XCTAssertEqual(stream.gcount(), 0);
         XCTAssertTrue(stream.eof());
     }
 
-    if (auto stream = std::ifstream{url_utils::number_file_url(root_url, 1, 5).path()}; stream.is_open()) {
+    {
+        auto stream = std::ifstream{url_utils::number_file_url(root_url, 1, 5).path()};
         std::string str((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
         XCTAssertEqual(str, "10,11,");
     }

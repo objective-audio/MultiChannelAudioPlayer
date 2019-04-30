@@ -96,28 +96,45 @@ struct yas_playing_timeline_exporter_test_cpp {
 
     XCTAssertTrue(url_utils::number_file_url(root_url, 1, 5));
 
-    char buf[256];
+    int64_t values[2];
+
+    values[0] = values[1] = 0;
 
     if (auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, -1, {-2, 2}, typeid(int64_t)).path(),
                                     std::ios_base::in | std::ios_base::binary};
         stream.is_open()) {
         XCTAssertFalse(stream.fail());
-        auto size = stream.readsome(buf, 256);
-        XCTAssertEqual(size, sizeof(int64_t) * 2);
+        stream.read((char *)values, sizeof(values));
+        XCTAssertEqual(values[0], 10);
+        XCTAssertEqual(values[1], 10);
+        stream.read((char *)values, sizeof(values));
+        XCTAssertTrue(stream.eof());
     }
+
+    values[0] = values[1] = 0;
 
     if (auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, 0, {0, 2}, typeid(int64_t)).path(),
                                     std::ios_base::in | std::ios_base::binary};
         stream.is_open()) {
-        auto size = stream.readsome(buf, 256);
-        XCTAssertEqual(size, sizeof(int64_t) * 2);
+        XCTAssertFalse(stream.fail());
+        stream.read((char *)values, sizeof(values));
+        XCTAssertEqual(values[0], 10);
+        XCTAssertEqual(values[1], 10);
+        stream.read((char *)values, sizeof(values));
+        XCTAssertTrue(stream.eof());
     }
+
+    values[0] = values[1] = 0;
 
     if (auto stream = std::ifstream{url_utils::signal_file_url(root_url, 0, 1, {2, 1}, typeid(int64_t)).path(),
                                     std::ios_base::in | std::ios_base::binary};
         stream.is_open()) {
-        auto size = stream.readsome(buf, 256);
-        XCTAssertEqual(size, sizeof(int64_t));
+        XCTAssertFalse(stream.fail());
+        stream.read((char *)values, sizeof(values));
+        XCTAssertEqual(values[0], 10);
+        XCTAssertEqual(values[1], 0);
+        stream.read((char *)values, sizeof(values));
+        XCTAssertTrue(stream.eof());
     }
 
     if (auto stream = std::ifstream{url_utils::number_file_url(root_url, 1, 5).path()}; stream.is_open()) {

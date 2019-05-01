@@ -353,7 +353,6 @@ struct timeline_exporter::impl : base::impl {
 
             auto const frag_path = url_utils::fragment_url(this->_root_url, ch_idx, frag_idx).path();
 
-#warning todo 事前に消すからいらなそう
             auto remove_result = file_manager::remove_content(frag_path);
             if (!remove_result) {
                 throw std::runtime_error("remove fragment directory failed");

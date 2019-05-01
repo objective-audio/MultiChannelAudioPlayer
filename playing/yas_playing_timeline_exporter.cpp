@@ -360,18 +360,20 @@ struct timeline_exporter::impl : base::impl {
 
         proc::time::range const fragments_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
-        this->_bg.timeline.process(fragments_range, sync_source,
-                                   [&op, this](proc::time::range const &range, proc::stream const &stream, bool &stop) {
-                                       if (op.is_canceled()) {
-                                           stop = true;
-                                           return;
-                                       }
+        this->_bg.timeline.process(
+            fragments_range, sync_source,
+            [&op, this, &weak_exporter](proc::time::range const &range, proc::stream const &stream, bool &stop) {
+                if (op.is_canceled()) {
+                    stop = true;
+                    return;
+                }
 
-                                       this->_export_fragment(range, stream);
-                                   });
+                this->_export_fragment(range, stream, weak_exporter);
+            });
     }
 
-    void _export_fragment(proc::time::range const &range, proc::stream const &stream) {
+    void _export_fragment(proc::time::range const &range, proc::stream const &stream,
+                          weak<timeline_exporter> const &weak_exporter) {
         assert(!thread::is_main());
 
         auto const frag_idx = range.frame / stream.sync_source().sample_rate;

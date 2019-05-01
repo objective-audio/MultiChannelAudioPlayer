@@ -339,6 +339,8 @@ struct timeline_exporter::impl : base::impl {
                 if (auto exporter = weak_exporter.lock()) {
                     auto exporter_impl = exporter.impl_ptr<impl>();
 
+                    exporter_impl->_send_event(event_type::export_began, range, weak_exporter);
+
                     if (auto const error = exporter_impl->_remove_fragments(range, op)) {
                         exporter_impl->_send_error(*error, range, weak_exporter);
                         return;
@@ -493,7 +495,7 @@ struct timeline_exporter::impl : base::impl {
                 auto const frag_path = url_utils::fragment_url(root_url, std::stoll(ch_name), frag_idx).path();
                 auto const remove_result = file_manager::remove_content(frag_path);
                 if (!remove_result) {
-                    throw std::runtime_error("remove fragment directory failed");
+                    return error_type::remove_fragment_failed;
                 }
             }
         }

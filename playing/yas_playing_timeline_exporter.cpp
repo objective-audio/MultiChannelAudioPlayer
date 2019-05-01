@@ -162,6 +162,8 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
+                             exporter_impl->_send_event(event_type::reset, std::nullopt, weak_exporter);
+
                              auto const &root_url = exporter_impl->_root_url;
 
                              auto result = file_manager::remove_content(root_url.path());
@@ -179,6 +181,8 @@ struct timeline_exporter::impl : base::impl {
                              if (!total_range.has_value()) {
                                  return;
                              }
+
+                             exporter_impl->_send_event(event_type::export_began, *total_range, weak_exporter);
 
                              exporter_impl->_export_fragments(*total_range, op, weak_exporter);
                          }

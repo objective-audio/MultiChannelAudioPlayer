@@ -414,6 +414,7 @@ struct timeline_exporter::impl : base::impl {
 
     void _remove_fragments(proc::time::range const &range, operation const &op) {
         assert(!thread::is_main());
+
         auto const &root_url = this->_root_url;
 
         auto ch_paths_result = file_manager::content_paths_in_directory(root_url.path());
@@ -428,13 +429,13 @@ struct timeline_exporter::impl : base::impl {
         auto const &sync_source = *this->_bg.sync_source;
         auto const &sample_rate = sync_source.sample_rate;
 
-        proc::time::range const fragments_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
+        proc::time::range const frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
         auto const ch_names = to_vector<std::string>(ch_paths_result.value(),
                                                      [](auto const &path) { return url{path}.last_path_component(); });
 
-        auto const begin_frag_idx = fragments_range.frame / sample_rate;
-        auto const end_frag_idx = fragments_range.next_frame() / sample_rate;
+        auto const begin_frag_idx = frags_range.frame / sample_rate;
+        auto const end_frag_idx = frags_range.next_frame() / sample_rate;
 
         for (auto const &ch_name : ch_names) {
             if (op.is_canceled()) {

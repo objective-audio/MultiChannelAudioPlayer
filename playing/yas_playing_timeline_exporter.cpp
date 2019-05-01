@@ -332,9 +332,7 @@ struct timeline_exporter::impl : base::impl {
 
         auto const &sync_source = *this->_bg.sync_source;
 
-        proc::time::range const process_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
-
-        this->_bg.timeline.process(process_range, sync_source,
+        this->_bg.timeline.process(range, sync_source,
                                    [&op, this](proc::time::range const &range, proc::stream const &stream, bool &stop) {
                                        if (op.is_canceled()) {
                                            stop = true;
@@ -354,10 +352,10 @@ struct timeline_exporter::impl : base::impl {
             auto const &ch_idx = ch_pair.first;
             auto const &channel = ch_pair.second;
 
-            auto const fragment_path = url_utils::fragment_url(this->_root_url, ch_idx, frag_idx).path();
+            auto const frag_path = url_utils::fragment_url(this->_root_url, ch_idx, frag_idx).path();
 
 #warning todo 事前に消すからいらなそう
-            auto remove_result = file_manager::remove_content(fragment_path);
+            auto remove_result = file_manager::remove_content(frag_path);
             if (!remove_result) {
                 throw std::runtime_error("remove fragment directory failed");
             }
@@ -366,7 +364,7 @@ struct timeline_exporter::impl : base::impl {
                 return;
             }
 
-            auto create_result = file_manager::create_directory_if_not_exists(fragment_path);
+            auto create_result = file_manager::create_directory_if_not_exists(frag_path);
             if (!create_result) {
                 throw std::runtime_error("create directory failed");
             }

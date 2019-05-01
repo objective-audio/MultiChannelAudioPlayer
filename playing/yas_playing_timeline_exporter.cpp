@@ -414,6 +414,7 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void _remove_fragments(proc::time::range const &range, operation const &op) {
+        assert(!thread::is_main());
         auto const &root_url = this->_root_url;
 
         auto ch_paths_result = file_manager::content_paths_in_directory(root_url.path());

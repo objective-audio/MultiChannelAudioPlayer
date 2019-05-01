@@ -338,9 +338,6 @@ struct timeline_exporter::impl : base::impl {
             [range, weak_exporter = to_weak(exporter)](operation const &op) {
                 if (auto exporter = weak_exporter.lock()) {
                     auto exporter_impl = exporter.impl_ptr<impl>();
-                    if (!exporter_impl->_bg.sync_source.has_value()) {
-                        return;
-                    }
 
                     exporter_impl->_remove_fragments(range, op);
                     exporter_impl->_export_fragments(range, op);

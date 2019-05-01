@@ -122,7 +122,7 @@ struct timeline_exporter::impl : base::impl {
 
         this->_queue.cancel_all();
 
-        operation op{[tracks = std::move(tracks), sample_rate = this->_sample_rate,
+        operation op{[tracks = std::move(tracks), sample_rate = this->_src_sample_rate,
                       weak_exporter = to_weak(exporter)](operation const &op) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();

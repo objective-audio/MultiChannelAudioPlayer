@@ -12,8 +12,6 @@ namespace yas::playing {
 struct timeline_cancel_matcher : base {
     class impl;
 
-    timeline_cancel_matcher(proc::track_index_t const, proc::time::range const &);
-    timeline_cancel_matcher(proc::track_index_t const);
     timeline_cancel_matcher(proc::time::range const &);
     timeline_cancel_matcher();
     timeline_cancel_matcher(std::nullptr_t);
@@ -23,14 +21,6 @@ struct timeline_cancel_request : protocol {
     struct impl : protocol::impl {
         virtual bool is_match(timeline_cancel_matcher::impl const &) const = 0;
     };
-};
-
-// requestのトラックと一致したらキャンセルさせる
-struct timeline_track_cancel_request : base {
-    class impl;
-
-    explicit timeline_track_cancel_request(proc::track_index_t const trk_idx);
-    timeline_track_cancel_request(std::nullptr_t);
 };
 
 // requestの範囲に完全に含まれていたらキャンセルさせる

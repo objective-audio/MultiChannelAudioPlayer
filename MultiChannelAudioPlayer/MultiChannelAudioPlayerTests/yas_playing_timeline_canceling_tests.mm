@@ -19,19 +19,8 @@ using namespace yas;
 - (void)tearDown {
 }
 
-- (void)test_track_cancel_request {
-    playing::timeline_cancel_matcher matcher{1, {0, 2}};
-    playing::timeline_track_cancel_request track_request_1{1};
-    playing::timeline_track_cancel_request track_request_2{2};
-
-    XCTAssertEqual(matcher, track_request_1);
-    XCTAssertEqual(track_request_1, matcher);
-    XCTAssertNotEqual(matcher, track_request_2);
-    XCTAssertNotEqual(track_request_2, matcher);
-}
-
 - (void)test_range_cancel_request {
-    playing::timeline_cancel_matcher matcher{1, {1, 2}};
+    playing::timeline_cancel_matcher matcher{{1, 2}};
     playing::timeline_range_cancel_request range_request_a{{1, 2}};
     playing::timeline_range_cancel_request range_request_b{{0, 3}};
     playing::timeline_range_cancel_request range_request_c{{1, 3}};

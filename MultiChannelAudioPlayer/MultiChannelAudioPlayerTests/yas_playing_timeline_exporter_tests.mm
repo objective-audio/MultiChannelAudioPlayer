@@ -30,6 +30,8 @@ struct yas_playing_timeline_exporter_test_cpp {
 }
 
 - (void)tearDown {
+    self->_cpp.queue.cancel_all();
+    self->_cpp.queue.wait_until_all_operations_are_finished();
     file_manager::remove_content(self->_cpp.root_url.path());
 }
 

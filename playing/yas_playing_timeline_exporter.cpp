@@ -72,10 +72,15 @@ struct timeline_exporter::impl : base::impl {
         this->_src_sample_rate.set_value(sample_rate);
     }
 
+    void set_result_handler(export_result_f &&handler) {
+        this->_result_handler = std::move(handler);
+    }
+
    private:
     chaining::value::holder<proc::timeline> _src_timeline{proc::timeline{nullptr}};
     chaining::value::holder<proc::sample_rate_t> _src_sample_rate;
     chaining::observer_pool _pool;
+    export_result_f _result_handler = nullptr;
 
     struct background {
         proc::timeline timeline;
@@ -492,4 +497,8 @@ void timeline_exporter::set_timeline(proc::timeline timeline) {
 
 void timeline_exporter::set_sample_rate(proc::sample_rate_t const sample_rate) {
     impl_ptr<impl>()->set_sample_rate(sample_rate, *this);
+}
+
+void timeline_exporter::set_result_handler(export_result_f handler) {
+    impl_ptr<impl>()->set_result_handler(std::move(handler));
 }

@@ -248,4 +248,49 @@ struct yas_playing_timeline_exporter_test_cpp {
     }
 }
 
+- (void)test_update_timeline {
+    url &root_url = self->_cpp.root_url;
+    operation_queue &queue = self->_cpp.queue;
+    proc::sample_rate_t const sample_rate = 2;
+
+    timeline_exporter exporter{root_url, queue, sample_rate};
+
+    queue.wait_until_all_operations_are_finished();
+
+    proc::timeline timeline;
+
+    exporter.set_timeline(timeline);
+
+    queue.wait_until_all_operations_are_finished();
+
+    XCTAssertFalse(file_manager::content_exists(root_url.path()));
+
+    proc::track track;
+    auto module1 = proc::make_number_module<int64_t>(100);
+    module1.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
+    track.push_back_module(module1, {0, 1});
+
+    timeline.insert_track(0, track);
+
+    queue.wait_until_all_operations_are_finished();
+
+    XCTAssertTrue(file_manager::content_exists(root_url.path()));
+    XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 0).path()));
+
+    auto module2 = proc::make_number_module<Float64>(1.0);
+    module1.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
+    track.push_back_module(module1, {2, 1});
+
+    queue.wait_until_all_operations_are_finished();
+
+    XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 1).path()));
+
+    track.erase_module(module1, {0, 1});
+
+    queue.wait_until_all_operations_are_finished();
+
+    XCTAssertFalse(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 0).path()));
+    XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 1).path()));
+}
+
 @end

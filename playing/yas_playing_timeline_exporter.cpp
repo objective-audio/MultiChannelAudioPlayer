@@ -315,7 +315,9 @@ struct timeline_exporter::impl : base::impl {
                                     exporter_impl->_export_fragments(range, op);
                                 }
                             },
-                            {.priority = playing::queue_priority::exporting}};
+                            {.priority = playing::queue_priority::exporting,
+                             .cancel_id = timeline_cancel_matcher(range),
+                             .push_cancel_id = timeline_range_cancel_request(range)}};
 
         this->_queue.push_back(std::move(export_op));
     }

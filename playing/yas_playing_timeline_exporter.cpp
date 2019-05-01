@@ -69,7 +69,7 @@ struct timeline_exporter::impl : base::impl {
 
    private:
     proc::timeline _src_timeline = nullptr;
-    chaining::value::holder<proc::sample_rate_t> _src_sample_rate{proc::sample_rate_t{0}};
+    chaining::value::holder<proc::sample_rate_t> _src_sample_rate;
     chaining::observer_pool _pool;
     chaining::any_observer _timeline_observer = nullptr;
 

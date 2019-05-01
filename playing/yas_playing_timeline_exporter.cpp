@@ -26,7 +26,7 @@ struct timeline_exporter::impl : base::impl {
     operation_queue _queue;
 
     impl(url const &root_url, operation_queue &&queue, proc::sample_rate_t const sample_rate)
-        : _root_url(root_url), _queue(std::move(queue)), _sample_rate(sample_rate) {
+        : _root_url(root_url), _queue(std::move(queue)), _src_sample_rate(sample_rate) {
     }
 
     void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
@@ -47,15 +47,15 @@ struct timeline_exporter::impl : base::impl {
     void set_sample_rate(proc::sample_rate_t const sample_rate, timeline_exporter &exporter) {
         assert(thread::is_main());
 
-        if (this->_sample_rate != sample_rate) {
-            this->_sample_rate = sample_rate;
+        if (this->_src_sample_rate != sample_rate) {
+            this->_src_sample_rate = sample_rate;
             this->_update_timeline(proc::copy_tracks(this->_src_timeline.tracks()), exporter);
         }
     }
 
    private:
     proc::timeline _src_timeline = nullptr;
-    proc::sample_rate_t _sample_rate;
+    proc::sample_rate_t _src_sample_rate;
     chaining::observer_pool _pool;
 
     struct background {

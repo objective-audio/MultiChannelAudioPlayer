@@ -29,34 +29,49 @@ struct timeline_exporter::impl : base::impl {
         : _root_url(root_url), _queue(std::move(queue)), _src_sample_rate(sample_rate) {
     }
 
+    void prepare(timeline_exporter &exporter) {
+        this->_pool += this->_src_sample_rate.chain()
+                           .perform([weak_exporter = to_weak(exporter)](proc::sample_rate_t const &sample_rate) {
+                               if (auto exporter = weak_exporter.lock()) {
+                                   exporter.impl_ptr<impl>()->_update_timeline(exporter);
+                               }
+                           })
+                           .end();
+    }
+
     void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
         assert(thread::is_main());
 
+        if (this->_timeline_observer) {
+            this->_timeline_observer.invalidate();
+            this->_timeline_observer = nullptr;
+        }
+
         this->_src_timeline = std::move(timeline);
 
-        this->_pool.invalidate();
-        this->_pool += this->_src_timeline.chain()
-                           .perform([weak_exporter = to_weak(exporter)](proc::timeline::event_t const &event) {
-                               if (auto exporter = weak_exporter.lock()) {
-                                   exporter.impl_ptr<impl>()->_receive_timeline_event(event, exporter);
-                               }
-                           })
-                           .sync();
+        if (this->_src_timeline) {
+            this->_timeline_observer =
+                this->_src_timeline.chain()
+                    .perform([weak_exporter = to_weak(exporter)](proc::timeline::event_t const &event) {
+                        if (auto exporter = weak_exporter.lock()) {
+                            exporter.impl_ptr<impl>()->_receive_timeline_event(event, exporter);
+                        }
+                    })
+                    .sync();
+        }
     }
 
     void set_sample_rate(proc::sample_rate_t const sample_rate, timeline_exporter &exporter) {
         assert(thread::is_main());
 
-        if (this->_src_sample_rate != sample_rate) {
-            this->_src_sample_rate = sample_rate;
-            this->_update_timeline(proc::copy_tracks(this->_src_timeline.tracks()), exporter);
-        }
+        this->_src_sample_rate.set_value(sample_rate);
     }
 
    private:
     proc::timeline _src_timeline = nullptr;
-    proc::sample_rate_t _src_sample_rate;
+    chaining::value::holder<proc::sample_rate_t> _src_sample_rate{proc::sample_rate_t{0}};
     chaining::observer_pool _pool;
+    chaining::any_observer _timeline_observer = nullptr;
 
     struct background {
         proc::timeline timeline;
@@ -117,12 +132,16 @@ struct timeline_exporter::impl : base::impl {
         }
     }
 
+    void _update_timeline(timeline_exporter &exporter) {
+        this->_update_timeline(proc::copy_tracks(this->_src_timeline.tracks()), exporter);
+    }
+
     void _update_timeline(proc::timeline::track_map_t &&tracks, timeline_exporter &exporter) {
         assert(thread::is_main());
 
         this->_queue.cancel_all();
 
-        operation op{[tracks = std::move(tracks), sample_rate = this->_src_sample_rate,
+        operation op{[tracks = std::move(tracks), sample_rate = this->_src_sample_rate.raw(),
                       weak_exporter = to_weak(exporter)](operation const &op) mutable {
                          if (auto exporter = weak_exporter.lock()) {
                              auto exporter_impl = exporter.impl_ptr<impl>();
@@ -457,6 +476,7 @@ struct timeline_exporter::impl : base::impl {
 
 timeline_exporter::timeline_exporter(url const &root_url, operation_queue queue, proc::sample_rate_t const sample_rate)
     : base(std::make_shared<impl>(root_url, std::move(queue), sample_rate)) {
+    this->impl_ptr<impl>()->prepare(*this);
 }
 
 timeline_exporter::timeline_exporter(std::nullptr_t) : base(nullptr) {

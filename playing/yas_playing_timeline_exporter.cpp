@@ -339,8 +339,12 @@ struct timeline_exporter::impl : base::impl {
                 if (auto exporter = weak_exporter.lock()) {
                     auto exporter_impl = exporter.impl_ptr<impl>();
 
-                    exporter_impl->_remove_fragments(range, op);
-                    exporter_impl->_export_fragments(range, op, weak_exporter);
+                    if (auto const error = exporter_impl->_remove_fragments(range, op)) {
+                        exporter_impl->_send_error(*error, range, weak_exporter);
+                        return;
+                    } else {
+                        exporter_impl->_export_fragments(range, op, weak_exporter);
+                    }
                 }
             },
             {.priority = playing::queue_priority::exporting, .cancel_id = timeline_cancel_matcher(range)}};
@@ -352,28 +356,35 @@ struct timeline_exporter::impl : base::impl {
                            weak<timeline_exporter> const &weak_exporter) {
         assert(!thread::is_main());
 
+        if (op.is_canceled()) {
+            return;
+        }
+
         if (!this->_bg.sync_source.has_value()) {
+            this->_send_error(error_type::sync_source_not_found, range, weak_exporter);
             return;
         }
 
         auto const &sync_source = *this->_bg.sync_source;
 
-        proc::time::range const fragments_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
+        proc::time::range const frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
         this->_bg.timeline.process(
-            fragments_range, sync_source,
+            frags_range, sync_source,
             [&op, this, &weak_exporter](proc::time::range const &range, proc::stream const &stream, bool &stop) {
                 if (op.is_canceled()) {
                     stop = true;
                     return;
                 }
 
-                this->_export_fragment(range, stream, weak_exporter);
+                if (auto error = this->_export_fragment(range, stream)) {
+                    this->_send_error(*error, range, weak_exporter);
+                }
             });
     }
 
-    void _export_fragment(proc::time::range const &range, proc::stream const &stream,
-                          weak<timeline_exporter> const &weak_exporter) {
+    [[nodiscard]] std::optional<error_type> _export_fragment(proc::time::range const &range,
+                                                             proc::stream const &stream) {
         assert(!thread::is_main());
 
         auto const frag_idx = range.frame / stream.sync_source().sample_rate;
@@ -386,16 +397,16 @@ struct timeline_exporter::impl : base::impl {
 
             auto remove_result = file_manager::remove_content(frag_path);
             if (!remove_result) {
-                throw std::runtime_error("remove fragment directory failed");
+                return error_type::remove_fragment_failed;
             }
 
             if (channel.events().size() == 0) {
-                return;
+                return std::nullopt;
             }
 
             auto create_result = file_manager::create_directory_if_not_exists(frag_path);
             if (!create_result) {
-                throw std::runtime_error("create directory failed");
+                return error_type::create_directory_failed;
             }
 
             for (auto const &event_pair : channel.filtered_events<proc::signal_event>()) {
@@ -407,7 +418,7 @@ struct timeline_exporter::impl : base::impl {
 
                 std::ofstream stream{signal_url.path(), std::ios_base::out | std::ios_base::binary};
                 if (!stream) {
-                    throw std::runtime_error("open stream failed.");
+                    return error_type::open_signal_stream_failed;
                 }
 
                 if (char const *data = timeline_utils::char_data(event)) {
@@ -422,7 +433,7 @@ struct timeline_exporter::impl : base::impl {
 
                 std::ofstream stream{number_url.path()};
                 if (!stream) {
-                    throw std::runtime_error("open stream failed.");
+                    return error_type::open_number_stream_failed;
                 }
 
                 for (auto const &event_pair : number_events) {
@@ -438,20 +449,26 @@ struct timeline_exporter::impl : base::impl {
                 stream.close();
             }
         }
+
+        return std::nullopt;
     }
 
-    void _remove_fragments(proc::time::range const &range, operation const &op) {
+        [[nodiscard]] std::optional<error_type> _remove_fragments(proc::time::range const &range, operation const &op) {
         assert(!thread::is_main());
 
         auto const &root_url = this->_root_url;
 
         auto ch_paths_result = file_manager::content_paths_in_directory(root_url.path());
         if (!ch_paths_result) {
-            return;
+            if (ch_paths_result.error() == file_manager::content_paths_error::directory_not_found) {
+                return std::nullopt;
+            } else {
+                return error_type::get_content_paths_failed;
+            }
         }
 
         if (!this->_bg.sync_source.has_value()) {
-            return;
+            return error_type::sync_source_not_found;
         }
 
         auto const &sync_source = *this->_bg.sync_source;
@@ -467,7 +484,7 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto const &ch_name : ch_names) {
             if (op.is_canceled()) {
-                return;
+                return std::nullopt;
             }
 
             auto each = make_fast_each(begin_frag_idx, end_frag_idx);
@@ -480,6 +497,8 @@ struct timeline_exporter::impl : base::impl {
                 }
             }
         }
+
+        return std::nullopt;
     }
 
     void _send_event(event_type const type, std::optional<proc::time::range> const &range,

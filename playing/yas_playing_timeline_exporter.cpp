@@ -305,8 +305,17 @@ struct timeline_exporter::impl : base::impl {
         operation export_op{[range, weak_exporter = to_weak(exporter)](operation const &op) {
                                 if (auto exporter = weak_exporter.lock()) {
                                     auto exporter_impl = exporter.impl_ptr<impl>();
-                                    exporter_impl->_remove_fragments(range, op);
-                                    exporter_impl->_export_fragments(range, op);
+                                    if (!exporter_impl->_bg.sync_source.has_value()) {
+                                        return;
+                                    }
+
+                                    auto const &sync_source = *exporter_impl->_bg.sync_source;
+
+                                    proc::time::range const process_range =
+                                        timeline_utils::fragments_range(range, sync_source.sample_rate);
+
+                                    exporter_impl->_remove_fragments(process_range, op);
+                                    exporter_impl->_export_fragments(process_range, op);
                                 }
                             },
                             {.priority = playing::queue_priority::exporting}};

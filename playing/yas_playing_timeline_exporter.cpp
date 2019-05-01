@@ -298,6 +298,8 @@ struct timeline_exporter::impl : base::impl {
             },
             {.priority = playing::queue_priority::timeline}};
 
+        this->_queue.push_back(std::move(op));
+
         this->_push_export_operation(range, exporter);
     }
 

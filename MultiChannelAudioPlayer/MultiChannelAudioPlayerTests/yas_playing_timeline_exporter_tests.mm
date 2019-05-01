@@ -13,17 +13,24 @@
 using namespace yas;
 using namespace yas::playing;
 
-struct yas_playing_timeline_exporter_test_cpp {
+namespace yas::playing::timeline_exporter_test {
+struct cpp {
     url root_url = system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
     operation_queue queue{queue_priority_count};
 };
+
+static std::string string_from_number_file(std::string const &path) {
+    auto stream = std::ifstream{path};
+    return std::string((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+}
+}
 
 @interface yas_playing_timeline_exporter_tests : XCTestCase
 
 @end
 
 @implementation yas_playing_timeline_exporter_tests {
-    yas_playing_timeline_exporter_test_cpp _cpp;
+    timeline_exporter_test::cpp _cpp;
 }
 
 - (void)setUp {
@@ -243,8 +250,8 @@ struct yas_playing_timeline_exporter_test_cpp {
     values[0] = values[1] = values[2] = 0;
 
     {
-        auto stream = std::ifstream{url_utils::number_file_url(root_url, 1, 3).path()};
-        std::string str((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+        auto path = url_utils::number_file_url(root_url, 1, 3).path();
+        auto str = timeline_exporter_test::string_from_number_file(path);
         XCTAssertEqual(str, "10,11,");
     }
 }
@@ -278,41 +285,54 @@ struct yas_playing_timeline_exporter_test_cpp {
     XCTAssertTrue(file_manager::content_exists(root_url.path()));
     XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 0).path()));
     XCTAssertTrue(file_manager::content_exists(url_utils::number_file_url(root_url, 0, 0).path()));
+    XCTAssertEqual(timeline_exporter_test::string_from_number_file(url_utils::number_file_url(root_url, 0, 0).path()),
+                   "0,100,");
 
     auto module2 = proc::make_number_module<Float64>(1.0);
-    module1.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
-    track.push_back_module(module1, {2, 1});
+    module2.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
+    track.push_back_module(module2, {2, 1});
 
     queue.wait_until_all_operations_are_finished();
 
-    XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 1).path()));
+    XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 1, 1).path()));
+    XCTAssertTrue(file_manager::content_exists(url_utils::number_file_url(root_url, 1, 1).path()));
+    XCTAssertEqual(timeline_exporter_test::string_from_number_file(url_utils::number_file_url(root_url, 1, 1).path()),
+                   "2,1.000000,");
 
     auto module3 = proc::make_number_module<Float64>(2.0);
-    module3.connect_output(proc::to_connector_index(proc::constant::output::value), 2);
+    module3.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
     track.push_back_module(module3, {0, 1});
 
     queue.wait_until_all_operations_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 0).path()));
     XCTAssertTrue(file_manager::content_exists(url_utils::number_file_url(root_url, 0, 0).path()));
+    XCTAssertEqual(timeline_exporter_test::string_from_number_file(url_utils::number_file_url(root_url, 0, 0).path()),
+                   "0,100,0,2.000000,");
 
     track.erase_module(module3, {0, 1});
 
+    queue.wait_until_all_operations_are_finished();
+
     XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 0).path()));
     XCTAssertTrue(file_manager::content_exists(url_utils::number_file_url(root_url, 0, 0).path()));
+    std::cout << timeline_exporter_test::string_from_number_file(url_utils::number_file_url(root_url, 0, 0).path())
+              << std::endl;
+    XCTAssertEqual(timeline_exporter_test::string_from_number_file(url_utils::number_file_url(root_url, 0, 0).path()),
+                   "0,100,");
 
     track.erase_module(module1, {0, 1});
 
     queue.wait_until_all_operations_are_finished();
 
     XCTAssertFalse(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 0).path()));
-    XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 1).path()));
+    XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 1, 1).path()));
 
     timeline.erase_track(0);
 
     queue.wait_until_all_operations_are_finished();
 
-    XCTAssertFalse(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 1).path()));
+    XCTAssertFalse(file_manager::content_exists(url_utils::fragment_url(root_url, 1, 1).path()));
 }
 
 @end

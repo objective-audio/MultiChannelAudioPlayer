@@ -72,7 +72,7 @@ struct timeline_exporter::impl : base::impl {
         this->_src_sample_rate.set_value(sample_rate);
     }
 
-    void set_result_handler(export_result_f &&handler) {
+    void set_result_handler(event_f &&handler) {
         this->_result_handler = std::move(handler);
     }
 
@@ -80,7 +80,7 @@ struct timeline_exporter::impl : base::impl {
     chaining::value::holder<proc::timeline> _src_timeline{proc::timeline{nullptr}};
     chaining::value::holder<proc::sample_rate_t> _src_sample_rate;
     chaining::observer_pool _pool;
-    export_result_f _result_handler = nullptr;
+    event_f _result_handler = nullptr;
 
     struct background {
         proc::timeline timeline;
@@ -162,7 +162,7 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
-                             exporter_impl->_send_event(event_type::reset, std::nullopt, weak_exporter);
+                             exporter_impl->_send_method(method::reset, std::nullopt, weak_exporter);
 
                              auto const &root_url = exporter_impl->_root_url;
 
@@ -182,7 +182,7 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
-                             exporter_impl->_send_event(event_type::export_began, *total_range, weak_exporter);
+                             exporter_impl->_send_method(method::export_began, *total_range, weak_exporter);
 
                              exporter_impl->_export_fragments(*total_range, op, weak_exporter);
                          }
@@ -343,7 +343,7 @@ struct timeline_exporter::impl : base::impl {
                 if (auto exporter = weak_exporter.lock()) {
                     auto exporter_impl = exporter.impl_ptr<impl>();
 
-                    exporter_impl->_send_event(event_type::export_began, range, weak_exporter);
+                    exporter_impl->_send_method(method::export_began, range, weak_exporter);
 
                     if (auto const error = exporter_impl->_remove_fragments(range, op)) {
                         exporter_impl->_send_error(*error, range, weak_exporter);
@@ -367,7 +367,7 @@ struct timeline_exporter::impl : base::impl {
         }
 
         if (!this->_bg.sync_source.has_value()) {
-            this->_send_error(error_type::sync_source_not_found, range, weak_exporter);
+            this->_send_error(error::sync_source_not_found, range, weak_exporter);
             return;
         }
 
@@ -389,8 +389,7 @@ struct timeline_exporter::impl : base::impl {
             });
     }
 
-    [[nodiscard]] std::optional<error_type> _export_fragment(proc::time::range const &range,
-                                                             proc::stream const &stream) {
+    [[nodiscard]] std::optional<error> _export_fragment(proc::time::range const &range, proc::stream const &stream) {
         assert(!thread::is_main());
 
         auto const frag_idx = range.frame / stream.sync_source().sample_rate;
@@ -403,7 +402,7 @@ struct timeline_exporter::impl : base::impl {
 
             auto remove_result = file_manager::remove_content(frag_path);
             if (!remove_result) {
-                return error_type::remove_fragment_failed;
+                return error::remove_fragment_failed;
             }
 
             if (channel.events().size() == 0) {
@@ -412,7 +411,7 @@ struct timeline_exporter::impl : base::impl {
 
             auto create_result = file_manager::create_directory_if_not_exists(frag_path);
             if (!create_result) {
-                return error_type::create_directory_failed;
+                return error::create_directory_failed;
             }
 
             for (auto const &event_pair : channel.filtered_events<proc::signal_event>()) {
@@ -424,7 +423,7 @@ struct timeline_exporter::impl : base::impl {
 
                 std::ofstream stream{signal_url.path(), std::ios_base::out | std::ios_base::binary};
                 if (!stream) {
-                    return error_type::open_signal_stream_failed;
+                    return error::open_signal_stream_failed;
                 }
 
                 if (char const *data = timeline_utils::char_data(event)) {
@@ -439,7 +438,7 @@ struct timeline_exporter::impl : base::impl {
 
                 std::ofstream stream{number_url.path()};
                 if (!stream) {
-                    return error_type::open_number_stream_failed;
+                    return error::open_number_stream_failed;
                 }
 
                 for (auto const &event_pair : number_events) {
@@ -459,7 +458,7 @@ struct timeline_exporter::impl : base::impl {
         return std::nullopt;
     }
 
-        [[nodiscard]] std::optional<error_type> _remove_fragments(proc::time::range const &range, operation const &op) {
+        [[nodiscard]] std::optional<error> _remove_fragments(proc::time::range const &range, operation const &op) {
         assert(!thread::is_main());
 
         auto const &root_url = this->_root_url;
@@ -469,12 +468,12 @@ struct timeline_exporter::impl : base::impl {
             if (ch_paths_result.error() == file_manager::content_paths_error::directory_not_found) {
                 return std::nullopt;
             } else {
-                return error_type::get_content_paths_failed;
+                return error::get_content_paths_failed;
             }
         }
 
         if (!this->_bg.sync_source.has_value()) {
-            return error_type::sync_source_not_found;
+            return error::sync_source_not_found;
         }
 
         auto const &sync_source = *this->_bg.sync_source;
@@ -499,7 +498,7 @@ struct timeline_exporter::impl : base::impl {
                 auto const frag_path = url_utils::fragment_url(root_url, std::stoll(ch_name), frag_idx).path();
                 auto const remove_result = file_manager::remove_content(frag_path);
                 if (!remove_result) {
-                    return error_type::remove_fragment_failed;
+                    return error::remove_fragment_failed;
                 }
             }
         }
@@ -507,25 +506,25 @@ struct timeline_exporter::impl : base::impl {
         return std::nullopt;
     }
 
-    void _send_event(event_type const type, std::optional<proc::time::range> const &range,
+    void _send_method(method const type, std::optional<proc::time::range> const &range,
+                      weak<timeline_exporter> const &weak_exporter) {
+        assert(!thread::is_main());
+
+        this->_send_event(event{.result = result_t{type}, .range = range}, weak_exporter);
+    }
+
+    void _send_error(error const type, std::optional<proc::time::range> const &range,
                      weak<timeline_exporter> const &weak_exporter) {
         assert(!thread::is_main());
 
-        this->_send_result(export_result_t{event{.type = type, .range = range}}, weak_exporter);
+        this->_send_event(event{.result = result_t{type}, .range = range}, weak_exporter);
     }
 
-    void _send_error(error_type const type, std::optional<proc::time::range> const &range,
-                     weak<timeline_exporter> const &weak_exporter) {
-        assert(!thread::is_main());
-
-        this->_send_result(export_result_t{error{.type = type, .range = range}}, weak_exporter);
-    }
-
-    void _send_result(export_result_t result, weak<timeline_exporter> const &weak_exporter) {
-        auto lambda = [this, result = std::move(result), weak_exporter] {
+    void _send_event(event event, weak<timeline_exporter> const &weak_exporter) {
+        auto lambda = [this, event = std::move(event), weak_exporter] {
             if (auto exporter = weak_exporter.lock()) {
                 if (auto const &handler = exporter.impl_ptr<impl>()->_result_handler) {
-                    handler(result);
+                    handler(event);
                 }
             }
         };
@@ -552,6 +551,6 @@ void timeline_exporter::set_sample_rate(proc::sample_rate_t const sample_rate) {
     impl_ptr<impl>()->set_sample_rate(sample_rate, *this);
 }
 
-void timeline_exporter::set_result_handler(export_result_f handler) {
+void timeline_exporter::set_result_handler(event_f handler) {
     impl_ptr<impl>()->set_result_handler(std::move(handler));
 }

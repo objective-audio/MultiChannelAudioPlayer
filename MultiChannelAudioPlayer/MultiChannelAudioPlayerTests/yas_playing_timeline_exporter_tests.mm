@@ -27,6 +27,7 @@ struct yas_playing_timeline_exporter_test_cpp {
 }
 
 - (void)setUp {
+    file_manager::remove_content(self->_cpp.root_url.path());
 }
 
 - (void)tearDown {

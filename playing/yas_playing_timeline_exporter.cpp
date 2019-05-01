@@ -309,13 +309,8 @@ struct timeline_exporter::impl : base::impl {
                                         return;
                                     }
 
-                                    auto const &sync_source = *exporter_impl->_bg.sync_source;
-
-                                    proc::time::range const process_range =
-                                        timeline_utils::fragments_range(range, sync_source.sample_rate);
-
-                                    exporter_impl->_remove_fragments(process_range, op);
-                                    exporter_impl->_export_fragments(process_range, op);
+                                    exporter_impl->_remove_fragments(range, op);
+                                    exporter_impl->_export_fragments(range, op);
                                 }
                             },
                             {.priority = playing::queue_priority::exporting}};
@@ -332,7 +327,9 @@ struct timeline_exporter::impl : base::impl {
 
         auto const &sync_source = *this->_bg.sync_source;
 
-        this->_bg.timeline.process(range, sync_source,
+        proc::time::range const process_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
+
+        this->_bg.timeline.process(process_range, sync_source,
                                    [&op, this](proc::time::range const &range, proc::stream const &stream, bool &stop) {
                                        if (op.is_canceled()) {
                                            stop = true;
@@ -346,7 +343,7 @@ struct timeline_exporter::impl : base::impl {
     void _export_fragment(proc::time::range const &range, proc::stream const &stream) {
         assert(!thread::is_main());
 
-        auto const frag_idx = range.frame / this->_sample_rate;
+        auto const frag_idx = range.frame / stream.sync_source().sample_rate;
 
         for (auto const &ch_pair : stream.channels()) {
             auto const &ch_idx = ch_pair.first;
@@ -420,11 +417,20 @@ struct timeline_exporter::impl : base::impl {
             return;
         }
 
+        if (!this->_bg.sync_source.has_value()) {
+            return;
+        }
+
+        auto const &sync_source = *this->_bg.sync_source;
+        auto const &sample_rate = sync_source.sample_rate;
+
+        proc::time::range const fragments_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
+
         auto const ch_names = to_vector<std::string>(ch_paths_result.value(),
                                                      [](auto const &path) { return url{path}.last_path_component(); });
 
-        auto const begin_frag_idx = range.frame / this->_sample_rate;
-        auto const end_frag_idx = range.next_frame() / this->_sample_rate;
+        auto const begin_frag_idx = fragments_range.frame / sample_rate;
+        auto const end_frag_idx = fragments_range.next_frame() / sample_rate;
 
         for (auto const &ch_name : ch_names) {
             if (op.is_canceled()) {

@@ -304,20 +304,21 @@ struct timeline_exporter::impl : base::impl {
     }
 
     void _push_export_operation(proc::time::range const &range, timeline_exporter &exporter) {
-        operation export_op{[range, weak_exporter = to_weak(exporter)](operation const &op) {
-                                if (auto exporter = weak_exporter.lock()) {
-                                    auto exporter_impl = exporter.impl_ptr<impl>();
-                                    if (!exporter_impl->_bg.sync_source.has_value()) {
-                                        return;
-                                    }
+        this->_queue.cancel_for_id(timeline_range_cancel_request(range));
 
-                                    exporter_impl->_remove_fragments(range, op);
-                                    exporter_impl->_export_fragments(range, op);
-                                }
-                            },
-                            {.priority = playing::queue_priority::exporting,
-                             .cancel_id = timeline_cancel_matcher(range),
-                             .push_cancel_id = timeline_range_cancel_request(range)}};
+        operation export_op{
+            [range, weak_exporter = to_weak(exporter)](operation const &op) {
+                if (auto exporter = weak_exporter.lock()) {
+                    auto exporter_impl = exporter.impl_ptr<impl>();
+                    if (!exporter_impl->_bg.sync_source.has_value()) {
+                        return;
+                    }
+
+                    exporter_impl->_remove_fragments(range, op);
+                    exporter_impl->_export_fragments(range, op);
+                }
+            },
+            {.priority = playing::queue_priority::exporting, .cancel_id = timeline_cancel_matcher(range)}};
 
         this->_queue.push_back(std::move(export_op));
     }

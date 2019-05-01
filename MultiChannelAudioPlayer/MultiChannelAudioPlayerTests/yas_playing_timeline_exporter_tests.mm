@@ -285,6 +285,9 @@ struct yas_playing_timeline_exporter_test_cpp {
     queue.wait_until_all_operations_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 1).path()));
+    
+#warning moduleを同じrangeに追加
+#warning 同じrangeのmoduleを削除
 
     track.erase_module(module1, {0, 1});
 
@@ -292,6 +295,12 @@ struct yas_playing_timeline_exporter_test_cpp {
 
     XCTAssertFalse(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 0).path()));
     XCTAssertTrue(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 1).path()));
+
+    timeline.erase_track(0);
+
+    queue.wait_until_all_operations_are_finished();
+
+    XCTAssertFalse(file_manager::content_exists(url_utils::fragment_url(root_url, 0, 1).path()));
 }
 
 @end

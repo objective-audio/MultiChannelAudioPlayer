@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_system_url_utils.h>
 #import <playing/yas_playing_audio_player.h>
-#import <playing/yas_playing_audio_types.h>
+#import <playing/yas_playing_types.h>
 #import "yas_playing_test_audio_renderer.h"
 #import "yas_playing_test_utils.h"
 

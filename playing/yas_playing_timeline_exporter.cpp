@@ -12,10 +12,10 @@
 #include <cpp_utils/yas_thread.h>
 #include <processing/yas_processing_umbrella.h>
 #include <fstream>
-#include "yas_playing_audio_types.h"
 #include "yas_playing_math.h"
 #include "yas_playing_timeline_canceling.h"
 #include "yas_playing_timeline_utils.h"
+#include "yas_playing_types.h"
 #include "yas_playing_url_utils.h"
 
 using namespace yas;

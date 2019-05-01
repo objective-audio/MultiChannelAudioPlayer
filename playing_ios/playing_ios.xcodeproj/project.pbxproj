@@ -21,7 +21,7 @@
 		B62879B021EB61EB00566CC1 /* yas_playing_audio_circular_buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = B628799821EB61EB00566CC1 /* yas_playing_audio_circular_buffer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62879B121EB61EB00566CC1 /* yas_playing_audio_circular_buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B628799921EB61EB00566CC1 /* yas_playing_audio_circular_buffer.cpp */; };
 		B62879B221EB61EB00566CC1 /* yas_playing_math.h in Headers */ = {isa = PBXBuildFile; fileRef = B628799A21EB61EB00566CC1 /* yas_playing_math.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B62879B321EB61EB00566CC1 /* yas_playing_audio_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B628799B21EB61EB00566CC1 /* yas_playing_audio_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62879B321EB61EB00566CC1 /* yas_playing_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B628799B21EB61EB00566CC1 /* yas_playing_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62879B421EB61EB00566CC1 /* yas_playing_timeline_exporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B628799C21EB61EB00566CC1 /* yas_playing_timeline_exporter.cpp */; };
 		B62879B521EB61EB00566CC1 /* yas_playing_audio_coordinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B628799D21EB61EB00566CC1 /* yas_playing_audio_coordinator.cpp */; };
 		B62879B621EB61EB00566CC1 /* yas_playing_url_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B628799E21EB61EB00566CC1 /* yas_playing_url_utils.cpp */; };
@@ -61,7 +61,7 @@
 		B628799821EB61EB00566CC1 /* yas_playing_audio_circular_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio_circular_buffer.h; sourceTree = "<group>"; };
 		B628799921EB61EB00566CC1 /* yas_playing_audio_circular_buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_audio_circular_buffer.cpp; sourceTree = "<group>"; };
 		B628799A21EB61EB00566CC1 /* yas_playing_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_math.h; sourceTree = "<group>"; };
-		B628799B21EB61EB00566CC1 /* yas_playing_audio_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio_types.h; sourceTree = "<group>"; };
+		B628799B21EB61EB00566CC1 /* yas_playing_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_types.h; sourceTree = "<group>"; };
 		B628799C21EB61EB00566CC1 /* yas_playing_timeline_exporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_timeline_exporter.cpp; sourceTree = "<group>"; };
 		B628799D21EB61EB00566CC1 /* yas_playing_audio_coordinator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_audio_coordinator.cpp; sourceTree = "<group>"; };
 		B628799E21EB61EB00566CC1 /* yas_playing_url_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_url_utils.cpp; sourceTree = "<group>"; };
@@ -144,7 +144,7 @@
 				B628799321EB61EB00566CC1 /* yas_playing_audio_player.mm */,
 				B628799521EB61EB00566CC1 /* yas_playing_audio_renderer.cpp */,
 				B628799221EB61EB00566CC1 /* yas_playing_audio_renderer.h */,
-				B628799B21EB61EB00566CC1 /* yas_playing_audio_types.h */,
+				B628799B21EB61EB00566CC1 /* yas_playing_types.h */,
 				B628799021EB61EB00566CC1 /* yas_playing_audio_utils.cpp */,
 				B62879A021EB61EB00566CC1 /* yas_playing_audio_utils.h */,
 				B628799421EB61EB00566CC1 /* yas_playing_audio.h */,
@@ -183,7 +183,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B62879B321EB61EB00566CC1 /* yas_playing_audio_types.h in Headers */,
+				B62879B321EB61EB00566CC1 /* yas_playing_types.h in Headers */,
 				B6A9FF07226C778D00E0C565 /* yas_playing_timeline_utils.h in Headers */,
 				B628798921EB5BAC00566CC1 /* playing.h in Headers */,
 				B62879B221EB61EB00566CC1 /* yas_playing_math.h in Headers */,

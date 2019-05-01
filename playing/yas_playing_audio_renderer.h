@@ -7,7 +7,7 @@
 #include <audio/yas_audio_engine_manager.h>
 #include <cpp_utils/yas_base.h>
 #include "yas_playing_audio_player_protocol.h"
-#include "yas_playing_audio_types.h"
+#include "yas_playing_types.h"
 
 namespace yas::playing {
 struct audio_renderer : base {

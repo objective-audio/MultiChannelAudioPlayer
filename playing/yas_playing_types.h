@@ -1,5 +1,5 @@
 //
-//  yas_playing_audio_types.h
+//  yas_playing_types.h
 //
 
 #pragma once

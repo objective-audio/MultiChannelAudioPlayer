@@ -8,7 +8,7 @@
 #include "yas_playing_audio_exporter.h"
 #include "yas_playing_audio_player.h"
 #include "yas_playing_audio_renderer.h"
-#include "yas_playing_audio_types.h"
+#include "yas_playing_types.h"
 
 using namespace yas;
 using namespace yas::playing;

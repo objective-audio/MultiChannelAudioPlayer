@@ -8,7 +8,7 @@
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_base.h>
 #include <processing/yas_processing_time.h>
-#include "yas_playing_audio_types.h"
+#include "yas_playing_types.h"
 
 namespace yas {
 class url;

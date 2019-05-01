@@ -7,7 +7,7 @@
 #import <cpp_utils/yas_system_url_utils.h>
 #import <playing/yas_playing_audio_circular_buffer.h>
 #import <playing/yas_playing_audio_exporter.h>
-#import <playing/yas_playing_audio_types.h>
+#import <playing/yas_playing_types.h>
 #import <playing/yas_playing_url_utils.h>
 #import "yas_playing_test_utils.h"
 

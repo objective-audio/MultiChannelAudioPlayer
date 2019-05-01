@@ -7,8 +7,8 @@
 #include <cpp_utils/yas_cf_utils.h>
 #include <cpp_utils/yas_file_manager.h>
 #include <cpp_utils/yas_operation.h>
-#include "yas_playing_audio_types.h"
 #include "yas_playing_math.h"
+#include "yas_playing_types.h"
 #include "yas_playing_url_utils.h"
 
 using namespace yas;

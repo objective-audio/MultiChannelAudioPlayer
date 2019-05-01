@@ -481,6 +481,34 @@ struct timeline_exporter::impl : base::impl {
             }
         }
     }
+
+    void _send_event(event_type const type, std::optional<proc::time::range> const &range,
+                     weak<timeline_exporter> const &weak_exporter) {
+        assert(!thread::is_main());
+
+        this->_send_result(export_result_t{event{.type = type, .range = range}}, weak_exporter);
+    }
+
+    void _send_error(error_type const type, std::optional<proc::time::range> const &range,
+                     weak<timeline_exporter> const &weak_exporter) {
+        assert(!thread::is_main());
+
+        this->_send_result(export_result_t{error{.type = type, .range = range}}, weak_exporter);
+    }
+
+    void _send_result(export_result_t result, weak<timeline_exporter> const &weak_exporter) {
+        auto lambda = [this, result = std::move(result), weak_exporter] {
+            if (auto exporter = weak_exporter.lock()) {
+                if (auto const &handler = exporter.impl_ptr<impl>()->_result_handler) {
+                    handler(result);
+                }
+            }
+        };
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            lambda();
+        });
+    }
 };
 
 timeline_exporter::timeline_exporter(url const &root_url, operation_queue queue, proc::sample_rate_t const sample_rate)

@@ -180,7 +180,7 @@ struct timeline_exporter::impl : base::impl {
                                  return;
                              }
 
-                             exporter_impl->_export_fragments(*total_range, op);
+                             exporter_impl->_export_fragments(*total_range, op, weak_exporter);
                          }
                      },
                      {.priority = playing::queue_priority::timeline}};
@@ -340,7 +340,7 @@ struct timeline_exporter::impl : base::impl {
                     auto exporter_impl = exporter.impl_ptr<impl>();
 
                     exporter_impl->_remove_fragments(range, op);
-                    exporter_impl->_export_fragments(range, op);
+                    exporter_impl->_export_fragments(range, op, weak_exporter);
                 }
             },
             {.priority = playing::queue_priority::exporting, .cancel_id = timeline_cancel_matcher(range)}};
@@ -348,7 +348,8 @@ struct timeline_exporter::impl : base::impl {
         this->_queue.push_back(std::move(export_op));
     }
 
-    void _export_fragments(proc::time::range const &range, operation const &op) {
+    void _export_fragments(proc::time::range const &range, operation const &op,
+                           weak<timeline_exporter> const &weak_exporter) {
         assert(!thread::is_main());
 
         if (!this->_bg.sync_source.has_value()) {

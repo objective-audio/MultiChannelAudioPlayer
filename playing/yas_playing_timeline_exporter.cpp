@@ -24,6 +24,7 @@ using namespace yas::playing;
 struct timeline_exporter::impl : base::impl {
     std::string const _root_path;
     operation_queue _queue;
+    chaining::notifier<event> _event_notifier;
 
     impl(std::string const &root_path, operation_queue &&queue, proc::sample_rate_t const sample_rate)
         : _root_path(root_path), _queue(std::move(queue)), _src_sample_rate(sample_rate) {
@@ -72,15 +73,10 @@ struct timeline_exporter::impl : base::impl {
         this->_src_sample_rate.set_value(sample_rate);
     }
 
-    void set_result_handler(event_f &&handler) {
-        this->_result_handler = std::move(handler);
-    }
-
    private:
     chaining::value::holder<proc::timeline> _src_timeline{proc::timeline{nullptr}};
     chaining::value::holder<proc::sample_rate_t> _src_sample_rate;
     chaining::observer_pool _pool;
-    event_f _result_handler = nullptr;
 
     struct background {
         proc::timeline timeline;
@@ -523,9 +519,7 @@ struct timeline_exporter::impl : base::impl {
     void _send_event(event event, weak<timeline_exporter> const &weak_exporter) {
         auto lambda = [this, event = std::move(event), weak_exporter] {
             if (auto exporter = weak_exporter.lock()) {
-                if (auto const &handler = exporter.impl_ptr<impl>()->_result_handler) {
-                    handler(event);
-                }
+                exporter.impl_ptr<impl>()->_event_notifier.notify(event);
             }
         };
 
@@ -550,8 +544,4 @@ void timeline_exporter::set_timeline(proc::timeline timeline) {
 
 void timeline_exporter::set_sample_rate(proc::sample_rate_t const sample_rate) {
     impl_ptr<impl>()->set_sample_rate(sample_rate, *this);
-}
-
-void timeline_exporter::set_result_handler(event_f handler) {
-    impl_ptr<impl>()->set_result_handler(std::move(handler));
 }

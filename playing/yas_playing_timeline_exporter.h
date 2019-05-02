@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_base.h>
 #include <cpp_utils/yas_operation.h>
 #include <cpp_utils/yas_result.h>
@@ -37,13 +38,10 @@ struct timeline_exporter : base {
         std::optional<proc::time::range> const range;
     };
 
-    using event_f = std::function<void(event const &)>;
-
     timeline_exporter(std::string const &root_path, operation_queue, proc::sample_rate_t const);
     timeline_exporter(std::nullptr_t);
 
     void set_timeline(proc::timeline);
     void set_sample_rate(proc::sample_rate_t const);
-    void set_result_handler(event_f);
 };
 }  // namespace yas::playing

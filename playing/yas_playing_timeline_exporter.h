@@ -43,5 +43,7 @@ struct timeline_exporter : base {
 
     void set_timeline(proc::timeline);
     void set_sample_rate(proc::sample_rate_t const);
+
+    chaining::chain_unsync_t<event> event_chain() const;
 };
 }  // namespace yas::playing

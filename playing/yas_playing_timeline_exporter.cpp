@@ -545,3 +545,7 @@ void timeline_exporter::set_timeline(proc::timeline timeline) {
 void timeline_exporter::set_sample_rate(proc::sample_rate_t const sample_rate) {
     impl_ptr<impl>()->set_sample_rate(sample_rate, *this);
 }
+
+chaining::chain_unsync_t<timeline_exporter::event> timeline_exporter::event_chain() const {
+    return impl_ptr<impl>()->_event_notifier.chain();
+}

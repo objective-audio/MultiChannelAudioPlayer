@@ -15,13 +15,11 @@ namespace yas::playing::path_utils {
 [[nodiscard]] std::string sample_type_name(std::type_info const &);
 [[nodiscard]] std::string signal_file_name(proc::time::range const &, std::type_info const &);
 
-[[nodiscard]] yas::file_path channel_path(yas::file_path const &root_path, int64_t const ch_idx);
-[[nodiscard]] yas::file_path fragment_path(yas::file_path const &root_path, int64_t const ch_idx,
-                                           int64_t const frg_idx);
-[[nodiscard]] yas::file_path signal_file_path(yas::file_path const &root_path, int64_t const ch_idx,
-                                              int64_t const frg_idx, proc::time::range const &, std::type_info const &);
-[[nodiscard]] yas::file_path number_file_path(yas::file_path const &root_path, int64_t const ch_idx,
-                                              int64_t const frg_idx);
+[[nodiscard]] std::string channel_path(std::string const &root_path, int64_t const ch_idx);
+[[nodiscard]] std::string fragment_path(std::string const &root_path, int64_t const ch_idx, int64_t const frg_idx);
+[[nodiscard]] std::string signal_file_path(std::string const &root_path, int64_t const ch_idx, int64_t const frg_idx,
+                                           proc::time::range const &, std::type_info const &);
+[[nodiscard]] std::string number_file_path(std::string const &root_path, int64_t const ch_idx, int64_t const frg_idx);
 
 [[nodiscard]] yas::url channel_url(yas::url const &root_url, int64_t const ch_idx);
 [[nodiscard]] yas::url fragment_url(yas::url const &root_url, int64_t const ch_idx, int64_t const frg_idx);

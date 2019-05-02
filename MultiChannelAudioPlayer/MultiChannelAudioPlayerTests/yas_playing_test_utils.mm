@@ -5,13 +5,13 @@
 #include "yas_playing_test_utils.h"
 #include <cpp_utils/yas_fast_each.h>
 #include <cpp_utils/yas_file_manager.h>
-#include <cpp_utils/yas_system_url_utils.h>
+#include <cpp_utils/yas_system_path_utils.h>
 
 using namespace yas;
 using namespace yas::playing;
 
 void test_utils::remove_all_document_files() {
-    auto document_url = system_url_utils::directory_url(system_url_utils::dir::document);
+    auto document_url = system_path_utils::directory_url(system_path_utils::dir::document);
     file_manager::remove_contents_in_directory(document_url.path());
 }
 

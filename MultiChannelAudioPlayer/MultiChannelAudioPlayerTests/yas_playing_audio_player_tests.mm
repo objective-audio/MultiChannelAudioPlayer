@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <cpp_utils/yas_system_url_utils.h>
+#import <cpp_utils/yas_system_path_utils.h>
 #import <playing/yas_playing_audio_player.h>
 #import <playing/yas_playing_types.h>
 #import "yas_playing_test_audio_renderer.h"
@@ -242,7 +242,7 @@ using namespace yas::playing;
 }
 
 - (url)root_url {
-    return system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
+    return system_path_utils::directory_url(system_path_utils::dir::document).appending("root");
 }
 
 - (audio::format)format {

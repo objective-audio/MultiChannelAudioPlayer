@@ -4,7 +4,7 @@
 
 #import "ViewController.h"
 #import <audio/yas_audio_math.h>
-#import <cpp_utils/yas_system_url_utils.h>
+#import <cpp_utils/yas_system_path_utils.h>
 #import <playing/yas_playing_umbrella.h>
 
 #import <iostream>
@@ -18,7 +18,7 @@ using namespace yas::playing;
 
 namespace yas::playing::sample {
 struct view_controller_cpp {
-    url root_url{system_url_utils::directory_url(system_url_utils::dir::document).appending("sample")};
+    url root_url{system_path_utils::directory_url(system_path_utils::dir::document).appending("sample")};
     proc::sample_rate_t const sample_rate{48000};
     audio_coordinator coordinator{this->root_url};
 #warning queueを共通にするかは後で考える
@@ -33,7 +33,7 @@ struct view_controller_cpp {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    std::cout << to_string(system_url_utils::directory_url(system_url_utils::dir::document)) << std::endl;
+    std::cout << to_string(system_path_utils::directory_url(system_path_utils::dir::document)) << std::endl;
 }
 
 - (IBAction)exportSine:(UIButton *)sender {

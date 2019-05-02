@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import <audio/yas_audio_umbrella.h>
 #import <cpp_utils/yas_file_manager.h>
-#import <cpp_utils/yas_system_url_utils.h>
+#import <cpp_utils/yas_system_path_utils.h>
 #import <playing/yas_playing_audio_exporter.h>
 #import <playing/yas_playing_types.h>
 #import "yas_playing_test_utils.h"
@@ -32,7 +32,7 @@ using namespace yas::playing;
 }
 
 - (void)test_export_file {
-    auto root_url = system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
+    auto root_url = system_path_utils::directory_url(system_path_utils::dir::document).appending("root");
     double const sample_rate = 3;
     uint32_t const file_length = sample_rate;
     audio::format format{audio::format::args{
@@ -188,7 +188,7 @@ using namespace yas::playing;
 }
 
 - (void)test_update_format {
-    auto root_url = system_url_utils::directory_url(system_url_utils::dir::document).appending("root");
+    auto root_url = system_path_utils::directory_url(system_path_utils::dir::document).appending("root");
 
     audio::format format{audio::format::args{
         .sample_rate = 3, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};

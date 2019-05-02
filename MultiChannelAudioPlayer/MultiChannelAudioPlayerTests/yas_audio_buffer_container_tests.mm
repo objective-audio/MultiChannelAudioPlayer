@@ -6,7 +6,7 @@
 #import <audio/yas_audio_each_data.h>
 #import <audio/yas_audio_file_utils.h>
 #import <cpp_utils/yas_fast_each.h>
-#import <cpp_utils/yas_system_url_utils.h>
+#import <cpp_utils/yas_system_path_utils.h>
 #import <cpp_utils/yas_url.h>
 #import <playing/yas_playing_audio_buffer_container.h>
 #import "yas_playing_test_utils.h"
@@ -31,7 +31,7 @@ audio_buffer_container::ptr make_container(uint32_t const file_length) {
 }
 
 audio::file make_file(uint32_t const file_length) {
-    auto const doc_url = system_url_utils::directory_url(system_url_utils::dir::document);
+    auto const doc_url = system_path_utils::directory_url(system_path_utils::dir::document);
     std::string const file_name = "test.caf";
     auto const file_url = doc_url.appending(file_name);
 

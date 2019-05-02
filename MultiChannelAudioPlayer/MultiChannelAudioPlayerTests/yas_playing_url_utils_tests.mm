@@ -9,11 +9,11 @@
 using namespace yas;
 using namespace yas::playing;
 
-@interface yas_playing_url_utils_tests : XCTestCase
+@interface yas_playing_path_utils_tests : XCTestCase
 
 @end
 
-@implementation yas_playing_url_utils_tests
+@implementation yas_playing_path_utils_tests
 
 - (void)setUp {
 }

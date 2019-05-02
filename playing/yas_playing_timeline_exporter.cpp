@@ -16,7 +16,7 @@
 #include "yas_playing_timeline_canceling.h"
 #include "yas_playing_timeline_utils.h"
 #include "yas_playing_types.h"
-#include "yas_playing_url_utils.h"
+#include "yas_playing_path_utils.h"
 
 using namespace yas;
 using namespace yas::playing;

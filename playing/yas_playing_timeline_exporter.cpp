@@ -25,8 +25,8 @@ struct timeline_exporter::impl : base::impl {
     std::string const _root_path;
     operation_queue _queue;
 
-    impl(url const &root_url, operation_queue &&queue, proc::sample_rate_t const sample_rate)
-        : _root_path(root_url.path()), _queue(std::move(queue)), _src_sample_rate(sample_rate) {
+    impl(std::string const &root_path, operation_queue &&queue, proc::sample_rate_t const sample_rate)
+        : _root_path(root_path), _queue(std::move(queue)), _src_sample_rate(sample_rate) {
     }
 
     void prepare(timeline_exporter &exporter) {
@@ -535,8 +535,9 @@ struct timeline_exporter::impl : base::impl {
     }
 };
 
-timeline_exporter::timeline_exporter(url const &root_url, operation_queue queue, proc::sample_rate_t const sample_rate)
-    : base(std::make_shared<impl>(root_url, std::move(queue), sample_rate)) {
+timeline_exporter::timeline_exporter(std::string const &root_path, operation_queue queue,
+                                     proc::sample_rate_t const sample_rate)
+    : base(std::make_shared<impl>(root_path, std::move(queue), sample_rate)) {
     this->impl_ptr<impl>()->prepare(*this);
 }
 

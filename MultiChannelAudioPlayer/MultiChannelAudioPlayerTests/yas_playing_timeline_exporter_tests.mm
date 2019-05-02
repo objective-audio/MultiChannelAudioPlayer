@@ -48,7 +48,7 @@ static std::string string_from_number_file(std::string const &path) {
     operation_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
 
-    timeline_exporter exporter{root_url, queue, sample_rate};
+    timeline_exporter exporter{root_url.path(), queue, sample_rate};
 
     queue.wait_until_all_operations_are_finished();
 
@@ -60,7 +60,7 @@ static std::string string_from_number_file(std::string const &path) {
     operation_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
 
-    timeline_exporter exporter{root_url, queue, sample_rate};
+    timeline_exporter exporter{root_url.path(), queue, sample_rate};
 
     queue.wait_until_all_operations_are_finished();
 
@@ -166,7 +166,7 @@ static std::string string_from_number_file(std::string const &path) {
     proc::sample_rate_t const pre_sample_rate = 2;
     proc::sample_rate_t const post_sample_rate = 3;
 
-    timeline_exporter exporter{root_url, queue, pre_sample_rate};
+    timeline_exporter exporter{root_url.path(), queue, pre_sample_rate};
 
     queue.wait_until_all_operations_are_finished();
 
@@ -261,7 +261,7 @@ static std::string string_from_number_file(std::string const &path) {
     operation_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
 
-    timeline_exporter exporter{root_url, queue, sample_rate};
+    timeline_exporter exporter{root_url.path(), queue, sample_rate};
 
     queue.wait_until_all_operations_are_finished();
 

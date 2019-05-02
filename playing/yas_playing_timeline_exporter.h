@@ -39,7 +39,7 @@ struct timeline_exporter : base {
 
     using event_f = std::function<void(event const &)>;
 
-    timeline_exporter(url const &root_url, operation_queue, proc::sample_rate_t const);
+    timeline_exporter(std::string const &root_path, operation_queue, proc::sample_rate_t const);
     timeline_exporter(std::nullptr_t);
 
     void set_timeline(proc::timeline);

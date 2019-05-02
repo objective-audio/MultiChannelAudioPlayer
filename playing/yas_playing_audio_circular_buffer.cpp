@@ -6,8 +6,8 @@
 #include <cpp_utils/yas_fast_each.h>
 #include <mutex>
 #include "yas_playing_math.h"
-#include "yas_playing_types.h"
 #include "yas_playing_path_utils.h"
+#include "yas_playing_types.h"
 
 using namespace yas;
 using namespace yas::playing;

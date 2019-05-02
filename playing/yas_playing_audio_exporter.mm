@@ -8,8 +8,8 @@
 #include <cpp_utils/yas_file_manager.h>
 #include <cpp_utils/yas_operation.h>
 #include "yas_playing_math.h"
-#include "yas_playing_types.h"
 #include "yas_playing_path_utils.h"
+#include "yas_playing_types.h"
 
 using namespace yas;
 using namespace yas::playing;

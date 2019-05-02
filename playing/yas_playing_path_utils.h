@@ -28,7 +28,7 @@ namespace yas::playing::path_utils {
 [[nodiscard]] yas::url signal_file_url(yas::url const &root_url, int64_t const ch_idx, int64_t const frg_idx,
                                        proc::time::range const &, std::type_info const &);
 [[nodiscard]] yas::url number_file_url(yas::url const &root_url, int64_t const ch_idx, int64_t const frg_idx);
-    
+
 [[nodiscard]] yas::url caf_url(yas::url const &ch_url, int64_t const file_idx);
 [[nodiscard]] int64_t caf_idx(int64_t const file_frame_idx, uint64_t const file_length);
 }  // namespace yas::playing::path_utils

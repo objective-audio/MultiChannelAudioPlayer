@@ -78,7 +78,7 @@ void audio_circular_buffer::reload(int64_t const file_idx) {
 void audio_circular_buffer::_load_container(audio_buffer_container::ptr container_ptr, int64_t const file_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
-    auto file_url = playing::url_utils::caf_url(this->_ch_url, file_idx);
+    auto file_url = playing::path_utils::caf_url(this->_ch_url, file_idx);
 
     operation op{[container_ptr, file_url = std::move(file_url), file_idx](operation const &) {
                      auto file_result = audio::make_opened_file(audio::file::open_args{

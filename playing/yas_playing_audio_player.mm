@@ -215,7 +215,7 @@ struct audio_player::impl : base::impl {
             auto each = make_fast_each(int64_t(ch_count));
             while (yas_each_next(each)) {
                 auto ch_idx = ch_mapping.at(yas_each_index(each));
-                auto const ch_url = url_utils::channel_url(this->_root_url, ch_idx);
+                auto const ch_url = path_utils::channel_url(this->_root_url, ch_idx);
                 auto buffer = make_audio_circular_buffer(*format, 3, ch_url, this->_queue);
                 buffer->reload_all(*top_file_idx);
                 this->_circular_buffers.push_back(std::move(buffer));

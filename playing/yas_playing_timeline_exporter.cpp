@@ -398,7 +398,7 @@ struct timeline_exporter::impl : base::impl {
             auto const &ch_idx = ch_pair.first;
             auto const &channel = ch_pair.second;
 
-            auto const frag_path = url_utils::fragment_url(this->_root_url, ch_idx, frag_idx).path();
+            auto const frag_path = path_utils::fragment_url(this->_root_url, ch_idx, frag_idx).path();
 
             auto remove_result = file_manager::remove_content(frag_path);
             if (!remove_result) {
@@ -419,7 +419,7 @@ struct timeline_exporter::impl : base::impl {
                 proc::signal_event const &event = event_pair.second;
 
                 auto const signal_url =
-                    url_utils::signal_file_url(this->_root_url, ch_idx, frag_idx, range, event.sample_type());
+                    path_utils::signal_file_url(this->_root_url, ch_idx, frag_idx, range, event.sample_type());
 
                 std::ofstream stream{signal_url.path(), std::ios_base::out | std::ios_base::binary};
                 if (!stream) {
@@ -434,7 +434,7 @@ struct timeline_exporter::impl : base::impl {
             }
 
             if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
-                auto const number_url = url_utils::number_file_url(this->_root_url, ch_idx, frag_idx);
+                auto const number_url = path_utils::number_file_url(this->_root_url, ch_idx, frag_idx);
 
                 std::ofstream stream{number_url.path()};
                 if (!stream) {
@@ -495,7 +495,7 @@ struct timeline_exporter::impl : base::impl {
             auto each = make_fast_each(begin_frag_idx, end_frag_idx);
             while (yas_each_next(each)) {
                 auto const &frag_idx = yas_each_index(each);
-                auto const frag_path = url_utils::fragment_url(root_url, std::stoll(ch_name), frag_idx).path();
+                auto const frag_path = path_utils::fragment_url(root_url, std::stoll(ch_name), frag_idx).path();
                 auto const remove_result = file_manager::remove_content(frag_path);
                 if (!remove_result) {
                     return error::remove_fragment_failed;

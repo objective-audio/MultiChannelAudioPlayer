@@ -67,7 +67,7 @@ struct audio_exporter::impl : base::impl {
 
     void export_file(uint32_t const ch_idx, proc::time::range const &range, export_proc_f &&proc_handler,
                      export_written_f &&written_handler, export_completion_f &&result_handler) {
-        auto ch_url = url_utils::channel_url(this->_root_url, ch_idx);
+        auto ch_url = path_utils::channel_url(this->_root_url, ch_idx);
 
         operation op{
             [ch_idx, range, proc_handler = std::move(proc_handler), written_handler = std::move(written_handler),
@@ -88,8 +88,8 @@ struct audio_exporter::impl : base::impl {
                             return;
                         }
 
-                        int64_t const file_idx = url_utils::caf_idx(file_frame_idx, sample_rate);
-                        url const file_url = url_utils::caf_url(ch_url, file_idx);
+                        int64_t const file_idx = path_utils::caf_idx(file_frame_idx, sample_rate);
+                        url const file_url = path_utils::caf_url(ch_url, file_idx);
                         proc::time::range const file_range{file_frame_idx, file_length};
 
                         // 1秒バッファをクリアする

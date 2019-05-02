@@ -8,7 +8,7 @@
 #include <cpp_utils/yas_url.h>
 #include <processing/yas_processing_time.h>
 
-namespace yas::playing::url_utils {
+namespace yas::playing::path_utils {
 [[nodiscard]] std::string channel_name(int64_t const ch_idx);
 [[nodiscard]] std::string fragment_name(int64_t const frg_idx);
 [[nodiscard]] std::string sample_type_name(std::type_info const &);

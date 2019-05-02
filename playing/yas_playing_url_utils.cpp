@@ -53,6 +53,21 @@ yas::file_path path_utils::channel_path(yas::file_path const &root_path, int64_t
     return root_path.appending(channel_name(ch_idx));
 }
 
+yas::file_path path_utils::fragment_path(yas::file_path const &root_path, int64_t const ch_idx, int64_t const frg_idx) {
+    return channel_path(root_path, ch_idx).appending(fragment_name(frg_idx));
+}
+
+yas::file_path path_utils::signal_file_path(yas::file_path const &root_path, int64_t const ch_idx,
+                                            int64_t const frg_idx, proc::time::range const &range,
+                                            std::type_info const &type_info) {
+    return fragment_path(root_path, ch_idx, frg_idx).appending(signal_file_name(range, type_info));
+}
+
+yas::file_path path_utils::number_file_path(yas::file_path const &root_path, int64_t const ch_idx,
+                                            int64_t const frg_idx) {
+    return fragment_path(root_path, ch_idx, frg_idx).appending("number");
+}
+
 yas::url path_utils::channel_url(yas::url const &root_url, int64_t const ch_idx) {
     return root_url.appending(channel_name(ch_idx));
 }

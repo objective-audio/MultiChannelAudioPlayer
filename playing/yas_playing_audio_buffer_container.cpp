@@ -10,17 +10,17 @@ using namespace yas::playing;
 audio_buffer_container::audio_buffer_container(audio::pcm_buffer &&buffer) : _buffer(std::move(buffer)) {
 }
 
-std::optional<int64_t> audio_buffer_container::file_idx() const {
+std::optional<int64_t> audio_buffer_container::fragment_idx() const {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-    return this->_file_idx;
+    return this->_frag_idx;
 }
 
 std::optional<int64_t> audio_buffer_container::begin_frame() const {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-    if (auto const &file_idx = this->_file_idx) {
-        return *file_idx * static_cast<int64_t>(this->_buffer.frame_length());
+    if (auto const &frag_idx = this->_frag_idx) {
+        return *frag_idx * static_cast<int64_t>(this->_buffer.frame_length());
     } else {
         return std::nullopt;
     }
@@ -45,19 +45,19 @@ void audio_buffer_container::prepare_loading(int64_t const file_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
     this->_state = state::unloaded;
-    this->_file_idx = file_idx;
+    this->_frag_idx = file_idx;
 }
 
 audio_buffer_container::load_result_t audio_buffer_container::load_from_file(audio::file &file,
-                                                                             int64_t const file_idx) {
+                                                                             int64_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-    if (!this->_file_idx) {
-        return load_result_t{load_error::file_idx_is_null};
+    if (!this->_frag_idx) {
+        return load_result_t{load_error::fragment_idx_is_null};
     }
 
-    if (*this->_file_idx != file_idx) {
-        return load_result_t{load_error::invalid_file_idx};
+    if (*this->_frag_idx != frag_idx) {
+        return load_result_t{load_error::invalid_fragment_idx};
     }
 
     if (auto result = file.read_into_buffer(this->_buffer, this->_buffer.frame_length())) {
@@ -118,9 +118,9 @@ audio_buffer_container::ptr playing::make_audio_buffer_container(audio::pcm_buff
 
 std::string yas::to_string(audio_buffer_container::load_error const &error) {
     switch (error) {
-        case audio_buffer_container::load_error::file_idx_is_null:
+        case audio_buffer_container::load_error::fragment_idx_is_null:
             return "file_idx_is_null";
-        case audio_buffer_container::load_error::invalid_file_idx:
+        case audio_buffer_container::load_error::invalid_fragment_idx:
             return "invalid_file_idx";
         case audio_buffer_container::load_error::read_from_file_failed:
             return "read_from_file_failed";

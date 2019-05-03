@@ -36,41 +36,41 @@ void audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer, int6
     container_ptr->read_into_buffer(out_buffer, play_frame);
 }
 
-void audio_circular_buffer::rotate_buffer(int64_t const next_file_idx) {
+void audio_circular_buffer::rotate_buffer(int64_t const next_frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
     auto &container_ptr = this->_containers.front();
 
-    if (container_ptr->file_idx() == next_file_idx - 1) {
+    if (container_ptr->fragment_idx() == next_frag_idx - 1) {
         this->_containers.push_back(container_ptr);
         this->_containers.pop_front();
-        int64_t const loading_file_idx = next_file_idx + this->_container_count - 1;
+        int64_t const loading_file_idx = next_frag_idx + this->_container_count - 1;
         container_ptr->prepare_loading(loading_file_idx);
         this->_load_container(container_ptr, loading_file_idx);
     } else {
-        this->reload_all(next_file_idx);
+        this->reload_all(next_frag_idx);
     }
 }
 
-void audio_circular_buffer::reload_all(int64_t const top_file_idx) {
-    int64_t load_file_idx = top_file_idx;
+void audio_circular_buffer::reload_all(int64_t const top_frag_idx) {
+    int64_t load_frag_idx = top_frag_idx;
 
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
     for (auto &container_ptr : this->_containers) {
-        container_ptr->prepare_loading(load_file_idx);
-        this->_load_container(container_ptr, load_file_idx);
-        ++load_file_idx;
+        container_ptr->prepare_loading(load_frag_idx);
+        this->_load_container(container_ptr, load_frag_idx);
+        ++load_frag_idx;
     }
 }
 
-void audio_circular_buffer::reload(int64_t const file_idx) {
+void audio_circular_buffer::reload(int64_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
     for (auto &container_ptr : this->_containers) {
-        if (auto const file_idx_opt = container_ptr->file_idx(); *file_idx_opt == file_idx) {
-            container_ptr->prepare_loading(file_idx);
-            this->_load_container(container_ptr, file_idx);
+        if (auto const file_idx_opt = container_ptr->fragment_idx(); *file_idx_opt == frag_idx) {
+            container_ptr->prepare_loading(frag_idx);
+            this->_load_container(container_ptr, frag_idx);
         }
     }
 }

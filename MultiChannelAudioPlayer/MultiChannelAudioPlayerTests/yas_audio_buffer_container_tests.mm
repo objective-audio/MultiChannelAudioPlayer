@@ -98,7 +98,7 @@ audio::file make_file(uint32_t const file_length) {
     auto const container = playing::test_utils::make_container(format, file_length);
 
     XCTAssertTrue(container);
-    XCTAssertFalse(container->file_idx());
+    XCTAssertFalse(container->fragment_idx());
     XCTAssertFalse(container->begin_frame());
     XCTAssertEqual(container->format(), format);
     XCTAssertFalse(container->contains(0));
@@ -111,21 +111,21 @@ audio::file make_file(uint32_t const file_length) {
 - (void)test_prepare_loading {
     auto const container = test_utils::make_container(3);
 
-    XCTAssertFalse(container->file_idx());
+    XCTAssertFalse(container->fragment_idx());
 
     container->prepare_loading(0);
 
-    XCTAssertEqual(*container->file_idx(), 0);
+    XCTAssertEqual(*container->fragment_idx(), 0);
     XCTAssertEqual(*container->begin_frame(), 0);
 
     container->prepare_loading(1);
 
-    XCTAssertEqual(*container->file_idx(), 1);
+    XCTAssertEqual(*container->fragment_idx(), 1);
     XCTAssertEqual(*container->begin_frame(), 3);
 
     container->prepare_loading(-1);
 
-    XCTAssertEqual(*container->file_idx(), -1);
+    XCTAssertEqual(*container->fragment_idx(), -1);
     XCTAssertEqual(*container->begin_frame(), -3);
 }
 

@@ -16,9 +16,9 @@ struct audio_circular_buffer {
     using wptr = std::weak_ptr<audio_circular_buffer>;
 
     void read_into_buffer(audio::pcm_buffer &out_buffer, int64_t const play_frame);
-    void rotate_buffer(int64_t const next_file_idx);
-    void reload_all(int64_t const top_file_idx);
-    void reload(int64_t const file_idx);
+    void rotate_buffer(int64_t const next_frag_idx);
+    void reload_all(int64_t const top_frag_idx);
+    void reload(int64_t const frag_idx);
 
    protected:
     audio_circular_buffer(audio::format const &format, std::size_t const container_count, url const &ch_url,

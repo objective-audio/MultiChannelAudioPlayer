@@ -3,9 +3,9 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <cpp_utils/cpp_utils.h>
+#import <cpp_utils/yas_file_manager.h>
+#import <cpp_utils/yas_system_path_utils.h>
 #import <playing/playing.h>
-#import <processing/processing.h>
 #import <fstream>
 
 using namespace yas;
@@ -311,8 +311,6 @@ static std::string string_from_number_file(std::string const &path) {
 
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
-    std::cout << timeline_exporter_test::string_from_number_file(path_utils::number_file_path(root_path, 0, 0))
-              << std::endl;
     XCTAssertEqual(timeline_exporter_test::string_from_number_file(path_utils::number_file_path(root_path, 0, 0)),
                    "0,100,");
 

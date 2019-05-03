@@ -547,3 +547,29 @@ void timeline_exporter::set_sample_rate(proc::sample_rate_t const sample_rate) {
 chaining::chain_unsync_t<timeline_exporter::event> timeline_exporter::event_chain() const {
     return impl_ptr<impl>()->_event_notifier.chain();
 }
+
+std::string yas::to_string(timeline_exporter::method const &method) {
+    switch (method) {
+        case timeline_exporter::method::reset:
+            return "reset";
+        case timeline_exporter::method::export_began:
+            return "export_began";
+        case timeline_exporter::method::export_ended:
+            return "export_ended";
+    }
+}
+
+std::string yas::to_string(timeline_exporter::error const &error) {
+    switch (error) {
+        case timeline_exporter::error::remove_fragment_failed:
+            return "remove_fragment_failed";
+        case timeline_exporter::error::create_directory_failed:
+            return "create_directory_failed";
+        case timeline_exporter::error::open_signal_stream_failed:
+            return "open_signal_stream_failed";
+        case timeline_exporter::error::open_number_stream_failed:
+            return "open_number_stream_failed";
+        case timeline_exporter::error::get_content_paths_failed:
+            return "get_content_paths_failed";
+    }
+}

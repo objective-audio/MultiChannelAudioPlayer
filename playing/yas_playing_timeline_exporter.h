@@ -45,3 +45,8 @@ struct timeline_exporter : base {
     chaining::chain_unsync_t<event> event_chain() const;
 };
 }  // namespace yas::playing
+
+namespace yas {
+std::string to_string(playing::timeline_exporter::method const &);
+std::string to_string(playing::timeline_exporter::error const &);
+};  // namespace yas

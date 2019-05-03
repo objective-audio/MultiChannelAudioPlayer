@@ -379,6 +379,8 @@ struct timeline_exporter::impl : base::impl {
 
                 if (auto error = this->_export_fragment(range, stream)) {
                     this->_send_error(*error, range, weak_exporter);
+                } else {
+                    this->_send_method(method::export_ended, range, weak_exporter);
                 }
             });
     }

@@ -44,9 +44,9 @@ void audio_circular_buffer::rotate_buffer(int64_t const next_frag_idx) {
     if (container_ptr->fragment_idx() == next_frag_idx - 1) {
         this->_containers.push_back(container_ptr);
         this->_containers.pop_front();
-        int64_t const loading_file_idx = next_frag_idx + this->_container_count - 1;
-        container_ptr->prepare_loading(loading_file_idx);
-        this->_load_container(container_ptr, loading_file_idx);
+        int64_t const loading_frag_idx = next_frag_idx + this->_container_count - 1;
+        container_ptr->prepare_loading(loading_frag_idx);
+        this->_load_container(container_ptr, loading_frag_idx);
     } else {
         this->reload_all(next_frag_idx);
     }
@@ -68,19 +68,19 @@ void audio_circular_buffer::reload(int64_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
     for (auto &container_ptr : this->_containers) {
-        if (auto const file_idx_opt = container_ptr->fragment_idx(); *file_idx_opt == frag_idx) {
+        if (auto const frag_idx_opt = container_ptr->fragment_idx(); *frag_idx_opt == frag_idx) {
             container_ptr->prepare_loading(frag_idx);
             this->_load_container(container_ptr, frag_idx);
         }
     }
 }
 
-void audio_circular_buffer::_load_container(audio_buffer_container::ptr container_ptr, int64_t const file_idx) {
+void audio_circular_buffer::_load_container(audio_buffer_container::ptr container_ptr, int64_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
-    auto file_url = playing::path_utils::caf_url(this->_ch_url, file_idx);
+    auto file_url = playing::path_utils::caf_url(this->_ch_url, frag_idx);
 
-    task task{[container_ptr, file_url = std::move(file_url), file_idx](yas::task const &) {
+    task task{[container_ptr, file_url = std::move(file_url), frag_idx](yas::task const &) {
                   auto file_result = audio::make_opened_file(audio::file::open_args{
                       .file_url = file_url,
                       .pcm_format = container_ptr->format().pcm_format(),
@@ -93,7 +93,7 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 
                   auto &file = file_result.value();
 
-                  auto load_result = container_ptr->load_from_file(file, file_idx);
+                  auto load_result = container_ptr->load_from_file(file, frag_idx);
               },
               task_option_t{.push_cancel_id = container_ptr->identifier, .priority = queue_priority::playing}};
 

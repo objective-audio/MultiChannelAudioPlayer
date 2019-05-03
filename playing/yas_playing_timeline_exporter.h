@@ -27,7 +27,6 @@ struct timeline_exporter : base {
         open_signal_stream_failed,
         open_number_stream_failed,
         get_content_paths_failed,
-        sync_source_not_found,
     };
 
     using result_t = result<method, error>;

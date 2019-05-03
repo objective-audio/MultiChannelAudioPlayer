@@ -178,9 +178,13 @@ struct timeline_exporter::impl : base::impl {
                               return;
                           }
 
-                          exporter_impl->_send_method(method::export_began, *total_range, weak_exporter);
+                          auto const &sync_source = exporter_impl->_sync_source_on_bg();
+                          auto const frags_range =
+                              timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
 
-                          exporter_impl->_export_fragments(*total_range, task, weak_exporter);
+                          exporter_impl->_send_method(method::export_began, frags_range, weak_exporter);
+
+                          exporter_impl->_export_fragments(frags_range, task, weak_exporter);
                       }
                   },
                   {.priority = playing::queue_priority::timeline}};
@@ -337,13 +341,16 @@ struct timeline_exporter::impl : base::impl {
                            if (auto exporter = weak_exporter.lock()) {
                                auto exporter_impl = exporter.impl_ptr<impl>();
 
-                               exporter_impl->_send_method(method::export_began, range, weak_exporter);
+                               auto const &sync_source = exporter_impl->_sync_source_on_bg();
+                               auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
-                               if (auto const error = exporter_impl->_remove_fragments(range, task)) {
+                               exporter_impl->_send_method(method::export_began, frags_range, weak_exporter);
+
+                               if (auto const error = exporter_impl->_remove_fragments(frags_range, task)) {
                                    exporter_impl->_send_error(*error, range, weak_exporter);
                                    return;
                                } else {
-                                   exporter_impl->_export_fragments(range, task, weak_exporter);
+                                   exporter_impl->_export_fragments(frags_range, task, weak_exporter);
                                }
                            }
                        },
@@ -352,7 +359,7 @@ struct timeline_exporter::impl : base::impl {
         this->_queue.push_back(std::move(export_op));
     }
 
-    void _export_fragments(proc::time::range const &range, task const &task,
+    void _export_fragments(proc::time::range const &frags_range, task const &task,
                            weak<timeline_exporter> const &weak_exporter) {
         assert(!thread::is_main());
 
@@ -360,17 +367,8 @@ struct timeline_exporter::impl : base::impl {
             return;
         }
 
-        if (!this->_bg.sync_source.has_value()) {
-            this->_send_error(error::sync_source_not_found, range, weak_exporter);
-            return;
-        }
-
-        auto const &sync_source = *this->_bg.sync_source;
-
-        proc::time::range const frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
-
         this->_bg.timeline.process(
-            frags_range, sync_source,
+            frags_range, this->_sync_source_on_bg(),
             [&task, this, &weak_exporter](proc::time::range const &range, proc::stream const &stream, bool &stop) {
                 if (task.is_canceled()) {
                     stop = true;
@@ -385,10 +383,11 @@ struct timeline_exporter::impl : base::impl {
             });
     }
 
-    [[nodiscard]] std::optional<error> _export_fragment(proc::time::range const &range, proc::stream const &stream) {
+    [[nodiscard]] std::optional<error> _export_fragment(proc::time::range const &frag_range,
+                                                        proc::stream const &stream) {
         assert(!thread::is_main());
 
-        auto const frag_idx = range.frame / stream.sync_source().sample_rate;
+        auto const frag_idx = frag_range.frame / stream.sync_source().sample_rate;
 
         for (auto const &ch_pair : stream.channels()) {
             auto const &ch_idx = ch_pair.first;
@@ -454,7 +453,7 @@ struct timeline_exporter::impl : base::impl {
         return std::nullopt;
     }
 
-        [[nodiscard]] std::optional<error> _remove_fragments(proc::time::range const &range, task const &task) {
+        [[nodiscard]] std::optional<error> _remove_fragments(proc::time::range const &frags_range, task const &task) {
         assert(!thread::is_main());
 
         auto const &root_path = this->_root_path;
@@ -468,14 +467,8 @@ struct timeline_exporter::impl : base::impl {
             }
         }
 
-        if (!this->_bg.sync_source.has_value()) {
-            return error::sync_source_not_found;
-        }
-
-        auto const &sync_source = *this->_bg.sync_source;
+        auto const &sync_source = this->_sync_source_on_bg();
         auto const &sample_rate = sync_source.sample_rate;
-
-        proc::time::range const frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
         auto const ch_names = to_vector<std::string>(ch_paths_result.value(),
                                                      [](auto const &path) { return url{path}.last_path_component(); });
@@ -526,6 +519,10 @@ struct timeline_exporter::impl : base::impl {
         dispatch_async(dispatch_get_main_queue(), ^{
             lambda();
         });
+    }
+
+    proc::sync_source const &_sync_source_on_bg() {
+        return *this->_bg.sync_source;
     }
 };
 

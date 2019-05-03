@@ -89,7 +89,7 @@ struct cpp {
 
     XCTAssertEqual(received.size(), 3);
     XCTAssertEqual(received.at(1).result.value(), timeline_exporter::method::export_began);
-    XCTAssertEqual(received.at(1).range, (proc::time::range{0, 1}));
+    XCTAssertEqual(received.at(1).range, (proc::time::range{0, 2}));
     XCTAssertEqual(received.at(2).result.value(), timeline_exporter::method::export_ended);
     XCTAssertEqual(received.at(2).range, (proc::time::range{0, 2}));
 

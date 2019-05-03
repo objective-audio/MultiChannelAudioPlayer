@@ -48,6 +48,25 @@ void audio_buffer_container::prepare_loading(int64_t const file_idx) {
     this->_frag_idx = file_idx;
 }
 
+audio_buffer_container::load_result_t audio_buffer_container::load(int64_t const frag_idx, load_f const &handler) {
+    std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
+    if (!this->_frag_idx) {
+        return load_result_t{load_error::fragment_idx_is_null};
+    }
+
+    if (*this->_frag_idx != frag_idx) {
+        return load_result_t{load_error::invalid_fragment_idx};
+    }
+
+    if (handler(this->_buffer, frag_idx)) {
+        this->_state = state::loaded;
+        return load_result_t{nullptr};
+    } else {
+        return load_result_t{load_error::write_buffer_failed};
+    }
+}
+
 audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(audio::pcm_buffer &to_buffer,
                                                                                int64_t const play_frame) const {
     auto lock = std::unique_lock<std::recursive_mutex>(this->_mutex, std::try_to_lock);
@@ -102,8 +121,8 @@ std::string yas::to_string(audio_buffer_container::load_error const &error) {
             return "file_idx_is_null";
         case audio_buffer_container::load_error::invalid_fragment_idx:
             return "invalid_file_idx";
-        case audio_buffer_container::load_error::read_from_file_failed:
-            return "read_from_file_failed";
+        case audio_buffer_container::load_error::write_buffer_failed:
+            return "write_buffer_failed";
     }
 }
 

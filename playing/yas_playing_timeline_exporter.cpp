@@ -158,7 +158,7 @@ struct timeline_exporter::impl : base::impl {
                               return;
                           }
 
-                          exporter_impl->_send_method(method::reset, std::nullopt, weak_exporter);
+                          exporter_impl->_send_method_on_bg(method::reset, std::nullopt, weak_exporter);
 
                           auto const &root_path = exporter_impl->_root_path;
 
@@ -182,7 +182,7 @@ struct timeline_exporter::impl : base::impl {
                           auto const frags_range =
                               timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
 
-                          exporter_impl->_send_method(method::export_began, frags_range, weak_exporter);
+                          exporter_impl->_send_method_on_bg(method::export_began, frags_range, weak_exporter);
 
                           exporter_impl->_export_fragments(frags_range, task, weak_exporter);
                       }
@@ -344,10 +344,10 @@ struct timeline_exporter::impl : base::impl {
                                auto const &sync_source = exporter_impl->_sync_source_on_bg();
                                auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
-                               exporter_impl->_send_method(method::export_began, frags_range, weak_exporter);
+                               exporter_impl->_send_method_on_bg(method::export_began, frags_range, weak_exporter);
 
-                               if (auto const error = exporter_impl->_remove_fragments(frags_range, task)) {
-                                   exporter_impl->_send_error(*error, range, weak_exporter);
+                               if (auto const error = exporter_impl->_remove_fragments_on_bg(frags_range, task)) {
+                                   exporter_impl->_send_error_on_bg(*error, range, weak_exporter);
                                    return;
                                } else {
                                    exporter_impl->_export_fragments(frags_range, task, weak_exporter);
@@ -375,16 +375,16 @@ struct timeline_exporter::impl : base::impl {
                     return;
                 }
 
-                if (auto error = this->_export_fragment(range, stream)) {
-                    this->_send_error(*error, range, weak_exporter);
+                if (auto error = this->_export_fragment_on_bg(range, stream)) {
+                    this->_send_error_on_bg(*error, range, weak_exporter);
                 } else {
-                    this->_send_method(method::export_ended, range, weak_exporter);
+                    this->_send_method_on_bg(method::export_ended, range, weak_exporter);
                 }
             });
     }
 
-    [[nodiscard]] std::optional<error> _export_fragment(proc::time::range const &frag_range,
-                                                        proc::stream const &stream) {
+    [[nodiscard]] std::optional<error> _export_fragment_on_bg(proc::time::range const &frag_range,
+                                                              proc::stream const &stream) {
         assert(!thread::is_main());
 
         auto const frag_idx = frag_range.frame / stream.sync_source().sample_rate;
@@ -453,7 +453,8 @@ struct timeline_exporter::impl : base::impl {
         return std::nullopt;
     }
 
-        [[nodiscard]] std::optional<error> _remove_fragments(proc::time::range const &frags_range, task const &task) {
+        [[nodiscard]] std::optional<error> _remove_fragments_on_bg(proc::time::range const &frags_range,
+                                                                   task const &task) {
         assert(!thread::is_main());
 
         auto const &root_path = this->_root_path;
@@ -495,21 +496,21 @@ struct timeline_exporter::impl : base::impl {
         return std::nullopt;
     }
 
-    void _send_method(method const type, std::optional<proc::time::range> const &range,
-                      weak<timeline_exporter> const &weak_exporter) {
+    void _send_method_on_bg(method const type, std::optional<proc::time::range> const &range,
+                            weak<timeline_exporter> const &weak_exporter) {
         assert(!thread::is_main());
 
-        this->_send_event(event{.result = result_t{type}, .range = range}, weak_exporter);
+        this->_send_event_on_bg(event{.result = result_t{type}, .range = range}, weak_exporter);
     }
 
-    void _send_error(error const type, std::optional<proc::time::range> const &range,
-                     weak<timeline_exporter> const &weak_exporter) {
+    void _send_error_on_bg(error const type, std::optional<proc::time::range> const &range,
+                           weak<timeline_exporter> const &weak_exporter) {
         assert(!thread::is_main());
 
-        this->_send_event(event{.result = result_t{type}, .range = range}, weak_exporter);
+        this->_send_event_on_bg(event{.result = result_t{type}, .range = range}, weak_exporter);
     }
 
-    void _send_event(event event, weak<timeline_exporter> const &weak_exporter) {
+    void _send_event_on_bg(event event, weak<timeline_exporter> const &weak_exporter) {
         auto lambda = [this, event = std::move(event), weak_exporter] {
             if (auto exporter = weak_exporter.lock()) {
                 exporter.impl_ptr<impl>()->_event_notifier.notify(event);

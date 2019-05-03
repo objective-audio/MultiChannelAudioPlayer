@@ -70,19 +70,6 @@ yas::url path_utils::channel_url(yas::url const &root_url, int64_t const ch_idx)
     return root_url.appending(channel_name(ch_idx));
 }
 
-yas::url path_utils::fragment_url(yas::url const &root_url, int64_t const ch_idx, int64_t const frg_idx) {
-    return channel_url(root_url, ch_idx).appending(fragment_name(frg_idx));
-}
-
-yas::url path_utils::signal_file_url(yas::url const &root_url, int64_t const ch_idx, int64_t const frg_idx,
-                                     proc::time::range const &range, std::type_info const &type_info) {
-    return fragment_url(root_url, ch_idx, frg_idx).appending(signal_file_name(range, type_info));
-}
-
-yas::url path_utils::number_file_url(yas::url const &root_url, int64_t const ch_idx, int64_t const frg_idx) {
-    return fragment_url(root_url, ch_idx, frg_idx).appending("number");
-}
-
 yas::url path_utils::caf_url(yas::url const &ch_url, int64_t const file_idx) {
     return ch_url.appending(std::to_string(file_idx) + ".caf");
 }

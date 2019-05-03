@@ -63,18 +63,16 @@ using namespace yas::playing;
     XCTAssertEqual(ch_url.path(), "/root/1");
 }
 
-- (void)test_fragment_url {
-    auto root_url = url::file_url("/root");
-    auto frg_url = path_utils::fragment_url(root_url, 1, 2);
+- (void)test_fragment_path {
+    auto frag_path = path_utils::fragment_path("/root", 1, 2);
 
-    XCTAssertEqual(frg_url.path(), "/root/1/2");
+    XCTAssertEqual(frag_path, "/root/1/2");
 }
 
-- (void)test_signal_file_url {
-    auto root_url = url::file_url("/root");
-    auto signal_url = path_utils::signal_file_url(root_url, 1, 2, {10, 11}, typeid(int64_t));
+- (void)test_signal_file_path {
+    auto signal_path = path_utils::signal_file_path("/root", 1, 2, {10, 11}, typeid(int64_t));
 
-    XCTAssertEqual(signal_url.path(), "/root/1/2/signal_10_11_i64");
+    XCTAssertEqual(signal_path, "/root/1/2/signal_10_11_i64");
 }
 
 - (void)test_caf_url_with_file_idx {

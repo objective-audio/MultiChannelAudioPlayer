@@ -57,143 +57,144 @@ struct audio_exporter::impl : base::impl {
         this->_file_buffer = make_one_sec_buffer(this->_format);
         this->_process_buffer = make_one_sec_buffer(this->_format);
 
-        task op{[handler = std::move(handler)](task const &) {
-                    dispatch_async(dispatch_get_main_queue(), [handler = std::move(handler)] { handler(); });
-                },
-                {.priority = queue_priority::exporting}};
+        task task{[handler = std::move(handler)](yas::task const &) {
+                      dispatch_async(dispatch_get_main_queue(), [handler = std::move(handler)] { handler(); });
+                  },
+                  {.priority = queue_priority::exporting}};
 
-        this->_queue.push_back(std::move(op));
+        this->_queue.push_back(std::move(task));
     }
 
     void export_file(uint32_t const ch_idx, proc::time::range const &range, export_proc_f &&proc_handler,
                      export_written_f &&written_handler, export_completion_f &&result_handler) {
         auto ch_url = path_utils::channel_url(this->_root_url, ch_idx);
 
-        task op{[ch_idx, range, proc_handler = std::move(proc_handler), written_handler = std::move(written_handler),
-                 result_handler = std::move(result_handler), format = this->_format, ch_url = std::move(ch_url),
-                 file_buffer = this->_file_buffer, process_buffer = this->_process_buffer](task const &task) mutable {
-                    proc::length_t const sample_rate = format.sample_rate();
-                    proc::length_t const file_length = sample_rate;
+        task task{
+            [ch_idx, range, proc_handler = std::move(proc_handler), written_handler = std::move(written_handler),
+             result_handler = std::move(result_handler), format = this->_format, ch_url = std::move(ch_url),
+             file_buffer = this->_file_buffer, process_buffer = this->_process_buffer](yas::task const &task) mutable {
+                proc::length_t const sample_rate = format.sample_rate();
+                proc::length_t const file_length = sample_rate;
 
-                    proc::frame_index_t file_frame_idx = math::floor_int(range.frame, file_length);
-                    proc::frame_index_t const end_frame_idx = range.next_frame();
+                proc::frame_index_t file_frame_idx = math::floor_int(range.frame, file_length);
+                proc::frame_index_t const end_frame_idx = range.next_frame();
 
-                    export_result_t export_result{nullptr};
+                export_result_t export_result{nullptr};
 
-                    if (auto result = file_manager::create_directory_if_not_exists(ch_url.path())) {
-                        while (file_frame_idx < end_frame_idx) {
-                            if (task.is_canceled()) {
-                                return;
-                            }
-
-                            int64_t const file_idx = path_utils::caf_idx(file_frame_idx, sample_rate);
-                            url const file_url = path_utils::caf_url(ch_url, file_idx);
-                            proc::time::range const file_range{file_frame_idx, file_length};
-
-                            // 1秒バッファをクリアする
-                            file_buffer.clear();
-
-                            if (task.is_canceled()) {
-                                return;
-                            }
-
-                            // ファイルがあれば1秒バッファへの読み込み
-                            if (auto result = audio::make_opened_file(
-                                    {.file_url = file_url, .pcm_format = format.pcm_format(), .interleaved = false});
-                                result.is_success()) {
-                                audio::file &file = result.value();
-                                if (file.processing_format() == format && file.file_length() == file_length) {
-                                    file.read_into_buffer(file_buffer);
-                                }
-                                file.close();
-                            }
-
-                            if (task.is_canceled()) {
-                                return;
-                            }
-
-                            // ファイルがあれば消す
-                            if (auto result = file_manager::remove_content(file_url.path()); result.is_error()) {
-                                export_result = export_result_t{export_error::erase_file_failed};
-                                break;
-                            }
-
-                            // 処理をする範囲を調べる
-                            auto opt_process_range = file_range.intersected(range);
-                            if (!opt_process_range) {
-                                export_result = export_result_t{export_error::invalid_process_range};
-                                break;
-                            }
-                            proc::time::range const &process_range = *opt_process_range;
-
-                            // 処理バッファをリセットして長さを合わせる
-                            process_buffer.reset();
-                            process_buffer.set_frame_length(static_cast<uint32_t>(process_range.length));
-
-                            if (task.is_canceled()) {
-                                return;
-                            }
-
-                            // 作業バッファへの書き込みをクロージャで行う
-                            proc_handler(ch_idx, process_range, process_buffer);
-
-                            if (task.is_canceled()) {
-                                return;
-                            }
-
-                            // 作業バッファから1秒バッファへのコピー
-                            if (auto result = file_buffer.copy_from(
-                                    process_buffer,
-                                    {.to_begin_frame = static_cast<uint32_t>(process_range.frame - file_frame_idx),
-                                     .length = static_cast<uint32_t>(process_range.length)});
-                                result.is_error()) {
-                                export_result = export_result_t{export_error::copy_buffer_failed};
-                                break;
-                            }
-
-                            if (task.is_canceled()) {
-                                return;
-                            }
-
-                            // 1秒バッファからファイルへの書き込み
-                            if (auto result = audio::make_created_file(
-                                    {.file_url = file_url,
-                                     .file_type = audio::file_type::core_audio_format,
-                                     .pcm_format = format.pcm_format(),
-                                     .interleaved = false,
-                                     .settings = audio::wave_file_settings(format.sample_rate(), 1,
-                                                                           format.sample_byte_count() * 8)})) {
-                                audio::file &file = result.value();
-                                if (auto write_result = file.write_from_buffer(file_buffer); write_result.is_error()) {
-                                    export_result = export_result_t{export_error::write_failed};
-                                    file.close();
-                                    break;
-                                }
-                                file.close();
-
-                                written_handler(ch_idx, file_idx);
-                            } else {
-                                export_result = export_result_t{export_error::create_file_failed};
-                                break;
-                            }
-
-                            file_frame_idx += file_length;
+                if (auto result = file_manager::create_directory_if_not_exists(ch_url.path())) {
+                    while (file_frame_idx < end_frame_idx) {
+                        if (task.is_canceled()) {
+                            return;
                         }
-                    } else {
-                        export_result = export_result_t{export_error::create_dir_failed};
-                    }
 
-                    result_handler(export_result);
-                },
-                {.cancel_id = this->_all_cancel_id, .priority = queue_priority::exporting}};
-        this->_queue.push_back(std::move(op));
+                        int64_t const file_idx = path_utils::caf_idx(file_frame_idx, sample_rate);
+                        url const file_url = path_utils::caf_url(ch_url, file_idx);
+                        proc::time::range const file_range{file_frame_idx, file_length};
+
+                        // 1秒バッファをクリアする
+                        file_buffer.clear();
+
+                        if (task.is_canceled()) {
+                            return;
+                        }
+
+                        // ファイルがあれば1秒バッファへの読み込み
+                        if (auto result = audio::make_opened_file(
+                                {.file_url = file_url, .pcm_format = format.pcm_format(), .interleaved = false});
+                            result.is_success()) {
+                            audio::file &file = result.value();
+                            if (file.processing_format() == format && file.file_length() == file_length) {
+                                file.read_into_buffer(file_buffer);
+                            }
+                            file.close();
+                        }
+
+                        if (task.is_canceled()) {
+                            return;
+                        }
+
+                        // ファイルがあれば消す
+                        if (auto result = file_manager::remove_content(file_url.path()); result.is_error()) {
+                            export_result = export_result_t{export_error::erase_file_failed};
+                            break;
+                        }
+
+                        // 処理をする範囲を調べる
+                        auto opt_process_range = file_range.intersected(range);
+                        if (!opt_process_range) {
+                            export_result = export_result_t{export_error::invalid_process_range};
+                            break;
+                        }
+                        proc::time::range const &process_range = *opt_process_range;
+
+                        // 処理バッファをリセットして長さを合わせる
+                        process_buffer.reset();
+                        process_buffer.set_frame_length(static_cast<uint32_t>(process_range.length));
+
+                        if (task.is_canceled()) {
+                            return;
+                        }
+
+                        // 作業バッファへの書き込みをクロージャで行う
+                        proc_handler(ch_idx, process_range, process_buffer);
+
+                        if (task.is_canceled()) {
+                            return;
+                        }
+
+                        // 作業バッファから1秒バッファへのコピー
+                        if (auto result = file_buffer.copy_from(
+                                process_buffer,
+                                {.to_begin_frame = static_cast<uint32_t>(process_range.frame - file_frame_idx),
+                                 .length = static_cast<uint32_t>(process_range.length)});
+                            result.is_error()) {
+                            export_result = export_result_t{export_error::copy_buffer_failed};
+                            break;
+                        }
+
+                        if (task.is_canceled()) {
+                            return;
+                        }
+
+                        // 1秒バッファからファイルへの書き込み
+                        if (auto result = audio::make_created_file(
+                                {.file_url = file_url,
+                                 .file_type = audio::file_type::core_audio_format,
+                                 .pcm_format = format.pcm_format(),
+                                 .interleaved = false,
+                                 .settings = audio::wave_file_settings(format.sample_rate(), 1,
+                                                                       format.sample_byte_count() * 8)})) {
+                            audio::file &file = result.value();
+                            if (auto write_result = file.write_from_buffer(file_buffer); write_result.is_error()) {
+                                export_result = export_result_t{export_error::write_failed};
+                                file.close();
+                                break;
+                            }
+                            file.close();
+
+                            written_handler(ch_idx, file_idx);
+                        } else {
+                            export_result = export_result_t{export_error::create_file_failed};
+                            break;
+                        }
+
+                        file_frame_idx += file_length;
+                    }
+                } else {
+                    export_result = export_result_t{export_error::create_dir_failed};
+                }
+
+                result_handler(export_result);
+            },
+            {.cancel_id = this->_all_cancel_id, .priority = queue_priority::exporting}};
+        this->_queue.push_back(std::move(task));
     }
 
     void clear_all_files(std::function<void(clear_result_t const &)> result_handler) {
         this->_queue.cancel_for_id(this->_all_cancel_id);
 
-        task op(
-            [result_handler, root_url = this->_root_url](task const &) {
+        task task(
+            [result_handler, root_url = this->_root_url](yas::task const &) {
                 if (auto result = file_manager::remove_content(root_url.path())) {
                     result_handler(clear_result_t{nullptr});
                 } else {
@@ -201,7 +202,7 @@ struct audio_exporter::impl : base::impl {
                 }
             },
             {.priority = queue_priority::exporting});
-        this->_queue.push_back(std::move(op));
+        this->_queue.push_back(std::move(task));
     }
 };
 

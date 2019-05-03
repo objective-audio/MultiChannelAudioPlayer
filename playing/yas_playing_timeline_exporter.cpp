@@ -146,46 +146,46 @@ struct timeline_exporter::impl : base::impl {
 
         this->_queue.cancel_all();
 
-        task op{[tracks = std::move(tracks), sample_rate = this->_src_sample_rate.raw(),
-                 weak_exporter = to_weak(exporter)](task const &op) mutable {
-                    if (auto exporter = weak_exporter.lock()) {
-                        auto exporter_impl = exporter.impl_ptr<impl>();
-                        auto &bg = exporter_impl->_bg;
-                        bg.timeline = proc::timeline{std::move(tracks)};
-                        bg.sync_source.emplace(sample_rate, sample_rate);
+        task task{[tracks = std::move(tracks), sample_rate = this->_src_sample_rate.raw(),
+                   weak_exporter = to_weak(exporter)](yas::task const &task) mutable {
+                      if (auto exporter = weak_exporter.lock()) {
+                          auto exporter_impl = exporter.impl_ptr<impl>();
+                          auto &bg = exporter_impl->_bg;
+                          bg.timeline = proc::timeline{std::move(tracks)};
+                          bg.sync_source.emplace(sample_rate, sample_rate);
 
-                        if (op.is_canceled()) {
-                            return;
-                        }
+                          if (task.is_canceled()) {
+                              return;
+                          }
 
-                        exporter_impl->_send_method(method::reset, std::nullopt, weak_exporter);
+                          exporter_impl->_send_method(method::reset, std::nullopt, weak_exporter);
 
-                        auto const &root_path = exporter_impl->_root_path;
+                          auto const &root_path = exporter_impl->_root_path;
 
-                        auto result = file_manager::remove_content(root_path);
-                        if (!result) {
-                            std::runtime_error("remove timeline root directory failed.");
-                        }
+                          auto result = file_manager::remove_content(root_path);
+                          if (!result) {
+                              std::runtime_error("remove timeline root directory failed.");
+                          }
 
-                        if (op.is_canceled()) {
-                            return;
-                        }
+                          if (task.is_canceled()) {
+                              return;
+                          }
 
-                        proc::timeline &timeline = exporter_impl->_bg.timeline;
+                          proc::timeline &timeline = exporter_impl->_bg.timeline;
 
-                        auto total_range = timeline.total_range();
-                        if (!total_range.has_value()) {
-                            return;
-                        }
+                          auto total_range = timeline.total_range();
+                          if (!total_range.has_value()) {
+                              return;
+                          }
 
-                        exporter_impl->_send_method(method::export_began, *total_range, weak_exporter);
+                          exporter_impl->_send_method(method::export_began, *total_range, weak_exporter);
 
-                        exporter_impl->_export_fragments(*total_range, op, weak_exporter);
-                    }
-                },
-                {.priority = playing::queue_priority::timeline}};
+                          exporter_impl->_export_fragments(*total_range, task, weak_exporter);
+                      }
+                  },
+                  {.priority = playing::queue_priority::timeline}};
 
-        this->_queue.push_back(std::move(op));
+        this->_queue.push_back(std::move(task));
     }
 
     void _insert_tracks(proc::timeline::inserted_event_t const &event, timeline_exporter &exporter) {
@@ -244,19 +244,19 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto &pair : modules) {
             auto const &range = pair.first;
-            task op{[trk_idx, range = range, modules = std::move(pair.second),
-                     weak_exporter = to_weak(exporter)](auto const &) mutable {
-                        if (auto exporter = weak_exporter.lock()) {
-                            auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
-                            assert(track.modules().count(range) == 0);
-                            for (auto &module : modules) {
-                                track.push_back_module(std::move(module), range);
-                            }
-                        }
-                    },
-                    {.priority = playing::queue_priority::timeline}};
+            task task{[trk_idx, range = range, modules = std::move(pair.second),
+                       weak_exporter = to_weak(exporter)](auto const &) mutable {
+                          if (auto exporter = weak_exporter.lock()) {
+                              auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
+                              assert(track.modules().count(range) == 0);
+                              for (auto &module : modules) {
+                                  track.push_back_module(std::move(module), range);
+                              }
+                          }
+                      },
+                      {.priority = playing::queue_priority::timeline}};
 
-            this->_queue.push_back(std::move(op));
+            this->_queue.push_back(std::move(task));
         }
 
         for (auto const &pair : modules) {
@@ -273,18 +273,18 @@ struct timeline_exporter::impl : base::impl {
 
         for (auto &pair : modules) {
             auto const &range = pair.first;
-            task op{[trk_idx, range = range, module = std::move(pair.second),
-                     weak_exporter = to_weak(exporter)](auto const &) mutable {
-                        if (auto exporter = weak_exporter.lock()) {
-                            auto exporter_impl = exporter.impl_ptr<impl>();
-                            auto &track = exporter_impl->_bg.timeline.track(trk_idx);
-                            assert(track.modules().count(range) > 0);
-                            track.erase_modules_for_range(range);
-                        }
-                    },
-                    {.priority = playing::queue_priority::timeline}};
+            task task{[trk_idx, range = range, module = std::move(pair.second),
+                       weak_exporter = to_weak(exporter)](auto const &) mutable {
+                          if (auto exporter = weak_exporter.lock()) {
+                              auto exporter_impl = exporter.impl_ptr<impl>();
+                              auto &track = exporter_impl->_bg.timeline.track(trk_idx);
+                              assert(track.modules().count(range) > 0);
+                              track.erase_modules_for_range(range);
+                          }
+                      },
+                      {.priority = playing::queue_priority::timeline}};
 
-            this->_queue.push_back(std::move(op));
+            this->_queue.push_back(std::move(task));
         }
 
         for (auto const &pair : modules) {
@@ -297,17 +297,17 @@ struct timeline_exporter::impl : base::impl {
                         proc::module_vector::inserted_event_t const &event, timeline_exporter &exporter) {
         assert(thread::is_main());
 
-        task op{[trk_idx, range, module_idx = event.index, module = event.element.copy(),
-                 weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    if (auto exporter = weak_exporter.lock()) {
-                        auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
-                        assert(track.modules().count(range) > 0);
-                        track.insert_module(std::move(module), module_idx, range);
-                    }
-                },
-                {.priority = playing::queue_priority::timeline}};
+        task task{[trk_idx, range, module_idx = event.index, module = event.element.copy(),
+                   weak_exporter = to_weak(exporter)](auto const &) mutable {
+                      if (auto exporter = weak_exporter.lock()) {
+                          auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
+                          assert(track.modules().count(range) > 0);
+                          track.insert_module(std::move(module), module_idx, range);
+                      }
+                  },
+                  {.priority = playing::queue_priority::timeline}};
 
-        this->_queue.push_back(std::move(op));
+        this->_queue.push_back(std::move(task));
 
         this->_push_export_task(range, exporter);
     }
@@ -316,16 +316,16 @@ struct timeline_exporter::impl : base::impl {
                        proc::module_vector::erased_event_t const &event, timeline_exporter &exporter) {
         assert(thread::is_main());
 
-        task op{[trk_idx, range, module_idx = event.index, weak_exporter = to_weak(exporter)](auto const &) mutable {
-                    if (auto exporter = weak_exporter.lock()) {
-                        auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
-                        assert(track.modules().count(range) > 0);
-                        track.erase_module_at(module_idx, range);
-                    }
-                },
-                {.priority = playing::queue_priority::timeline}};
+        task task{[trk_idx, range, module_idx = event.index, weak_exporter = to_weak(exporter)](auto const &) mutable {
+                      if (auto exporter = weak_exporter.lock()) {
+                          auto &track = exporter.impl_ptr<impl>()->_bg.timeline.track(trk_idx);
+                          assert(track.modules().count(range) > 0);
+                          track.erase_module_at(module_idx, range);
+                      }
+                  },
+                  {.priority = playing::queue_priority::timeline}};
 
-        this->_queue.push_back(std::move(op));
+        this->_queue.push_back(std::move(task));
 
         this->_push_export_task(range, exporter);
     }
@@ -333,17 +333,17 @@ struct timeline_exporter::impl : base::impl {
     void _push_export_task(proc::time::range const &range, timeline_exporter &exporter) {
         this->_queue.cancel_for_id(timeline_range_cancel_request(range));
 
-        task export_op{[range, weak_exporter = to_weak(exporter)](task const &op) {
+        task export_op{[range, weak_exporter = to_weak(exporter)](task const &task) {
                            if (auto exporter = weak_exporter.lock()) {
                                auto exporter_impl = exporter.impl_ptr<impl>();
 
                                exporter_impl->_send_method(method::export_began, range, weak_exporter);
 
-                               if (auto const error = exporter_impl->_remove_fragments(range, op)) {
+                               if (auto const error = exporter_impl->_remove_fragments(range, task)) {
                                    exporter_impl->_send_error(*error, range, weak_exporter);
                                    return;
                                } else {
-                                   exporter_impl->_export_fragments(range, op, weak_exporter);
+                                   exporter_impl->_export_fragments(range, task, weak_exporter);
                                }
                            }
                        },
@@ -352,11 +352,11 @@ struct timeline_exporter::impl : base::impl {
         this->_queue.push_back(std::move(export_op));
     }
 
-    void _export_fragments(proc::time::range const &range, task const &op,
+    void _export_fragments(proc::time::range const &range, task const &task,
                            weak<timeline_exporter> const &weak_exporter) {
         assert(!thread::is_main());
 
-        if (op.is_canceled()) {
+        if (task.is_canceled()) {
             return;
         }
 
@@ -371,8 +371,8 @@ struct timeline_exporter::impl : base::impl {
 
         this->_bg.timeline.process(
             frags_range, sync_source,
-            [&op, this, &weak_exporter](proc::time::range const &range, proc::stream const &stream, bool &stop) {
-                if (op.is_canceled()) {
+            [&task, this, &weak_exporter](proc::time::range const &range, proc::stream const &stream, bool &stop) {
+                if (task.is_canceled()) {
                     stop = true;
                     return;
                 }
@@ -452,7 +452,7 @@ struct timeline_exporter::impl : base::impl {
         return std::nullopt;
     }
 
-        [[nodiscard]] std::optional<error> _remove_fragments(proc::time::range const &range, task const &op) {
+        [[nodiscard]] std::optional<error> _remove_fragments(proc::time::range const &range, task const &task) {
         assert(!thread::is_main());
 
         auto const &root_path = this->_root_path;
@@ -482,7 +482,7 @@ struct timeline_exporter::impl : base::impl {
         auto const end_frag_idx = frags_range.next_frame() / sample_rate;
 
         for (auto const &ch_name : ch_names) {
-            if (op.is_canceled()) {
+            if (task.is_canceled()) {
                 return std::nullopt;
             }
 

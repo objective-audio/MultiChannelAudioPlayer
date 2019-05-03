@@ -19,7 +19,7 @@ using namespace yas::playing;
 @implementation yas_playing_audio_player_tests {
     double _sample_rate;
     task_queue _queue;
-    std::shared_ptr<audio_exporter> _exporter;
+    //    std::shared_ptr<audio_exporter> _exporter;
     test_utils::test_audio_renderer _renderer;
 }
 
@@ -28,8 +28,8 @@ using namespace yas::playing;
 
     self->_queue = task_queue{queue_priority_count};
 
-    self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
-                                                                [self root_url], self -> _queue);
+    //    self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
+    //                                                                [self root_url], self -> _queue);
 
     self->_renderer = test_utils::test_audio_renderer{};
     self->_renderer.set_pcm_format(audio::pcm_format::int16);
@@ -42,7 +42,7 @@ using namespace yas::playing;
     self->_queue.wait_until_all_tasks_are_finished();
 
     self->_queue = nullptr;
-    self->_exporter = nullptr;
+    //    self->_exporter = nullptr;
     self->_renderer = nullptr;
 
     test_utils::remove_all_document_files();
@@ -210,7 +210,7 @@ using namespace yas::playing;
     render_buffer.clear();
 
     auto overwrite_exp = [self expectationWithDescription:@"overwrite"];
-    test_utils::overwrite_file(*self->_exporter, [self ch_count], [&overwrite_exp] { [overwrite_exp fulfill]; });
+    //    test_utils::overwrite_file(*self->_exporter, [self ch_count], [&overwrite_exp] { [overwrite_exp fulfill]; });
 
     [self waitForExpectations:@[overwrite_exp] timeout:1.0];
 
@@ -254,7 +254,7 @@ using namespace yas::playing;
 
 - (void)setup_files {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
+    //    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:1.0];
 }
 

@@ -18,13 +18,8 @@ namespace yas::playing {
 struct audio_coordinator : base {
     class impl;
 
-    using export_proc_f = std::function<void(uint32_t const ch_idx, proc::time::range const &, audio::pcm_buffer &)>;
-
     audio_coordinator(url root_url);
     audio_coordinator(std::nullptr_t);
-
-    void set_export_proc_handler(export_proc_f);
-    void export_file(uint32_t const ch_idx, proc::time::range const range);
 
     void set_playing(bool const);
     void seek(int64_t const);

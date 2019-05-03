@@ -6,7 +6,6 @@
 #import <audio/yas_audio_format.h>
 #import <cpp_utils/yas_system_path_utils.h>
 #import <playing/yas_playing_audio_circular_buffer.h>
-#import <playing/yas_playing_audio_exporter.h>
 #import <playing/yas_playing_path_utils.h>
 #import <playing/yas_playing_types.h>
 #import "yas_playing_test_utils.h"
@@ -20,7 +19,7 @@ using namespace yas::playing;
 
 @implementation yas_audio_circuler_buffer_tests {
     task_queue _queue;
-    std::shared_ptr<playing::audio_exporter> _exporter;
+    //    std::shared_ptr<playing::audio_exporter> _exporter;
 }
 
 - (void)setUp {
@@ -28,19 +27,19 @@ using namespace yas::playing;
 
     self->_queue = task_queue{queue_priority_count};
 
-    self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
-                                                                [self root_url], self -> _queue);
+    //    self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
+    //                                                                [self root_url], self -> _queue);
 }
 
 - (void)tearDown {
-    self->_exporter = nullptr;
+    //    self->_exporter = nullptr;
 
     test_utils::remove_all_document_files();
 }
 
 - (void)test_read_into_buffer {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
+    //    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = path_utils::channel_url([self root_url], [self ch_idx]);
@@ -83,7 +82,7 @@ using namespace yas::playing;
 
 - (void)test_reload {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
+    //    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = path_utils::channel_url([self root_url], [self ch_idx]);
@@ -93,7 +92,7 @@ using namespace yas::playing;
     self->_queue.wait_until_all_tasks_are_finished();
 
     auto overwrite_exp = [self expectationWithDescription:@"overwrite"];
-    test_utils::overwrite_file(*self->_exporter, [self ch_count], [overwrite_exp] { [overwrite_exp fulfill]; });
+    //    test_utils::overwrite_file(*self->_exporter, [self ch_count], [overwrite_exp] { [overwrite_exp fulfill]; });
     [self waitForExpectations:@[overwrite_exp] timeout:10.0];
 
     circular_buffer->reload(0);

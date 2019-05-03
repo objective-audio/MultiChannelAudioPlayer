@@ -5,7 +5,6 @@
 #include "yas_playing_audio_coordinator.h"
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_url.h>
-#include "yas_playing_audio_exporter.h"
 #include "yas_playing_audio_player.h"
 #include "yas_playing_audio_renderer.h"
 #include "yas_playing_types.h"
@@ -18,8 +17,6 @@ struct audio_coordinator::impl : base::impl {
     task_queue _queue{queue_priority_count};
     audio_renderer _renderer;
     audio_player _player{this->_renderer.renderable(), this->_root_url, this->_queue};
-    audio_exporter _exporter = nullptr;
-    export_proc_f _export_proc_handler = nullptr;
 
     chaining::observer_pool _pool;
 
@@ -32,45 +29,10 @@ struct audio_coordinator::impl : base::impl {
         this->_pool += this->_renderer.chain_configuration()
                            .perform([weak_coordinator](auto const &configuration) {
                                if (auto coordinator = weak_coordinator.lock()) {
-                                   coordinator.impl_ptr<impl>()->_update_exporter(configuration);
+#warning todo configurationが変わったのでリロードする
                                }
                            })
                            .sync();
-    }
-
-    void export_file(uint32_t const ch_idx, proc::time::range const range, audio_coordinator &coordinator) {
-        if (!this->_export_proc_handler) {
-            throw std::runtime_error("export_proc_handler is null.");
-        }
-
-        auto weak_coordinator = to_weak(coordinator);
-
-        this->_exporter.export_file(ch_idx, range, this->_export_proc_handler,
-                                    [weak_coordinator](uint32_t const ch_idx, int64_t const &file_idx) {
-                                        if (auto coordinator = weak_coordinator.lock()) {
-                                            auto coordinator_impl = coordinator.impl_ptr<impl>();
-                                            coordinator_impl->_player.reload(ch_idx, file_idx);
-                                        }
-                                    },
-                                    [](audio_exporter::export_result_t const &result) {
-#warning todo エラーを外に知らせる？
-                                    });
-    }
-
-   private:
-    void _update_exporter(audio_configuration const &configuration) {
-        double const &sample_rate = configuration.sample_rate;
-        audio::pcm_format const &pcm_format = configuration.pcm_format;
-
-        if (this->_exporter) {
-            if (this->_exporter.sample_rate() == sample_rate && this->_exporter.pcm_format() == pcm_format) {
-                return;
-            }
-
-            this->_exporter.update_format(sample_rate, pcm_format, [] {});
-        } else {
-            this->_exporter = audio_exporter{sample_rate, pcm_format, this->_root_url, this->_queue};
-        }
     }
 };
 
@@ -79,14 +41,6 @@ audio_coordinator::audio_coordinator(url root_url) : base(std::make_shared<impl>
 }
 
 audio_coordinator::audio_coordinator(std::nullptr_t) : base(nullptr) {
-}
-
-void audio_coordinator::set_export_proc_handler(export_proc_f handler) {
-    impl_ptr<impl>()->_export_proc_handler = handler;
-}
-
-void audio_coordinator::export_file(uint32_t const ch_idx, proc::time::range const range) {
-    impl_ptr<impl>()->export_file(ch_idx, range, *this);
 }
 
 void audio_coordinator::set_playing(bool const is_playing) {

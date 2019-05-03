@@ -8,8 +8,6 @@
 #import <processing/processing.h>
 #import <fstream>
 
-#import <iostream>
-
 using namespace yas;
 using namespace yas::playing;
 

@@ -43,7 +43,7 @@ using namespace yas::playing;
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = path_utils::channel_url([self root_url], [self ch_idx]);
-    auto circular_buffer = make_audio_circular_buffer([self format], 2, ch_url, self -> _queue);
+    auto circular_buffer = make_audio_circular_buffer([self format], 2, self -> _queue);
 
     circular_buffer->reload_all(-1);
     self->_queue.wait_until_all_tasks_are_finished();
@@ -86,7 +86,7 @@ using namespace yas::playing;
     [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = path_utils::channel_url([self root_url], [self ch_idx]);
-    auto circular_buffer = make_audio_circular_buffer([self format], 3, ch_url, self -> _queue);
+    auto circular_buffer = make_audio_circular_buffer([self format], 3, self -> _queue);
 
     circular_buffer->reload_all(-1);
     self->_queue.wait_until_all_tasks_are_finished();

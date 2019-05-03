@@ -53,7 +53,7 @@ struct audio_buffer_container {
     [[nodiscard]] bool contains(int64_t const frame) const;
 
     void prepare_loading(int64_t const frag_idx);
-    load_result_t load_from_file(audio::file &, int64_t const frag_idx);
+#warning todo load_from_fileの代わりにクロージャで書き込めるようにする
     read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, int64_t const play_frame) const;
 
    protected:

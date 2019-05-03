@@ -12,12 +12,8 @@
 using namespace yas;
 using namespace yas::playing;
 
-audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::size_t const count, url const &ch_url,
-                                             task_queue &&queue)
-    : _file_length(static_cast<uint32_t>(format.sample_rate())),
-      _ch_url(ch_url),
-      _queue(std::move(queue)),
-      _container_count(count) {
+audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::size_t const count, task_queue &&queue)
+    : _file_length(static_cast<uint32_t>(format.sample_rate())), _queue(std::move(queue)), _container_count(count) {
     auto each = make_fast_each(count);
     while (yas_each_next(each)) {
         auto ptr = make_audio_buffer_container(audio::pcm_buffer{format, this->_file_length});
@@ -78,22 +74,9 @@ void audio_circular_buffer::reload(int64_t const frag_idx) {
 void audio_circular_buffer::_load_container(audio_buffer_container::ptr container_ptr, int64_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
-    auto file_url = playing::path_utils::caf_url(this->_ch_url, frag_idx);
-
-    task task{[container_ptr, file_url = std::move(file_url), frag_idx](yas::task const &) {
-                  auto file_result = audio::make_opened_file(audio::file::open_args{
-                      .file_url = file_url,
-                      .pcm_format = container_ptr->format().pcm_format(),
-                      .interleaved = false,
-                  });
-
-                  if (file_result.is_error()) {
-                      return;
-                  }
-
-                  auto &file = file_result.value();
-
-                  auto load_result = container_ptr->load_from_file(file, frag_idx);
+    task task{[container_ptr, frag_idx](yas::task const &) {
+//                  auto load_result = container_ptr->load_from_file(file, frag_idx);
+#warning todo fragmentからcontainerに読み込む
               },
               task_option_t{.push_cancel_id = container_ptr->identifier, .priority = queue_priority::playing}};
 
@@ -104,15 +87,13 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 
 namespace yas::playing {
 struct audio_circular_buffer_factory : audio_circular_buffer {
-    audio_circular_buffer_factory(audio::format const &format, std::size_t const container_count, url const &ch_url,
-                                  task_queue &&queue)
-        : audio_circular_buffer(format, container_count, ch_url, std::move(queue)) {
+    audio_circular_buffer_factory(audio::format const &format, std::size_t const container_count, task_queue &&queue)
+        : audio_circular_buffer(format, container_count, std::move(queue)) {
     }
 };
 }  // namespace yas::playing
 
 audio_circular_buffer::ptr playing::make_audio_circular_buffer(audio::format const &format,
-                                                               std::size_t const container_count, url const &ch_url,
-                                                               task_queue queue) {
-    return std::make_shared<audio_circular_buffer_factory>(format, container_count, ch_url, std::move(queue));
+                                                               std::size_t const container_count, task_queue queue) {
+    return std::make_shared<audio_circular_buffer_factory>(format, container_count, std::move(queue));
 }

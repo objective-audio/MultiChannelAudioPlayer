@@ -21,11 +21,9 @@ struct audio_circular_buffer {
     void reload(int64_t const frag_idx);
 
    protected:
-    audio_circular_buffer(audio::format const &format, std::size_t const container_count, url const &ch_url,
-                          task_queue &&queue);
+    audio_circular_buffer(audio::format const &format, std::size_t const container_count, task_queue &&queue);
 
    private:
-    url const _ch_url;
     uint32_t const _file_length;
     std::size_t const _container_count;
     std::deque<audio_buffer_container::ptr> _containers;
@@ -36,5 +34,5 @@ struct audio_circular_buffer {
 };
 
 audio_circular_buffer::ptr make_audio_circular_buffer(audio::format const &format, std::size_t const container_count,
-                                                      url const &ch_url, task_queue queue);
+                                                      task_queue queue);
 }  // namespace yas::playing

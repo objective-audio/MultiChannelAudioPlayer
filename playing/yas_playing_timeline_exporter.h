@@ -19,7 +19,6 @@ struct timeline_exporter : base {
         reset,
         export_began,
         export_ended,
-        export_failed,
     };
 
     enum error {

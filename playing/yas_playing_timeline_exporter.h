@@ -6,8 +6,8 @@
 
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_base.h>
-#include <cpp_utils/yas_operation.h>
 #include <cpp_utils/yas_result.h>
+#include <cpp_utils/yas_task.h>
 #include <cpp_utils/yas_url.h>
 #include <processing/yas_processing_timeline.h>
 
@@ -38,7 +38,7 @@ struct timeline_exporter : base {
         std::optional<proc::time::range> const range;
     };
 
-    timeline_exporter(std::string const &root_path, operation_queue, proc::sample_rate_t const);
+    timeline_exporter(std::string const &root_path, task_queue, proc::sample_rate_t const);
     timeline_exporter(std::nullptr_t);
 
     void set_timeline(proc::timeline);

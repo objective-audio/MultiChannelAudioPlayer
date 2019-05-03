@@ -16,7 +16,7 @@ using namespace yas::playing;
 namespace yas::playing::timeline_exporter_test {
 struct cpp {
     std::string root_path = system_path_utils::directory_url(system_path_utils::dir::document).appending("root").path();
-    operation_queue queue{queue_priority_count};
+    task_queue queue{queue_priority_count};
 };
 
 static std::string string_from_number_file(std::string const &path) {
@@ -39,30 +39,30 @@ static std::string string_from_number_file(std::string const &path) {
 
 - (void)tearDown {
     self->_cpp.queue.cancel_all();
-    self->_cpp.queue.wait_until_all_operations_are_finished();
+    self->_cpp.queue.wait_until_all_tasks_are_finished();
     file_manager::remove_content(self->_cpp.root_path);
 }
 
 - (void)test_initial {
     std::string const &root_path = self->_cpp.root_path;
-    operation_queue &queue = self->_cpp.queue;
+    task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
 
     timeline_exporter exporter{root_path, queue, sample_rate};
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     XCTAssertFalse(file_manager::content_exists(root_path));
 }
 
 - (void)test_set_timeline {
     std::string const &root_path = self->_cpp.root_path;
-    operation_queue &queue = self->_cpp.queue;
+    task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
 
     timeline_exporter exporter{root_path, queue, sample_rate};
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     auto module0 = proc::make_signal_module<int64_t>(10);
     module0.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
@@ -78,7 +78,7 @@ static std::string string_from_number_file(std::string const &path) {
 
     exporter.set_timeline(timeline);
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(root_path));
 
@@ -160,13 +160,13 @@ static std::string string_from_number_file(std::string const &path) {
 
 - (void)test_set_sample_rate {
     std::string const &root_path = self->_cpp.root_path;
-    operation_queue &queue = self->_cpp.queue;
+    task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const pre_sample_rate = 2;
     proc::sample_rate_t const post_sample_rate = 3;
 
     timeline_exporter exporter{root_path, queue, pre_sample_rate};
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     auto module0 = proc::make_signal_module<int64_t>(10);
     module0.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
@@ -182,11 +182,11 @@ static std::string string_from_number_file(std::string const &path) {
 
     exporter.set_timeline(timeline);
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     exporter.set_sample_rate(post_sample_rate);
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(root_path));
 
@@ -255,18 +255,18 @@ static std::string string_from_number_file(std::string const &path) {
 
 - (void)test_update_timeline {
     std::string const &root_path = self->_cpp.root_path;
-    operation_queue &queue = self->_cpp.queue;
+    task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
 
     timeline_exporter exporter{root_path, queue, sample_rate};
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     proc::timeline timeline;
 
     exporter.set_timeline(timeline);
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     XCTAssertFalse(file_manager::content_exists(root_path));
 
@@ -277,7 +277,7 @@ static std::string string_from_number_file(std::string const &path) {
 
     timeline.insert_track(0, track);
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(root_path));
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
@@ -289,7 +289,7 @@ static std::string string_from_number_file(std::string const &path) {
     module2.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
     track.push_back_module(module2, {2, 1});
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 1, 1)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 1, 1)));
@@ -300,7 +300,7 @@ static std::string string_from_number_file(std::string const &path) {
     module3.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
     track.push_back_module(module3, {0, 1});
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
@@ -309,7 +309,7 @@ static std::string string_from_number_file(std::string const &path) {
 
     track.erase_module(module3, {0, 1});
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
@@ -320,14 +320,14 @@ static std::string string_from_number_file(std::string const &path) {
 
     track.erase_module(module1, {0, 1});
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     XCTAssertFalse(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 1, 1)));
 
     timeline.erase_track(0);
 
-    queue.wait_until_all_operations_are_finished();
+    queue.wait_until_all_tasks_are_finished();
 
     XCTAssertFalse(file_manager::content_exists(path_utils::fragment_path(root_path, 1, 1)));
 }

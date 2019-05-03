@@ -18,13 +18,13 @@ using namespace yas::playing;
 @end
 
 @implementation yas_playing_audio_exporter_tests {
-    operation_queue _queue;
+    task_queue _queue;
 }
 
 - (void)setUp {
     test_utils::remove_all_document_files();
 
-    self->_queue = operation_queue{queue_priority_count};
+    self->_queue = task_queue{queue_priority_count};
 }
 
 - (void)tearDown {

@@ -19,14 +19,14 @@ using namespace yas::playing;
 @end
 
 @implementation yas_audio_circuler_buffer_tests {
-    operation_queue _queue;
+    task_queue _queue;
     std::shared_ptr<playing::audio_exporter> _exporter;
 }
 
 - (void)setUp {
     test_utils::remove_all_document_files();
 
-    self->_queue = operation_queue{queue_priority_count};
+    self->_queue = task_queue{queue_priority_count};
 
     self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
                                                                 [self root_url], self -> _queue);
@@ -47,7 +47,7 @@ using namespace yas::playing;
     auto circular_buffer = make_audio_circular_buffer([self format], 2, ch_url, self -> _queue);
 
     circular_buffer->reload_all(-1);
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     audio::pcm_buffer read_buffer{[self format], 3};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
@@ -59,7 +59,7 @@ using namespace yas::playing;
     XCTAssertEqual(data_ptr[2], -1);
 
     circular_buffer->rotate_buffer(0);
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
 
@@ -70,7 +70,7 @@ using namespace yas::playing;
     XCTAssertEqual(data_ptr[2], 2);
 
     circular_buffer->rotate_buffer(1);
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
 
@@ -90,14 +90,14 @@ using namespace yas::playing;
     auto circular_buffer = make_audio_circular_buffer([self format], 3, ch_url, self -> _queue);
 
     circular_buffer->reload_all(-1);
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     auto overwrite_exp = [self expectationWithDescription:@"overwrite"];
     test_utils::overwrite_file(*self->_exporter, [self ch_count], [overwrite_exp] { [overwrite_exp fulfill]; });
     [self waitForExpectations:@[overwrite_exp] timeout:10.0];
 
     circular_buffer->reload(0);
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     audio::pcm_buffer read_buffer{[self format], 3};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
@@ -109,7 +109,7 @@ using namespace yas::playing;
     XCTAssertEqual(data_ptr[2], -1);
 
     circular_buffer->rotate_buffer(0);
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
 
@@ -120,7 +120,7 @@ using namespace yas::playing;
     XCTAssertEqual(data_ptr[2], 102);
 
     circular_buffer->rotate_buffer(1);
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
 

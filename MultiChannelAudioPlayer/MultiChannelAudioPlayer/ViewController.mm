@@ -22,7 +22,7 @@ struct view_controller_cpp {
     proc::sample_rate_t const sample_rate{48000};
     audio_coordinator coordinator{this->root_url};
 #warning queueを共通にするかは後で考える
-    playing::timeline_exporter timeline_exporter{this->root_url.path(), yas::operation_queue{}, this->sample_rate};
+    playing::timeline_exporter timeline_exporter{this->root_url.path(), yas::task_queue{}, this->sample_rate};
 };
 }
 

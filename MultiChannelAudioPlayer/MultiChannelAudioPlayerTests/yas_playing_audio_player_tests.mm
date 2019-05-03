@@ -18,7 +18,7 @@ using namespace yas::playing;
 
 @implementation yas_playing_audio_player_tests {
     double _sample_rate;
-    operation_queue _queue;
+    task_queue _queue;
     std::shared_ptr<audio_exporter> _exporter;
     test_utils::test_audio_renderer _renderer;
 }
@@ -26,7 +26,7 @@ using namespace yas::playing;
 - (void)setUp {
     test_utils::remove_all_document_files();
 
-    self->_queue = operation_queue{queue_priority_count};
+    self->_queue = task_queue{queue_priority_count};
 
     self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
                                                                 [self root_url], self -> _queue);
@@ -39,7 +39,7 @@ using namespace yas::playing;
 
 - (void)tearDown {
     self->_queue.cancel_all();
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     self->_queue = nullptr;
     self->_exporter = nullptr;
@@ -99,7 +99,7 @@ using namespace yas::playing;
 
     audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
 
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
     audio::pcm_buffer render_buffer{[self format], render_length};
@@ -156,7 +156,7 @@ using namespace yas::playing;
 
     audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
 
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
     audio::pcm_buffer render_buffer{[self format], render_length};
@@ -176,7 +176,7 @@ using namespace yas::playing;
 
     player.seek(6);
 
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     [self render:render_buffer];
 
@@ -191,7 +191,7 @@ using namespace yas::playing;
 
     audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
 
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
     audio::pcm_buffer render_buffer{[self format], render_length};
@@ -217,7 +217,7 @@ using namespace yas::playing;
     player.reload(0, 0);
     player.reload(1, 0);
 
-    self->_queue.wait_until_all_operations_are_finished();
+    self->_queue.wait_until_all_tasks_are_finished();
 
     [self render:render_buffer];
 

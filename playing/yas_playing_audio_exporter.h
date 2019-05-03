@@ -7,8 +7,8 @@
 #include <audio/yas_audio_format.h>
 #include <audio/yas_audio_pcm_buffer.h>
 #include <cpp_utils/yas_base.h>
-#include <cpp_utils/yas_operation.h>
 #include <cpp_utils/yas_result.h>
+#include <cpp_utils/yas_task.h>
 #include <cpp_utils/yas_url.h>
 #include <processing/yas_processing_umbrella.h>
 #include <string>
@@ -36,8 +36,7 @@ struct audio_exporter : base {
     };
     using clear_result_t = result<std::nullptr_t, clear_error>;
 
-    audio_exporter(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url,
-                   operation_queue queue);
+    audio_exporter(double const sample_rate, audio::pcm_format const pcm_format, url const &root_url, task_queue queue);
     audio_exporter(std::nullptr_t);
 
     void update_format(double const sample_rate, audio::pcm_format const, std::function<void(void)> completion_handler);

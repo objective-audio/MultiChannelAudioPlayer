@@ -5,7 +5,7 @@
 #pragma once
 
 #include <audio/yas_audio_pcm_buffer.h>
-#include <cpp_utils/yas_operation.h>
+#include <cpp_utils/yas_task.h>
 #include <cpp_utils/yas_url.h>
 #include <deque>
 #include "yas_playing_audio_buffer_container.h"
@@ -22,19 +22,19 @@ struct audio_circular_buffer {
 
    protected:
     audio_circular_buffer(audio::format const &format, std::size_t const container_count, url const &ch_url,
-                          operation_queue &&queue);
+                          task_queue &&queue);
 
    private:
     url const _ch_url;
     uint32_t const _file_length;
     std::size_t const _container_count;
     std::deque<audio_buffer_container::ptr> _containers;
-    operation_queue _queue;
+    task_queue _queue;
     std::recursive_mutex _container_mutex;
 
     void _load_container(audio_buffer_container::ptr container_ptr, int64_t const file_idx);
 };
 
 audio_circular_buffer::ptr make_audio_circular_buffer(audio::format const &format, std::size_t const container_count,
-                                                      url const &ch_url, operation_queue queue);
+                                                      url const &ch_url, task_queue queue);
 }  // namespace yas::playing

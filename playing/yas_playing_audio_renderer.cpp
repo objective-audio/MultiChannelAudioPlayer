@@ -177,7 +177,7 @@ uint32_t audio_renderer::channel_count() const {
     return impl_ptr<impl>()->_channel_count.raw();
 }
 
-chaining::chain_sync_t<audio_configuration> audio_renderer::chain_configuration() const {
+chaining::chain_sync_t<audio_configuration> audio_renderer::configuration_chain() const {
     return impl_ptr<impl>()->_configuration.chain();
 }
 

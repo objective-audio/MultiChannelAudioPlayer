@@ -25,7 +25,7 @@ struct audio_coordinator::impl : base::impl {
     void prepare(audio_coordinator &coordinator) {
         auto weak_coordinator = to_weak(coordinator);
 
-        this->_pool += this->_renderer.chain_configuration()
+        this->_pool += this->_renderer.configuration_chain()
                            .perform([weak_coordinator](auto const &configuration) {
                                if (auto coordinator = weak_coordinator.lock()) {
 #warning todo configurationが変わったのでリロードする
@@ -63,5 +63,5 @@ uint32_t audio_coordinator::channel_count() const {
 }
 
 chaining::chain_sync_t<audio_configuration> audio_coordinator::chain_configuration() const {
-    return impl_ptr<impl>()->_renderer.chain_configuration();
+    return impl_ptr<impl>()->_renderer.configuration_chain();
 }

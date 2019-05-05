@@ -4,7 +4,7 @@
 
 #include "yas_playing_audio_coordinator.h"
 #include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_url.h>
+#include <cpp_utils/yas_file_path.h>
 #include "yas_playing_audio_player.h"
 #include "yas_playing_audio_renderer.h"
 #include "yas_playing_types.h"
@@ -13,14 +13,14 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_coordinator::impl : base::impl {
-    url _root_url;
+    std::string _root_path;
     task_queue _queue{queue_priority_count};
     audio_renderer _renderer;
-    audio_player _player{this->_renderer.renderable(), this->_root_url, this->_queue};
+    audio_player _player{this->_renderer.renderable(), this->_root_path, this->_queue};
 
     chaining::observer_pool _pool;
 
-    impl(url &&root_url) : _root_url(std::move(root_url)) {
+    impl(std::string &&root_path) : _root_path(std::move(root_path)) {
     }
 
     void prepare(audio_coordinator &coordinator) {
@@ -36,7 +36,7 @@ struct audio_coordinator::impl : base::impl {
     }
 };
 
-audio_coordinator::audio_coordinator(url root_url) : base(std::make_shared<impl>(std::move(root_url))) {
+audio_coordinator::audio_coordinator(std::string root_path) : base(std::make_shared<impl>(std::move(root_path))) {
     impl_ptr<impl>()->prepare(*this);
 }
 

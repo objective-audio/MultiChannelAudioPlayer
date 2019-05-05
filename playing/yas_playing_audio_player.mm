@@ -15,7 +15,7 @@ using namespace yas;
 using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
-    url const _root_url;
+    std::string const _root_path;
     chaining::value::holder<std::vector<int64_t>> _ch_mapping{std::vector<int64_t>{}};
 
     // ロックここから
@@ -23,8 +23,8 @@ struct audio_player::impl : base::impl {
     std::atomic<bool> _is_playing = false;
     // ロックここまで
 
-    impl(audio_renderable &&renderable, url const &root_url, task_queue &&queue)
-        : _root_url(root_url), _renderable(std::move(renderable)), _queue(std::move(queue)) {
+    impl(audio_renderable &&renderable, std::string const &root_path, task_queue &&queue)
+        : _root_path(root_path), _renderable(std::move(renderable)), _queue(std::move(queue)) {
     }
 
     void prepare(audio_player &player) {
@@ -215,10 +215,15 @@ struct audio_player::impl : base::impl {
             auto each = make_fast_each(int64_t(ch_count));
             while (yas_each_next(each)) {
                 auto ch_idx = ch_mapping.at(yas_each_index(each));
-                auto const ch_url = path_utils::channel_url(this->_root_url, ch_idx);
 #warning todo
-                auto buffer = make_audio_circular_buffer(
-                    *format, 3, this->_queue, [](audio::pcm_buffer &buffer, int64_t const frag_idx) { return true; });
+                auto buffer = make_audio_circular_buffer(*format, 3, this->_queue,
+                                                         [](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+                                                             //                        path_utils::fragment_path(<#const
+                                                             //                        std::string &root_path#>, <#const
+                                                             //                        int64_t ch_idx#>, <#const int64_t
+                                                             //                        frg_idx#>)
+                                                             return true;
+                                                         });
                 buffer->reload_all(*top_file_idx);
                 this->_circular_buffers.push_back(std::move(buffer));
             }
@@ -274,8 +279,8 @@ struct audio_player::impl : base::impl {
     }
 };
 
-audio_player::audio_player(audio_renderable renderable, url const &root_url, task_queue queue)
-    : base(std::make_shared<impl>(std::move(renderable), root_url, std::move(queue))) {
+audio_player::audio_player(audio_renderable renderable, std::string const &root_path, task_queue queue)
+    : base(std::make_shared<impl>(std::move(renderable), root_path, std::move(queue))) {
     impl_ptr<impl>()->prepare(*this);
 }
 
@@ -298,8 +303,8 @@ void audio_player::reload(int64_t const ch_idx, int64_t const file_idx) {
     impl_ptr<impl>()->reload(ch_idx, file_idx);
 }
 
-url audio_player::root_url() const {
-    return impl_ptr<impl>()->_root_url;
+std::string const &audio_player::root_path() const {
+    return impl_ptr<impl>()->_root_path;
 }
 
 std::vector<int64_t> const &audio_player::ch_mapping() const {

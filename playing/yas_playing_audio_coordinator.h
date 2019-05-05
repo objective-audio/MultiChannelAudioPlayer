@@ -10,15 +10,11 @@
 #include <processing/yas_processing_time.h>
 #include "yas_playing_types.h"
 
-namespace yas {
-class url;
-}
-
 namespace yas::playing {
 struct audio_coordinator : base {
     class impl;
 
-    audio_coordinator(url root_url);
+    audio_coordinator(std::string root_path);
     audio_coordinator(std::nullptr_t);
 
     void set_playing(bool const);

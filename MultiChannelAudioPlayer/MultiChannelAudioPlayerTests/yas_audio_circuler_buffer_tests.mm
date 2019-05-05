@@ -32,14 +32,15 @@ using namespace yas::playing;
 }
 
 - (void)test_read_into_buffer {
-    //    auto setup_exp = [self expectationWithDescription:@"setup"];
-    //    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
-    //    [self waitForExpectations:@[setup_exp] timeout:10.0];
-
-    auto const ch_url = path_utils::channel_url([self root_url], [self ch_idx]);
-#warning todo
-    auto circular_buffer = make_audio_circular_buffer(
-        [self format], 2, self -> _queue, [](audio::pcm_buffer &buffer, int64_t const frag_idx) { return true; });
+    auto circular_buffer = make_audio_circular_buffer([self format], 2, self -> _queue,
+                                                      [](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+                                                          int64_t const top_frame_idx = frag_idx * 3;
+                                                          int16_t *data_ptr = buffer.data_ptr_at_index<int16_t>(0);
+                                                          data_ptr[0] = top_frame_idx;
+                                                          data_ptr[1] = top_frame_idx + 1;
+                                                          data_ptr[2] = top_frame_idx + 2;
+                                                          return true;
+                                                      });
 
     circular_buffer->reload_all(-1);
     self->_queue.wait_until_all_tasks_are_finished();
@@ -77,21 +78,22 @@ using namespace yas::playing;
 }
 
 - (void)test_reload {
-    //    auto setup_exp = [self expectationWithDescription:@"setup"];
-    //    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
-    //    [self waitForExpectations:@[setup_exp] timeout:10.0];
+    int64_t offset = 0;
 
-    auto const ch_url = path_utils::channel_url([self root_url], [self ch_idx]);
-#warning todo
-    auto circular_buffer = make_audio_circular_buffer(
-        [self format], 3, self -> _queue, [](audio::pcm_buffer &buffer, int64_t const frag_idx) { return true; });
+    auto circular_buffer = make_audio_circular_buffer([self format], 3, self -> _queue,
+                                                      [&offset](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+                                                          int64_t const top_frame_idx = frag_idx * 3 + offset;
+                                                          int16_t *data_ptr = buffer.data_ptr_at_index<int16_t>(0);
+                                                          data_ptr[0] = top_frame_idx;
+                                                          data_ptr[1] = top_frame_idx + 1;
+                                                          data_ptr[2] = top_frame_idx + 2;
+                                                          return true;
+                                                      });
 
     circular_buffer->reload_all(-1);
     self->_queue.wait_until_all_tasks_are_finished();
 
-    auto overwrite_exp = [self expectationWithDescription:@"overwrite"];
-    //    test_utils::overwrite_file(*self->_exporter, [self ch_count], [overwrite_exp] { [overwrite_exp fulfill]; });
-    [self waitForExpectations:@[overwrite_exp] timeout:10.0];
+    offset = 100;
 
     circular_buffer->reload(0);
     self->_queue.wait_until_all_tasks_are_finished();

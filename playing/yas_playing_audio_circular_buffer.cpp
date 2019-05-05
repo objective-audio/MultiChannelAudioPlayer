@@ -80,6 +80,7 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 
     task task{[container_ptr, frag_idx, load_handler_ptr = this->_load_handler_ptr](yas::task const &) {
                   auto load_result = container_ptr->load(frag_idx, *load_handler_ptr);
+#warning todo エラーハンドリングする？
               },
               task_option_t{.push_cancel_id = container_ptr->identifier, .priority = queue_priority::playing}};
 

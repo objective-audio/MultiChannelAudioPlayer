@@ -173,14 +173,13 @@ audio::file make_file(uint32_t const file_length) {
 
     XCTAssertFalse(load_result);
 }
-/*
+
 - (void)test_contains {
     uint32_t const file_length = 3;
     auto const container = test_utils::make_container(file_length);
-    auto file = test_utils::make_file(file_length);
 
     container->prepare_loading(0);
-    container->load_from_file(file, 0);
+    container->load(0, [](audio::pcm_buffer &buffer, int64_t const frag_idx) { return true; });
 
     XCTAssertTrue(container->contains(0));
     XCTAssertTrue(container->contains(1));
@@ -189,10 +188,8 @@ audio::file make_file(uint32_t const file_length) {
     XCTAssertFalse(container->contains(-1));
     XCTAssertFalse(container->contains(3));
 
-    file = test_utils::make_file(file_length);
-
     container->prepare_loading(1);
-    auto result = container->load_from_file(file, 1);
+    auto result = container->load(1, [](audio::pcm_buffer &buffer, int64_t const frag_idx) { return true; });
     XCTAssertTrue(result);
 
     XCTAssertTrue(container->contains(3));
@@ -202,5 +199,5 @@ audio::file make_file(uint32_t const file_length) {
     XCTAssertFalse(container->contains(2));
     XCTAssertFalse(container->contains(6));
 }
-*/
+
 @end

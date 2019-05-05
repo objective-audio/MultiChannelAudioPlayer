@@ -218,6 +218,7 @@ struct audio_player::impl : base::impl {
                 auto const channel_path = path_utils::channel_path(this->_root_path, ch_idx);
                 auto buffer = make_audio_circular_buffer(
                     *format, 3, this->_queue, [channel_path](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+                        auto const frag_path = path_utils::fragment_path(channel_path, frag_idx);
 #warning todo
                         //                        path_utils::fragment_path(<#const
                         //                        std::string &root_path#>, <#const

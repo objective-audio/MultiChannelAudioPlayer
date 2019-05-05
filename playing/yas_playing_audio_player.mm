@@ -204,7 +204,7 @@ struct audio_player::impl : base::impl {
         }
 
         uint32_t const ch_count = this->_ch_count.raw();
-        std::vector<int64_t> const ch_mapping = this->_current_ch_mapping();
+        std::vector<int64_t> const ch_mapping = this->_actually_ch_mapping();
 
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
@@ -252,7 +252,7 @@ struct audio_player::impl : base::impl {
         }
     }
 
-    std::vector<int64_t> _current_ch_mapping() {
+    std::vector<int64_t> _actually_ch_mapping() {
         std::vector<int64_t> mapped;
 
         auto each = make_fast_each(this->_ch_count.raw());

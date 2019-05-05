@@ -4,7 +4,6 @@
 
 #include "yas_playing_audio_coordinator.h"
 #include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_file_path.h>
 #include "yas_playing_audio_player.h"
 #include "yas_playing_audio_renderer.h"
 #include "yas_playing_types.h"

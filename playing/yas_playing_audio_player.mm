@@ -215,15 +215,16 @@ struct audio_player::impl : base::impl {
             auto each = make_fast_each(int64_t(ch_count));
             while (yas_each_next(each)) {
                 auto const ch_idx = ch_mapping.at(yas_each_index(each));
-                auto buffer = make_audio_circular_buffer(*format, 3, this->_queue,
-                                                         [ch_idx](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+                auto const channel_path = path_utils::channel_path(this->_root_path, ch_idx);
+                auto buffer = make_audio_circular_buffer(
+                    *format, 3, this->_queue, [channel_path](audio::pcm_buffer &buffer, int64_t const frag_idx) {
 #warning todo
-                                                             //                        path_utils::fragment_path(<#const
-                                                             //                        std::string &root_path#>, <#const
-                                                             //                        int64_t ch_idx#>, <#const int64_t
-                                                             //                        frg_idx#>)
-                                                             return true;
-                                                         });
+                        //                        path_utils::fragment_path(<#const
+                        //                        std::string &root_path#>, <#const
+                        //                        int64_t ch_idx#>, <#const int64_t
+                        //                        frg_idx#>)
+                        return true;
+                    });
                 buffer->reload_all(*top_file_idx);
                 this->_circular_buffers.push_back(std::move(buffer));
             }

@@ -49,19 +49,19 @@ using namespace yas::playing;
 }
 
 - (void)test_initial {
-    auto root_url = [self root_url];
+    auto root_path = [self root_path];
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), root_url, self->_queue};
+    audio_player player{renderer.renderable(), root_path, self->_queue};
 
     XCTAssertFalse(player.is_playing());
     XCTAssertEqual(player.play_frame(), 0);
-    XCTAssertEqual(player.root_url(), root_url);
+    XCTAssertEqual(player.root_path(), root_path);
 }
 
 - (void)test_is_playing {
-    auto root_url = [self root_url];
+    auto root_path = [self root_path];
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), root_url, self->_queue};
+    audio_player player{renderer.renderable(), root_path, self->_queue};
 
     XCTAssertFalse(player.is_playing());
 
@@ -75,9 +75,9 @@ using namespace yas::playing;
 }
 
 - (void)test_seek_without_format {
-    auto root_url = [self root_url];
+    auto root_path = [self root_path];
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), root_url, self->_queue};
+    audio_player player{renderer.renderable(), root_path, self->_queue};
 
     XCTAssertEqual(player.play_frame(), 0);
 
@@ -97,7 +97,7 @@ using namespace yas::playing;
 - (void)test_render {
     [self setup_files];
 
-    audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
+    audio_player player{self->_renderer.renderable(), [self root_path], self -> _queue};
 
     self->_queue.wait_until_all_tasks_are_finished();
 
@@ -154,7 +154,7 @@ using namespace yas::playing;
 - (void)test_seek {
     [self setup_files];
 
-    audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
+    audio_player player{self->_renderer.renderable(), [self root_path], self -> _queue};
 
     self->_queue.wait_until_all_tasks_are_finished();
 
@@ -189,7 +189,7 @@ using namespace yas::playing;
 - (void)test_reload {
     [self setup_files];
 
-    audio_player player{self->_renderer.renderable(), [self root_url], self -> _queue};
+    audio_player player{self->_renderer.renderable(), [self root_path], self -> _queue};
 
     self->_queue.wait_until_all_tasks_are_finished();
 
@@ -241,8 +241,8 @@ using namespace yas::playing;
     return 2;
 }
 
-- (url)root_url {
-    return system_path_utils::directory_url(system_path_utils::dir::document).appending("root");
+- (std::string)root_path {
+    return system_path_utils::directory_url(system_path_utils::dir::document).appending("root").path();
 }
 
 - (audio::format)format {

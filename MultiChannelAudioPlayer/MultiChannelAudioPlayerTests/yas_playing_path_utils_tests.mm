@@ -68,22 +68,4 @@ using namespace yas::playing;
     XCTAssertEqual(signal_path, "/root/1/2/signal_10_11_i64");
 }
 
-- (void)test_caf_url_with_file_idx {
-    auto ch_url = path_utils::channel_url(yas::url::file_url("/root"), 1);
-
-    XCTAssertEqual(path_utils::caf_url(ch_url, 0).path(), "/root/1/0.caf");
-    XCTAssertEqual(path_utils::caf_url(ch_url, 1).path(), "/root/1/1.caf");
-    XCTAssertEqual(path_utils::caf_url(ch_url, -1).path(), "/root/1/-1.caf");
-}
-
-- (void)test_caf_idx {
-    XCTAssertEqual(path_utils::caf_idx(0, 10), 0);
-    XCTAssertEqual(path_utils::caf_idx(1, 10), 0);
-    XCTAssertEqual(path_utils::caf_idx(9, 10), 0);
-    XCTAssertEqual(path_utils::caf_idx(10, 10), 1);
-    XCTAssertEqual(path_utils::caf_idx(-1, 10), -1);
-    XCTAssertEqual(path_utils::caf_idx(-10, 10), -1);
-    XCTAssertEqual(path_utils::caf_idx(-11, 10), -2);
-}
-
 @end

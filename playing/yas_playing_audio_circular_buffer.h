@@ -27,7 +27,7 @@ struct audio_circular_buffer {
    private:
     uint32_t const _file_length;
     std::size_t const _container_count;
-    audio_buffer_container::load_f const _load_handler;
+    std::shared_ptr<audio_buffer_container::load_f> const _load_handler_ptr;
     std::deque<audio_buffer_container::ptr> _containers;
     task_queue _queue;
     std::recursive_mutex _container_mutex;

@@ -17,7 +17,7 @@ audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::s
     : _file_length(static_cast<uint32_t>(format.sample_rate())),
       _queue(std::move(queue)),
       _container_count(count),
-      _load_handler(std::move(load_handler)) {
+      _load_handler_ptr(std::make_shared<audio_buffer_container::load_f>(std::move(load_handler))) {
     auto each = make_fast_each(count);
     while (yas_each_next(each)) {
         auto ptr = make_audio_buffer_container(audio::pcm_buffer{format, this->_file_length});
@@ -78,9 +78,8 @@ void audio_circular_buffer::reload(int64_t const frag_idx) {
 void audio_circular_buffer::_load_container(audio_buffer_container::ptr container_ptr, int64_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
-    task task{[container_ptr, frag_idx](yas::task const &) {
-//                  auto load_result = container_ptr->load_from_file(file, frag_idx);
-#warning todo fragmentからcontainerに読み込む
+    task task{[container_ptr, frag_idx, load_handler_ptr = this->_load_handler_ptr](yas::task const &) {
+                  auto load_result = container_ptr->load(frag_idx, *load_handler_ptr);
               },
               task_option_t{.push_cancel_id = container_ptr->identifier, .priority = queue_priority::playing}};
 

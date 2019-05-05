@@ -19,21 +19,15 @@ using namespace yas::playing;
 
 @implementation yas_audio_circuler_buffer_tests {
     task_queue _queue;
-    //    std::shared_ptr<playing::audio_exporter> _exporter;
 }
 
 - (void)setUp {
     test_utils::remove_all_document_files();
 
     self->_queue = task_queue{queue_priority_count};
-
-    //    self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
-    //                                                                [self root_url], self -> _queue);
 }
 
 - (void)tearDown {
-    //    self->_exporter = nullptr;
-
     test_utils::remove_all_document_files();
 }
 

@@ -56,13 +56,6 @@ using namespace yas::playing;
     XCTAssertEqual(path_utils::signal_file_name({-1, 2}, typeid(double)), "signal_-1_2_f64");
 }
 
-- (void)test_channel_url {
-    auto root_url = url::file_url("/root");
-    auto ch_url = path_utils::channel_url(root_url, 1);
-
-    XCTAssertEqual(ch_url.path(), "/root/1");
-}
-
 - (void)test_fragment_path {
     auto frag_path = path_utils::fragment_path("/root", 1, 2);
 

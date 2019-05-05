@@ -65,16 +65,3 @@ std::string path_utils::signal_file_path(std::string const &root_path, int64_t c
 std::string path_utils::number_file_path(std::string const &root_path, int64_t const ch_idx, int64_t const frg_idx) {
     return file_path{fragment_path(root_path, ch_idx, frg_idx)}.appending("number").string();
 }
-
-yas::url path_utils::channel_url(yas::url const &root_url, int64_t const ch_idx) {
-    return root_url.appending(channel_name(ch_idx));
-}
-
-yas::url path_utils::caf_url(yas::url const &ch_url, int64_t const file_idx) {
-    return ch_url.appending(std::to_string(file_idx) + ".caf");
-}
-
-int64_t path_utils::caf_idx(int64_t const file_frame_idx, uint64_t const file_length) {
-    int64_t const floored_frame_idx = math::floor_int(file_frame_idx, file_length);
-    return floored_frame_idx / (int64_t)file_length;
-}

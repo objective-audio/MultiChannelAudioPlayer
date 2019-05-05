@@ -214,10 +214,10 @@ struct audio_player::impl : base::impl {
         if (auto top_file_idx = this->_top_file_idx(); top_file_idx && ch_count > 0) {
             auto each = make_fast_each(int64_t(ch_count));
             while (yas_each_next(each)) {
-                auto ch_idx = ch_mapping.at(yas_each_index(each));
-#warning todo
+                auto const ch_idx = ch_mapping.at(yas_each_index(each));
                 auto buffer = make_audio_circular_buffer(*format, 3, this->_queue,
-                                                         [](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+                                                         [ch_idx](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+#warning todo
                                                              //                        path_utils::fragment_path(<#const
                                                              //                        std::string &root_path#>, <#const
                                                              //                        int64_t ch_idx#>, <#const int64_t

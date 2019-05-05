@@ -38,9 +38,9 @@ using namespace yas::playing;
 }
 
 - (void)test_read_into_buffer {
-    auto setup_exp = [self expectationWithDescription:@"setup"];
+    //    auto setup_exp = [self expectationWithDescription:@"setup"];
     //    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
-    [self waitForExpectations:@[setup_exp] timeout:10.0];
+    //    [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = path_utils::channel_url([self root_url], [self ch_idx]);
 #warning todo
@@ -83,9 +83,9 @@ using namespace yas::playing;
 }
 
 - (void)test_reload {
-    auto setup_exp = [self expectationWithDescription:@"setup"];
+    //    auto setup_exp = [self expectationWithDescription:@"setup"];
     //    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
-    [self waitForExpectations:@[setup_exp] timeout:10.0];
+    //    [self waitForExpectations:@[setup_exp] timeout:10.0];
 
     auto const ch_url = path_utils::channel_url([self root_url], [self ch_idx]);
 #warning todo

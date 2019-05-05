@@ -129,18 +129,23 @@ audio::file make_file(uint32_t const file_length) {
     XCTAssertEqual(*container->begin_frame(), -3);
 }
 
-#warning todo
-/*
-- (void)test_load_from_file_and_read_into_buffer {
+- (void)test_load_and_read_into_buffer {
     uint32_t const file_length = 3;
     auto format = test_utils::make_format(file_length);
     auto container = test_utils::make_container(format, file_length);
 
     container->prepare_loading(0);
 
-    auto file = test_utils::make_file(file_length);
+    auto load_result = container->load(0, [self](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+        XCTAssertEqual(frag_idx, 0);
 
-    auto load_result = container->load_from_file(file, 0);
+        int16_t *data_ptr = buffer.data_ptr_at_index<int16_t>(0);
+        data_ptr[0] = 10;
+        data_ptr[1] = 11;
+        data_ptr[2] = 12;
+
+        return true;
+    });
 
     XCTAssertTrue(load_result);
 
@@ -152,11 +157,23 @@ audio::file make_file(uint32_t const file_length) {
 
     int16_t const *data_ptr = reading_buffer.data_ptr_at_index<int16_t>(0);
 
-    XCTAssertEqual(data_ptr[0], 0);
-    XCTAssertEqual(data_ptr[1], 1);
-    XCTAssertEqual(data_ptr[2], 2);
+    XCTAssertEqual(data_ptr[0], 10);
+    XCTAssertEqual(data_ptr[1], 11);
+    XCTAssertEqual(data_ptr[2], 12);
 }
 
+- (void)test_load_error {
+    uint32_t const file_length = 3;
+    auto format = test_utils::make_format(file_length);
+    auto container = test_utils::make_container(format, file_length);
+
+    container->prepare_loading(0);
+
+    auto load_result = container->load(0, [self](audio::pcm_buffer &buffer, int64_t const frag_idx) { return false; });
+
+    XCTAssertFalse(load_result);
+}
+/*
 - (void)test_contains {
     uint32_t const file_length = 3;
     auto const container = test_utils::make_container(file_length);

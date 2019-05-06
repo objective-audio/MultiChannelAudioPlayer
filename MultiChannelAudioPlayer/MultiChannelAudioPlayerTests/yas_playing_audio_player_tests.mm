@@ -4,9 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <cpp_utils/cpp_utils.h>
-#import <playing/yas_playing_audio_buffer_container.h>
-#import <playing/yas_playing_audio_player.h>
-#import <playing/yas_playing_types.h>
+#import <playing/playing.h>
 #import "yas_playing_test_audio_renderer.h"
 #import "yas_playing_test_utils.h"
 
@@ -20,7 +18,7 @@ using namespace yas::playing;
 @implementation yas_playing_audio_player_tests {
     double _sample_rate;
     task_queue _queue;
-    //    std::shared_ptr<audio_exporter> _exporter;
+    std::shared_ptr<timeline_exporter> _exporter;
     test_utils::test_audio_renderer _renderer;
 }
 
@@ -29,8 +27,8 @@ using namespace yas::playing;
 
     self->_queue = task_queue{queue_priority_count};
 
-    //    self->_exporter = std::make_shared<playing::audio_exporter>([self sample_rate], audio::pcm_format::int16,
-    //                                                                [self root_url], self -> _queue);
+    self->_exporter =
+        std::make_shared<playing::timeline_exporter>([self root_path], self -> _queue, [self sample_rate]);
 
     self->_renderer = test_utils::test_audio_renderer{};
     self->_renderer.set_pcm_format(audio::pcm_format::int16);
@@ -43,7 +41,7 @@ using namespace yas::playing;
     self->_queue.wait_until_all_tasks_are_finished();
 
     self->_queue = nullptr;
-    //    self->_exporter = nullptr;
+    self->_exporter = nullptr;
     self->_renderer = nullptr;
 
     test_utils::remove_all_document_files();

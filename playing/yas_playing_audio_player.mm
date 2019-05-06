@@ -266,7 +266,7 @@ struct audio_player::impl : base::impl {
                                 return false;
                             }
 
-                            auto stream = std::fstream{info.path};
+                            auto stream = std::fstream{info.path, std::ios_base::in | std::ios_base::binary};
                             if (!stream) {
                                 return false;
                             }
@@ -274,8 +274,15 @@ struct audio_player::impl : base::impl {
                             int64_t const byte_top_idx_in_buf = (info.range.frame - buf_top_frame) * sample_byte_count;
                             int64_t const copy_byte_length = info.range.length * sample_byte_count;
 
-#warning todo
+                            char *data_ptr = timeline_utils::char_data(buffer);
+
+                            stream.read(&data_ptr[byte_top_idx_in_buf], copy_byte_length);
+
+                            if (stream.gcount() != copy_byte_length) {
+                                return false;
+                            }
                         }
+
                         return true;
                     });
                 buffer->reload_all(*top_file_idx);

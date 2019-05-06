@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_timeline_utils.h"
+#include <audio/yas_audio_format.h>
 #include <cpp_utils/yas_boolean.h>
 #include "yas_playing_math.h"
 
@@ -73,5 +74,20 @@ char const *timeline_utils::char_data(proc::signal_event const &event) {
         return reinterpret_cast<char const *>(event.data<boolean>());
     } else {
         return nullptr;
+    }
+}
+
+char *timeline_utils::char_data(audio::pcm_buffer &buffer) {
+    switch (buffer.format().pcm_format()) {
+        case audio::pcm_format::float32:
+            return reinterpret_cast<char *>(buffer.data_ptr_at_index<float>(0));
+        case audio::pcm_format::float64:
+            return reinterpret_cast<char *>(buffer.data_ptr_at_index<double>(0));
+        case audio::pcm_format::int16:
+            return reinterpret_cast<char *>(buffer.data_ptr_at_index<int16_t>(0));
+        case audio::pcm_format::fixed824:
+            return reinterpret_cast<char *>(buffer.data_ptr_at_index<int32_t>(0));
+        case audio::pcm_format::other:
+            return nullptr;
     }
 }

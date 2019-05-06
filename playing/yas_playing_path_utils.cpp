@@ -17,11 +17,6 @@ std::string path_utils::fragment_name(int64_t const frag_idx) {
     return std::to_string(frag_idx);
 }
 
-std::string path_utils::signal_file_name(proc::time::range const &range, std::type_info const &type_info) {
-    return "signal_" + std::to_string(range.frame) + "_" + std::to_string(range.length) + "_" +
-           to_sample_type_name(type_info);
-}
-
 std::string path_utils::channel_path(std::string const &root_path, int64_t const ch_idx) {
     return file_path{root_path}.appending(channel_name(ch_idx)).string();
 }
@@ -32,7 +27,7 @@ std::string path_utils::fragment_path(std::string const &channel_path, int64_t c
 
 std::string path_utils::signal_file_path(std::string const &fragment_path, proc::time::range const &range,
                                          std::type_info const &type_info) {
-    return file_path{fragment_path}.appending(signal_file_name(range, type_info)).string();
+    return file_path{fragment_path}.appending(signal_file_info(range, type_info).file_name()).string();
 }
 
 std::string path_utils::number_file_path(std::string const &fragment_path) {
@@ -45,7 +40,9 @@ std::string path_utils::fragment_path(std::string const &root_path, int64_t cons
 
 std::string path_utils::signal_file_path(std::string const &root_path, int64_t const ch_idx, int64_t const frag_idx,
                                          proc::time::range const &range, std::type_info const &type_info) {
-    return file_path{fragment_path(root_path, ch_idx, frag_idx)}.appending(signal_file_name(range, type_info)).string();
+    return file_path{fragment_path(root_path, ch_idx, frag_idx)}
+        .appending(signal_file_info(range, type_info).file_name())
+        .string();
 }
 
 std::string path_utils::number_file_path(std::string const &root_path, int64_t const ch_idx, int64_t const frag_idx) {

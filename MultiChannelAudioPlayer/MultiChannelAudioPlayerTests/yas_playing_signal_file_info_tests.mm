@@ -22,9 +22,9 @@ using namespace yas::playing;
 }
 
 - (void)test_file_name {
-    signal_file_info info{proc::time::range{10, 20}, typeid(int64_t)};
-
-    XCTAssertEqual(info.file_name(), "signal_10_20_i64");
+    XCTAssertEqual(signal_file_info({10, 20}, typeid(int64_t)).file_name(), "signal_10_20_i64");
+    XCTAssertEqual(signal_file_info({0, 1}, typeid(double)).file_name(), "signal_0_1_f64");
+    XCTAssertEqual(signal_file_info({-1, 2}, typeid(boolean)).file_name(), "signal_-1_2_b");
 }
 
 - (void)test_to_signal_file_info {

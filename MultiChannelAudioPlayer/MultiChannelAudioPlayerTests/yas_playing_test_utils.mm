@@ -14,6 +14,12 @@ void test_utils::remove_all_document_files() {
     auto document_url = system_path_utils::directory_url(system_path_utils::dir::document);
     file_manager::remove_contents_in_directory(document_url.path());
 }
+
+proc::timeline test_utils::test_timeline() {
+    proc::timeline timeline;
+
+    return timeline;
+}
 /*
 void test_utils::setup_files(audio_exporter &exporter, uint32_t const ch_count,
                              std::function<void(void)> &&completion) {

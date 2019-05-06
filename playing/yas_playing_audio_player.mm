@@ -247,8 +247,7 @@ struct audio_player::impl : base::impl {
 
                         std::vector<signal_file_info> infos;
                         for (std::string const &path : paths) {
-                            auto const file_name = file_path{path}.last_component();
-                            if (auto info = to_signal_file_info(file_name); info->sample_type == sample_type) {
+                            if (auto info = to_signal_file_info(path); info->sample_type == sample_type) {
                                 infos.emplace_back(std::move(*info));
                             }
                         }

@@ -5,6 +5,7 @@
 #include "yas_playing_path_utils.h"
 #include <cpp_utils/yas_boolean.h>
 #include "yas_playing_math.h"
+#include "yas_playing_signal_file_info.h"
 
 using namespace yas::playing;
 
@@ -16,37 +17,9 @@ std::string path_utils::fragment_name(int64_t const frag_idx) {
     return std::to_string(frag_idx);
 }
 
-std::string path_utils::sample_type_name(std::type_info const &type_info) {
-    if (type_info == typeid(Float64)) {
-        return "f64";
-    } else if (type_info == typeid(Float32)) {
-        return "f32";
-    } else if (type_info == typeid(int64_t)) {
-        return "i64";
-    } else if (type_info == typeid(uint64_t)) {
-        return "u64";
-    } else if (type_info == typeid(int32_t)) {
-        return "i32";
-    } else if (type_info == typeid(uint32_t)) {
-        return "u32";
-    } else if (type_info == typeid(int16_t)) {
-        return "i16";
-    } else if (type_info == typeid(uint16_t)) {
-        return "u16";
-    } else if (type_info == typeid(int8_t)) {
-        return "i8";
-    } else if (type_info == typeid(uint8_t)) {
-        return "u8";
-    } else if (type_info == typeid(boolean)) {
-        return "b";
-    } else {
-        return "";
-    }
-}
-
 std::string path_utils::signal_file_name(proc::time::range const &range, std::type_info const &type_info) {
     return "signal_" + std::to_string(range.frame) + "_" + std::to_string(range.length) + "_" +
-           sample_type_name(type_info);
+           to_sample_type_name(type_info);
 }
 
 std::string path_utils::channel_path(std::string const &root_path, int64_t const ch_idx) {

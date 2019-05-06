@@ -1,0 +1,56 @@
+//
+//  yas_playing_signal_file_info_tests.mm
+//
+
+#import <XCTest/XCTest.h>
+#import <cpp_utils/yas_boolean.h>
+#import <playing/yas_playing_signal_file_info.h>
+
+using namespace yas;
+using namespace yas::playing;
+
+@interface yas_playing_signal_file_info_tests : XCTestCase
+
+@end
+
+@implementation yas_playing_signal_file_info_tests
+
+- (void)setUp {
+}
+
+- (void)tearDown {
+}
+
+- (void)test_to_sample_type_name {
+    XCTAssertEqual(to_sample_type_name(typeid(double)), "f64");
+    XCTAssertEqual(to_sample_type_name(typeid(float)), "f32");
+    XCTAssertEqual(to_sample_type_name(typeid(int64_t)), "i64");
+    XCTAssertEqual(to_sample_type_name(typeid(uint64_t)), "u64");
+    XCTAssertEqual(to_sample_type_name(typeid(int32_t)), "i32");
+    XCTAssertEqual(to_sample_type_name(typeid(uint32_t)), "u32");
+    XCTAssertEqual(to_sample_type_name(typeid(int16_t)), "i16");
+    XCTAssertEqual(to_sample_type_name(typeid(uint16_t)), "u16");
+    XCTAssertEqual(to_sample_type_name(typeid(int8_t)), "i8");
+    XCTAssertEqual(to_sample_type_name(typeid(uint8_t)), "u8");
+    XCTAssertEqual(to_sample_type_name(typeid(boolean)), "b");
+
+    XCTAssertEqual(to_sample_type_name(typeid(std::string)), "");
+}
+
+- (void)test_to_sample_type {
+    XCTAssertTrue(to_sample_type("f64") == typeid(double));
+    XCTAssertTrue(to_sample_type("f32") == typeid(float));
+    XCTAssertTrue(to_sample_type("i64") == typeid(int64_t));
+    XCTAssertTrue(to_sample_type("u64") == typeid(uint64_t));
+    XCTAssertTrue(to_sample_type("i32") == typeid(int32_t));
+    XCTAssertTrue(to_sample_type("u32") == typeid(uint32_t));
+    XCTAssertTrue(to_sample_type("i16") == typeid(int16_t));
+    XCTAssertTrue(to_sample_type("u16") == typeid(uint16_t));
+    XCTAssertTrue(to_sample_type("i8") == typeid(int8_t));
+    XCTAssertTrue(to_sample_type("u8") == typeid(uint8_t));
+    XCTAssertTrue(to_sample_type("b") == typeid(boolean));
+
+    XCTAssertTrue(to_sample_type("") == typeid(std::nullptr_t));
+}
+
+@end

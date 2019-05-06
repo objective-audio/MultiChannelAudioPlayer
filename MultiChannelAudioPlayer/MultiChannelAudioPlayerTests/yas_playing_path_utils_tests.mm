@@ -35,22 +35,6 @@ using namespace yas::playing;
     XCTAssertEqual(path_utils::fragment_name(-1), "-1");
 }
 
-- (void)test_sample_type_name {
-    XCTAssertEqual(path_utils::sample_type_name(typeid(double)), "f64");
-    XCTAssertEqual(path_utils::sample_type_name(typeid(float)), "f32");
-    XCTAssertEqual(path_utils::sample_type_name(typeid(int64_t)), "i64");
-    XCTAssertEqual(path_utils::sample_type_name(typeid(uint64_t)), "u64");
-    XCTAssertEqual(path_utils::sample_type_name(typeid(int32_t)), "i32");
-    XCTAssertEqual(path_utils::sample_type_name(typeid(uint32_t)), "u32");
-    XCTAssertEqual(path_utils::sample_type_name(typeid(int16_t)), "i16");
-    XCTAssertEqual(path_utils::sample_type_name(typeid(uint16_t)), "u16");
-    XCTAssertEqual(path_utils::sample_type_name(typeid(int8_t)), "i8");
-    XCTAssertEqual(path_utils::sample_type_name(typeid(uint8_t)), "u8");
-    XCTAssertEqual(path_utils::sample_type_name(typeid(boolean)), "b");
-
-    XCTAssertEqual(path_utils::sample_type_name(typeid(std::string)), "");
-}
-
 - (void)test_signal_file_name {
     XCTAssertEqual(path_utils::signal_file_name({0, 1}, typeid(double)), "signal_0_1_f64");
     XCTAssertEqual(path_utils::signal_file_name({-1, 2}, typeid(double)), "signal_-1_2_f64");

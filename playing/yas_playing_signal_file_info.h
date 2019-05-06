@@ -6,6 +6,7 @@
 
 #include <processing/yas_processing_time.h>
 #include <optional>
+#include <string>
 
 namespace yas::playing {
 struct signal_file_info {
@@ -17,6 +18,7 @@ struct signal_file_info {
     std::string file_name() const;
 };
 
+[[nodiscard]] std::string to_sample_type_name(std::type_info const &);
 [[nodiscard]] std::type_info const &to_sample_type(std::string const &);
 [[nodiscard]] std::optional<signal_file_info> to_signal_file_info(std::string const &);
 }  // namespace yas::playing

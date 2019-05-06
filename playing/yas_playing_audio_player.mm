@@ -271,14 +271,13 @@ struct audio_player::impl : base::impl {
                                 return false;
                             }
 
-                            int64_t const byte_top_idx_in_buf = (info.range.frame - buf_top_frame) * sample_byte_count;
-                            int64_t const copy_byte_length = info.range.length * sample_byte_count;
-
+                            int64_t const frame = (info.range.frame - buf_top_frame) * sample_byte_count;
+                            int64_t const length = info.range.length * sample_byte_count;
                             char *data_ptr = timeline_utils::char_data(buffer);
 
-                            stream.read(&data_ptr[byte_top_idx_in_buf], copy_byte_length);
+                            stream.read(&data_ptr[frame], length);
 
-                            if (stream.gcount() != copy_byte_length) {
+                            if (stream.gcount() != length) {
                                 return false;
                             }
                         }

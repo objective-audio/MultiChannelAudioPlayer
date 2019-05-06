@@ -3,10 +3,10 @@
 //
 
 #import "ViewController.h"
-#import <audio/yas_audio_math.h>
-#import <cpp_utils/yas_system_path_utils.h>
-#import <playing/yas_playing_umbrella.h>
-#import <processing/yas_processing_umbrella.h>
+#import <audio/audio.h>
+#import <cpp_utils/cpp_utils.h>
+#import <playing/playing.h>
+#import <processing/processing.h>
 
 #import <iostream>
 

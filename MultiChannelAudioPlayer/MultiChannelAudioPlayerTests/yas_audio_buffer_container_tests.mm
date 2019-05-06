@@ -3,11 +3,9 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <audio/yas_audio_each_data.h>
-#import <audio/yas_audio_file_utils.h>
-#import <cpp_utils/yas_fast_each.h>
-#import <cpp_utils/yas_system_path_utils.h>
-#import <playing/yas_playing_audio_buffer_container.h>
+#import <audio/audio.h>
+#import <cpp_utils/cpp_utils.h>
+#import <playing/playing.h>
 #import "yas_playing_test_utils.h"
 
 using namespace yas;

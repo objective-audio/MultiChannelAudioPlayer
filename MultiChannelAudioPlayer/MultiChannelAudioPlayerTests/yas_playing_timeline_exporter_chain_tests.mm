@@ -3,10 +3,9 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <cpp_utils/yas_file_manager.h>
-#import <cpp_utils/yas_system_path_utils.h>
-#import <cpp_utils/yas_thread.h>
-#import <playing/playing.h>
+#import <cpp_utils/cpp_utils.h>
+#import <playing/yas_playing_timeline_exporter.h>
+#import <playing/yas_playing_types.h>
 #import <processing/processing.h>
 
 using namespace yas;

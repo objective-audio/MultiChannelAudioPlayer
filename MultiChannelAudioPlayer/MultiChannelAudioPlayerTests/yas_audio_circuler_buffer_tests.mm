@@ -3,10 +3,10 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <audio/yas_audio_format.h>
-#import <cpp_utils/yas_system_path_utils.h>
+#import <audio/audio.h>
+#import <cpp_utils/cpp_utils.h>
+#import <playing/yas_playing_audio_buffer_container.h>
 #import <playing/yas_playing_audio_circular_buffer.h>
-#import <playing/yas_playing_path_utils.h>
 #import <playing/yas_playing_types.h>
 #import "yas_playing_test_utils.h"
 

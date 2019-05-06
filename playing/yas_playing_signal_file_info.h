@@ -5,6 +5,7 @@
 #pragma once
 
 #include <processing/yas_processing_time.h>
+#include <optional>
 
 namespace yas::playing {
 struct signal_file_info {
@@ -15,4 +16,6 @@ struct signal_file_info {
 
     std::string file_name() const;
 };
+
+std::optional<signal_file_info> to_signal_file_info(std::string const &);
 }  // namespace yas::playing

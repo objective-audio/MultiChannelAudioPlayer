@@ -11,56 +11,66 @@
 using namespace yas;
 using namespace yas::playing;
 
+namespace yas::playing::audio_player_test {
+struct cpp {
+    std::string const root_path =
+        file_path{system_path_utils::directory_path(system_path_utils::dir::document)}.appending("root").string();
+    uint32_t const ch_count = 2;
+    proc::sample_rate_t const sample_rate = 3;
+    audio::format format = audio::format{audio::format::args{.sample_rate = static_cast<double>(this->sample_rate),
+                                                             .channel_count = 2,
+                                                             .pcm_format = audio::pcm_format::int16,
+                                                             .interleaved = false}};
+    task_queue queue{nullptr};
+    timeline_exporter exporter{nullptr};
+    test_utils::test_audio_renderer renderer{nullptr};
+};
+}
+
 @interface yas_playing_audio_player_tests : XCTestCase
 
 @end
 
 @implementation yas_playing_audio_player_tests {
-    double _sample_rate;
-    task_queue _queue;
-    std::shared_ptr<timeline_exporter> _exporter;
-    test_utils::test_audio_renderer _renderer;
+    audio_player_test::cpp _cpp;
 }
 
 - (void)setUp {
     test_utils::remove_all_document_files();
 
-    self->_queue = task_queue{queue_priority_count};
+    self->_cpp.queue = task_queue{queue_priority_count};
 
-    self->_exporter =
-        std::make_shared<playing::timeline_exporter>([self root_path], self -> _queue, [self sample_rate]);
+    self->_cpp.exporter = timeline_exporter{self->_cpp.root_path, self->_cpp.queue, self->_cpp.sample_rate};
 
-    self->_renderer = test_utils::test_audio_renderer{};
-    self->_renderer.set_pcm_format(audio::pcm_format::int16);
-    self->_renderer.set_sample_rate([self sample_rate]);
-    self->_renderer.set_channel_count(2);
+    self->_cpp.renderer = test_utils::test_audio_renderer{};
+    self->_cpp.renderer.set_pcm_format(audio::pcm_format::int16);
+    self->_cpp.renderer.set_sample_rate(self->_cpp.sample_rate);
+    self->_cpp.renderer.set_channel_count(2);
 }
 
 - (void)tearDown {
-    self->_queue.cancel_all();
-    self->_queue.wait_until_all_tasks_are_finished();
+    self->_cpp.queue.cancel_all();
+    self->_cpp.queue.wait_until_all_tasks_are_finished();
 
-    self->_queue = nullptr;
-    self->_exporter = nullptr;
-    self->_renderer = nullptr;
+    self->_cpp.queue = nullptr;
+    self->_cpp.exporter = nullptr;
+    self->_cpp.renderer = nullptr;
 
     test_utils::remove_all_document_files();
 }
 
 - (void)test_initial {
-    auto root_path = [self root_path];
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), root_path, self->_queue};
+    audio_player player{renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
 
     XCTAssertFalse(player.is_playing());
     XCTAssertEqual(player.play_frame(), 0);
-    XCTAssertEqual(player.root_path(), root_path);
+    XCTAssertEqual(player.root_path(), self->_cpp.root_path);
 }
 
 - (void)test_is_playing {
-    auto root_path = [self root_path];
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), root_path, self->_queue};
+    audio_player player{renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
 
     XCTAssertFalse(player.is_playing());
 
@@ -74,9 +84,8 @@ using namespace yas::playing;
 }
 
 - (void)test_seek_without_format {
-    auto root_path = [self root_path];
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), root_path, self->_queue};
+    audio_player player{renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
 
     XCTAssertEqual(player.play_frame(), 0);
 
@@ -96,12 +105,12 @@ using namespace yas::playing;
 - (void)test_render {
     [self setup_files];
 
-    audio_player player{self->_renderer.renderable(), [self root_path], self -> _queue};
+    audio_player player{self->_cpp.renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
 
-    self->_queue.wait_until_all_tasks_are_finished();
+    self->_cpp.queue.wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
-    audio::pcm_buffer render_buffer{[self format], render_length};
+    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
     int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
     int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
 
@@ -153,12 +162,12 @@ using namespace yas::playing;
 - (void)test_seek {
     [self setup_files];
 
-    audio_player player{self->_renderer.renderable(), [self root_path], self -> _queue};
+    audio_player player{self->_cpp.renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
 
-    self->_queue.wait_until_all_tasks_are_finished();
+    self->_cpp.queue.wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
-    audio::pcm_buffer render_buffer{[self format], render_length};
+    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
     int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
     int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
 
@@ -175,7 +184,7 @@ using namespace yas::playing;
 
     player.seek(6);
 
-    self->_queue.wait_until_all_tasks_are_finished();
+    self->_cpp.queue.wait_until_all_tasks_are_finished();
 
     [self render:render_buffer];
 
@@ -188,12 +197,12 @@ using namespace yas::playing;
 - (void)test_reload {
     [self setup_files];
 
-    audio_player player{self->_renderer.renderable(), [self root_path], self -> _queue};
+    audio_player player{self->_cpp.renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
 
-    self->_queue.wait_until_all_tasks_are_finished();
+    self->_cpp.queue.wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
-    audio::pcm_buffer render_buffer{[self format], render_length};
+    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
     int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
     int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
 
@@ -209,14 +218,15 @@ using namespace yas::playing;
     render_buffer.clear();
 
     auto overwrite_exp = [self expectationWithDescription:@"overwrite"];
-    //    test_utils::overwrite_file(*self->_exporter, [self ch_count], [&overwrite_exp] { [overwrite_exp fulfill]; });
+    //    test_utils::overwrite_file(*self->_cpp.exporter, [self ch_count], [&overwrite_exp] { [overwrite_exp fulfill];
+    //    });
 
     [self waitForExpectations:@[overwrite_exp] timeout:1.0];
 
     player.reload(0, 0);
     player.reload(1, 0);
 
-    self->_queue.wait_until_all_tasks_are_finished();
+    self->_cpp.queue.wait_until_all_tasks_are_finished();
 
     [self render:render_buffer];
 
@@ -228,32 +238,9 @@ using namespace yas::playing;
 
 #pragma mark -
 
-- (double)sample_rate {
-    return 3.0;
-}
-
-- (uint32_t)file_length {
-    return uint32_t([self sample_rate]);
-}
-
-- (uint32_t)ch_count {
-    return 2;
-}
-
-- (std::string)root_path {
-    return system_path_utils::directory_url(system_path_utils::dir::document).appending("root").path();
-}
-
-- (audio::format)format {
-    return audio::format{audio::format::args{.sample_rate = [self sample_rate],
-                                             .channel_count = 2,
-                                             .pcm_format = audio::pcm_format::int16,
-                                             .interleaved = false}};
-}
-
 - (void)setup_files {
     auto setup_exp = [self expectationWithDescription:@"setup"];
-    //    test_utils::setup_files(*self->_exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
+    //    test_utils::setup_files(*self->_cpp.exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
     [self waitForExpectations:@[setup_exp] timeout:1.0];
 }
 
@@ -263,7 +250,7 @@ using namespace yas::playing;
     auto render_exp = [self expectationWithDescription:@"render"];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_renderer, &render_buffer, &render_exp] {
+                   [&renderer = self->_cpp.renderer, &render_buffer, &render_exp] {
                        renderer.render(render_buffer);
 
                        [render_exp fulfill];

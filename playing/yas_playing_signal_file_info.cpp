@@ -16,7 +16,8 @@ signal_file_info::signal_file_info(proc::time::range const &range, std::type_inf
 }
 
 std::string signal_file_info::file_name() const {
-    return path_utils::signal_file_name(this->range, this->sample_type);
+    return "signal_" + std::to_string(this->range.frame) + "_" + std::to_string(this->range.length) + "_" +
+           to_sample_type_name(this->sample_type);
 }
 
 std::string playing::to_sample_type_name(std::type_info const &type_info) {
@@ -76,7 +77,7 @@ std::type_info const &playing::to_sample_type(std::string const &name) {
 }
 
 std::optional<signal_file_info> playing::to_signal_file_info(std::string const &file_name) {
-    std::vector<std::string> splited = split(file_name, '/');
+    std::vector<std::string> splited = split(file_name, '_');
     if (splited.size() != 4) {
         return std::nullopt;
     }

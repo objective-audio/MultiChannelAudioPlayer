@@ -21,6 +21,26 @@ using namespace yas::playing;
 - (void)tearDown {
 }
 
+- (void)test_file_name {
+    signal_file_info info{proc::time::range{10, 20}, typeid(int64_t)};
+
+    XCTAssertEqual(info.file_name(), "signal_10_20_i64");
+}
+
+- (void)test_to_signal_file_info {
+    auto info = to_signal_file_info("signal_10_20_i64");
+
+    XCTAssertTrue(info);
+    XCTAssertEqual(info->range, (proc::time::range{10, 20}));
+    XCTAssertTrue(info->sample_type == typeid(int64_t));
+}
+
+- (void)test_to_signal_file_info_failed {
+    auto info = to_signal_file_info("");
+
+    XCTAssertFalse(info);
+}
+
 - (void)test_to_sample_type_name {
     XCTAssertEqual(to_sample_type_name(typeid(double)), "f64");
     XCTAssertEqual(to_sample_type_name(typeid(float)), "f32");

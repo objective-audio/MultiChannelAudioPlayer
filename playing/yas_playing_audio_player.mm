@@ -5,11 +5,15 @@
 #include "yas_playing_audio_player.h"
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_fast_each.h>
+#include <cpp_utils/yas_file_manager.h>
 #include <atomic>
+#include <fstream>
 #include "yas_playing_audio_circular_buffer.h"
 #include "yas_playing_audio_utils.h"
 #include "yas_playing_math.h"
 #include "yas_playing_path_utils.h"
+#include "yas_playing_signal_file_info.h"
+#include "yas_playing_timeline_utils.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -198,10 +202,11 @@ struct audio_player::impl : base::impl {
     }
 
     void _update_circular_buffers() {
-        auto const &format = this->_format.raw();
-        if (!format) {
+        auto const &format_opt = this->_format.raw();
+        if (!format_opt) {
             return;
         }
+        auto const &format = *format_opt;
 
         uint32_t const ch_count = this->_ch_count.raw();
         std::vector<int64_t> const ch_mapping = this->_actually_ch_mapping();
@@ -217,13 +222,58 @@ struct audio_player::impl : base::impl {
                 auto const ch_idx = ch_mapping.at(yas_each_index(each));
                 auto const channel_path = path_utils::channel_path(this->_root_path, ch_idx);
                 auto buffer = make_audio_circular_buffer(
-                    *format, 3, this->_queue, [channel_path](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+                    format, 3, this->_queue, [channel_path](audio::pcm_buffer &buffer, int64_t const frag_idx) {
                         auto const frag_path = path_utils::fragment_path(channel_path, frag_idx);
+                        auto const paths_result = file_manager::content_paths_in_directory(frag_path);
+                        if (!paths_result) {
+                            if (paths_result.error() == file_manager::content_paths_error::directory_not_found) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+
+                        auto const &paths = paths_result.value();
+
+                        if (paths.size() == 0) {
+                            return true;
+                        }
+
+                        auto const &format = buffer.format();
+                        std::type_info const &sample_type = yas::to_sample_type(format.pcm_format());
+                        if (sample_type == typeid(std::nullptr_t)) {
+                            return false;
+                        }
+
+                        std::vector<signal_file_info> infos;
+                        for (std::string const &path : paths) {
+                            auto const file_name = file_path{path}.last_component();
+                            if (auto info = to_signal_file_info(file_name); info->sample_type == sample_type) {
+                                infos.emplace_back(std::move(*info));
+                            }
+                        }
+
+                        if (infos.size() == 0) {
+                            return true;
+                        }
+
+                        int64_t const sample_rate = std::round(format.sample_rate());
+                        int64_t const buf_top_frame = frag_idx * sample_rate;
+                        int64_t const buf_next_frame = buf_top_frame + buffer.frame_length();
+                        int64_t const sample_byte_count = format.sample_byte_count();
+
+                        for (signal_file_info const &info : infos) {
+                            if (info.range.frame < buf_top_frame || buf_next_frame < info.range.next_frame()) {
+                                return false;
+                            }
+
+                            //                            auto stream = std::fstream{info.};
+
+                            int64_t const byte_top_idx_in_buf = (info.range.frame - buf_top_frame) * sample_byte_count;
+                            int64_t const copy_byte_length = info.range.length * sample_byte_count;
+
 #warning todo
-                        //                        path_utils::fragment_path(<#const
-                        //                        std::string &root_path#>, <#const
-                        //                        int64_t ch_idx#>, <#const int64_t
-                        //                        frg_idx#>)
+                        }
                         return true;
                     });
                 buffer->reload_all(*top_file_idx);

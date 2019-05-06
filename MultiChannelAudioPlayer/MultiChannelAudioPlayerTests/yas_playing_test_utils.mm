@@ -3,9 +3,7 @@
 //
 
 #include "yas_playing_test_utils.h"
-#include <cpp_utils/yas_fast_each.h>
-#include <cpp_utils/yas_file_manager.h>
-#include <cpp_utils/yas_system_path_utils.h>
+#include <cpp_utils/cpp_utils.h>
 
 using namespace yas;
 using namespace yas::playing;
@@ -15,61 +13,50 @@ void test_utils::remove_all_document_files() {
     file_manager::remove_contents_in_directory(document_url.path());
 }
 
-proc::timeline test_utils::test_timeline() {
+proc::timeline test_utils::test_timeline(int64_t const offset, uint32_t const ch_count) {
     proc::timeline timeline;
+    proc::track_index_t trk_idx = 0;
+    proc::time::range const module_range{-3, 18};
+
+    if (auto track = proc::track{}) {
+        if (auto module = proc::make_signal_module<int64_t>(proc::generator::kind::frame, offset)) {
+            module.connect_output(proc::to_connector_index(proc::generator::output::value), 0);
+            track.push_back_module(module, module_range);
+        }
+        timeline.insert_track(trk_idx++, track);
+    }
+
+    if (auto track = proc::track{}) {
+        if (auto module = proc::cast::make_signal_module<int64_t, int16_t>()) {
+            module.connect_input(proc::to_connector_index(proc::cast::input::value), 0);
+            module.connect_output(proc::to_connector_index(proc::cast::output::value), 0);
+            track.push_back_module(module, module_range);
+        }
+        timeline.insert_track(trk_idx++, track);
+    }
+
+    auto each = make_fast_each(ch_count);
+    while (yas_each_next(each)) {
+        auto const &ch_idx = yas_each_index(each);
+
+        if (auto track = proc::track{}) {
+            if (auto module = proc::make_signal_module<int16_t>(1000 * ch_idx)) {
+                module.connect_output(proc::to_connector_index(proc::constant::output::value), ch_idx);
+                track.push_back_module(module, module_range);
+            }
+            timeline.insert_track(trk_idx++, track);
+        }
+
+        if (auto track = proc::track{}) {
+            if (auto module = proc::make_signal_module<int16_t>(proc::math2::kind::plus)) {
+                module.connect_input(proc::to_connector_index(proc::math2::input::left), 0);
+                module.connect_input(proc::to_connector_index(proc::math2::input::right), ch_idx);
+                module.connect_output(proc::to_connector_index(proc::math2::output::result), ch_idx);
+                track.push_back_module(module, module_range);
+            }
+            timeline.insert_track(trk_idx++, track);
+        }
+    }
 
     return timeline;
 }
-/*
-void test_utils::setup_files(audio_exporter &exporter, uint32_t const ch_count,
-                             std::function<void(void)> &&completion) {
-    auto remain = std::make_shared<uint32_t>(ch_count);
-
-    auto each = make_fast_each(ch_count);
-    while (yas_each_next(each)) {
-        auto const &ch_idx = yas_each_index(each);
-        exporter.export_file(ch_idx, proc::time::range{-3, 18},
-                             [](uint32_t const ch_idx, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {
-                                 int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
-                                 auto each = make_fast_each(range.length);
-                                 while (yas_each_next(each)) {
-                                     auto const &idx = yas_each_index(each);
-                                     data[idx] = int16_t(range.frame + idx + 1000 * ch_idx);
-                                 }
-                             },
-                             [](uint32_t const ch_idx, int64_t const &) {},
-                             [completion, remain](auto const &) {
-                                 *remain -= 1;
-                                 if (*remain == 0) {
-                                     completion();
-                                 }
-                             });
-    }
-}
-
-void test_utils::overwrite_file(audio_exporter &exporter, uint32_t const ch_count,
-                                std::function<void(void)> &&completion) {
-    auto remain = std::make_shared<uint32_t>(ch_count);
-
-    auto each = make_fast_each(ch_count);
-    while (yas_each_next(each)) {
-        auto const &ch_idx = yas_each_index(each);
-        exporter.export_file(ch_idx, proc::time::range{0, 3},
-                             [ch_idx](uint32_t const, proc::time::range const &range, audio::pcm_buffer &pcm_buffer) {
-                                 int16_t *const data = pcm_buffer.data_ptr_at_index<int16_t>(0);
-                                 auto each = make_fast_each(range.length);
-                                 while (yas_each_next(each)) {
-                                     auto const &idx = yas_each_index(each);
-                                     data[idx] = int16_t(range.frame + idx + 100 + 1000 * ch_idx);
-                                 }
-                             },
-                             [](uint32_t const ch_idx, int64_t const &) {},
-                             [completion, remain](auto const &) {
-                                 *remain -= 1;
-                                 if (*remain == 0) {
-                                     completion();
-                                 }
-                             });
-    }
-}
-*/

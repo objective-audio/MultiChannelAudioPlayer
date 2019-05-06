@@ -239,9 +239,8 @@ struct cpp {
 #pragma mark -
 
 - (void)setup_files {
-    auto setup_exp = [self expectationWithDescription:@"setup"];
-    //    test_utils::setup_files(*self->_cpp.exporter, [self ch_count], [setup_exp] { [setup_exp fulfill]; });
-    [self waitForExpectations:@[setup_exp] timeout:1.0];
+    self->_cpp.exporter.set_timeline(test_utils::test_timeline(0, self->_cpp.ch_count));
+    self->_cpp.queue.wait_until_all_tasks_are_finished();
 }
 
 - (void)render:(audio::pcm_buffer &)render_buffer {

@@ -44,34 +44,6 @@ std::string path_utils::sample_type_name(std::type_info const &type_info) {
     }
 }
 
-std::type_info const &path_utils::to_sample_type(std::string const &name) {
-    if (name == "f64") {
-        return typeid(Float64);
-    } else if (name == "f32") {
-        return typeid(Float32);
-    } else if (name == "i64") {
-        return typeid(int64_t);
-    } else if (name == "u64") {
-        return typeid(uint64_t);
-    } else if (name == "i32") {
-        return typeid(int32_t);
-    } else if (name == "u32") {
-        return typeid(uint32_t);
-    } else if (name == "i16") {
-        return typeid(int16_t);
-    } else if (name == "u16") {
-        return typeid(uint16_t);
-    } else if (name == "i8") {
-        return typeid(int8_t);
-    } else if (name == "u8") {
-        return typeid(uint8_t);
-    } else if (name == "b") {
-        return typeid(boolean);
-    } else {
-        return typeid(std::nullptr_t);
-    }
-}
-
 std::string path_utils::signal_file_name(proc::time::range const &range, std::type_info const &type_info) {
     return "signal_" + std::to_string(range.frame) + "_" + std::to_string(range.length) + "_" +
            sample_type_name(type_info);

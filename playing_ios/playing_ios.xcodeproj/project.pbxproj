@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B61FBF82227FD63A00F3E865 /* yas_playing_signal_file_info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61FBF80227FD63A00F3E865 /* yas_playing_signal_file_info.cpp */; };
+		B61FBF83227FD63A00F3E865 /* yas_playing_signal_file_info.h in Headers */ = {isa = PBXBuildFile; fileRef = B61FBF81227FD63A00F3E865 /* yas_playing_signal_file_info.h */; };
 		B628798921EB5BAC00566CC1 /* playing.h in Headers */ = {isa = PBXBuildFile; fileRef = B628798721EB5BAC00566CC1 /* playing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62879A621EB61EB00566CC1 /* yas_playing_audio_coordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = B628798E21EB61EB00566CC1 /* yas_playing_audio_coordinator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62879A721EB61EB00566CC1 /* yas_playing_audio_buffer_container.h in Headers */ = {isa = PBXBuildFile; fileRef = B628798F21EB61EB00566CC1 /* yas_playing_audio_buffer_container.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -43,6 +45,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B61FBF80227FD63A00F3E865 /* yas_playing_signal_file_info.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_signal_file_info.cpp; sourceTree = "<group>"; };
+		B61FBF81227FD63A00F3E865 /* yas_playing_signal_file_info.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_signal_file_info.h; sourceTree = "<group>"; };
 		B628798421EB5BAC00566CC1 /* playing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = playing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B628798721EB5BAC00566CC1 /* playing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = playing.h; sourceTree = "<group>"; };
 		B628798821EB5BAC00566CC1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -153,6 +157,8 @@
 				B62879BE21EB623F00566CC1 /* yas_playing_umbrella.h */,
 				B628799E21EB61EB00566CC1 /* yas_playing_path_utils.cpp */,
 				B628799621EB61EB00566CC1 /* yas_playing_path_utils.h */,
+				B61FBF80227FD63A00F3E865 /* yas_playing_signal_file_info.cpp */,
+				B61FBF81227FD63A00F3E865 /* yas_playing_signal_file_info.h */,
 			);
 			name = playing;
 			path = ../../playing;
@@ -193,6 +199,7 @@
 				B62879B821EB61EB00566CC1 /* yas_playing_audio_utils.h in Headers */,
 				B6D4C60D21EC6455004A95A8 /* yas_playing_umbrella.h in Headers */,
 				B62879BA21EB61EB00566CC1 /* yas_playing_timeline_exporter.h in Headers */,
+				B61FBF83227FD63A00F3E865 /* yas_playing_signal_file_info.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +280,7 @@
 				B629BD822213A516008B2761 /* yas_playing_timeline_canceling.cpp in Sources */,
 				B62879B421EB61EB00566CC1 /* yas_playing_timeline_exporter.cpp in Sources */,
 				B62879B621EB61EB00566CC1 /* yas_playing_path_utils.cpp in Sources */,
+				B61FBF82227FD63A00F3E865 /* yas_playing_signal_file_info.cpp in Sources */,
 				B6A9FF06226C778D00E0C565 /* yas_playing_timeline_utils.cpp in Sources */,
 				B62879BC21EB61EB00566CC1 /* yas_playing_math.cpp in Sources */,
 			);

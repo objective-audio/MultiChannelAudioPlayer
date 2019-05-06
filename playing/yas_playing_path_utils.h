@@ -13,6 +13,7 @@ namespace yas::playing::path_utils {
 [[nodiscard]] std::string channel_name(int64_t const ch_idx);
 [[nodiscard]] std::string fragment_name(int64_t const frag_idx);
 [[nodiscard]] std::string sample_type_name(std::type_info const &);
+[[nodiscard]] std::type_info const &to_sample_type(std::string const &);
 [[nodiscard]] std::string signal_file_name(proc::time::range const &, std::type_info const &);
 
 [[nodiscard]] std::string channel_path(std::string const &root_path, int64_t const ch_idx);

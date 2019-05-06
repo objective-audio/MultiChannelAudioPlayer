@@ -266,7 +266,10 @@ struct audio_player::impl : base::impl {
                                 return false;
                             }
 
-                            //                            auto stream = std::fstream{info.};
+                            auto stream = std::fstream{info.path};
+                            if (!stream) {
+                                return false;
+                            }
 
                             int64_t const byte_top_idx_in_buf = (info.range.frame - buf_top_frame) * sample_byte_count;
                             int64_t const copy_byte_length = info.range.length * sample_byte_count;

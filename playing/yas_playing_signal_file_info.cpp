@@ -11,13 +11,18 @@
 using namespace yas;
 using namespace yas::playing;
 
-signal_file_info::signal_file_info(proc::time::range const &range, std::type_info const &sample_type)
-    : range(range), sample_type(sample_type) {
+signal_file_info::signal_file_info(std::string const &path, proc::time::range const &range,
+                                   std::type_info const &sample_type)
+    : path(path), range(range), sample_type(sample_type) {
 }
 
 std::string signal_file_info::file_name() const {
-    return "signal_" + std::to_string(this->range.frame) + "_" + std::to_string(this->range.length) + "_" +
-           to_sample_type_name(this->sample_type);
+    return to_signal_file_name(this->range, this->sample_type);
+}
+
+std::string playing::to_signal_file_name(proc::time::range const &range, std::type_info const &sample_type) {
+    return "signal_" + std::to_string(range.frame) + "_" + std::to_string(range.length) + "_" +
+           to_sample_type_name(sample_type);
 }
 
 std::string playing::to_sample_type_name(std::type_info const &type_info) {
@@ -76,7 +81,9 @@ std::type_info const &playing::to_sample_type(std::string const &name) {
     }
 }
 
-std::optional<signal_file_info> playing::to_signal_file_info(std::string const &file_name) {
+std::optional<signal_file_info> playing::to_signal_file_info(std::string const &path) {
+    std::string const file_name = file_path{path}.last_component();
+
     std::vector<std::string> splited = split(file_name, '_');
     if (splited.size() != 4) {
         return std::nullopt;
@@ -95,5 +102,5 @@ std::optional<signal_file_info> playing::to_signal_file_info(std::string const &
     auto const frame = to_integer<proc::frame_index_t>(splited.at(1));
     auto const length = to_integer<proc::length_t>(splited.at(2));
 
-    return signal_file_info{proc::time::range{frame, length}, sample_type};
+    return signal_file_info{path, proc::time::range{frame, length}, sample_type};
 }

@@ -61,7 +61,7 @@ struct audio_player::impl : base::impl {
         }
     }
 
-    void reload(int64_t const ch_idx, int64_t const file_idx) {
+    void reload(int64_t const ch_idx, int64_t const frag_idx) {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
         if (this->_circular_buffers.size() <= ch_idx) {
@@ -69,7 +69,7 @@ struct audio_player::impl : base::impl {
         }
 
         auto &buffer = this->_circular_buffers.at(ch_idx);
-        buffer->reload(file_idx);
+        buffer->reload(frag_idx);
     }
 
    private:
@@ -359,8 +359,8 @@ void audio_player::seek(int64_t const play_frame) {
     impl_ptr<impl>()->seek(play_frame);
 }
 
-void audio_player::reload(int64_t const ch_idx, int64_t const file_idx) {
-    impl_ptr<impl>()->reload(ch_idx, file_idx);
+void audio_player::reload(int64_t const ch_idx, int64_t const frag_idx) {
+    impl_ptr<impl>()->reload(ch_idx, frag_idx);
 }
 
 std::string const &audio_player::root_path() const {

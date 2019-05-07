@@ -19,6 +19,8 @@ struct audio_coordinator : base {
 
     void set_playing(bool const);
     void seek(int64_t const);
+    void reload_all();
+    void reload(proc::time::range const &);
 
     [[nodiscard]] double sample_rate() const;
     [[nodiscard]] audio::pcm_format pcm_format() const;

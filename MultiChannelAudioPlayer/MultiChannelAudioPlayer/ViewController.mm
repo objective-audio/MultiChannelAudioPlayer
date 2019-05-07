@@ -25,6 +25,7 @@ struct view_controller_cpp {
 #warning queueを共通にするかは後で考える
     playing::timeline_exporter timeline_exporter{this->root_path, yas::task_queue{}, this->sample_rate};
     audio_coordinator coordinator{this->root_path};
+    chaining::observer_pool pool;
 };
 }
 
@@ -34,6 +35,27 @@ struct view_controller_cpp {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    self->_cpp.pool +=
+        self->_cpp.timeline_exporter.event_chain()
+            .perform([&coordinator = self->_cpp.coordinator](playing::timeline_exporter::event const &event) {
+                if (!event.result) {
+                    return;
+                }
+
+                switch (event.result.value()) {
+                    case timeline_exporter::method::reset:
+                        coordinator.reload_all();
+                        break;
+                    case timeline_exporter::method::export_ended:
+                        coordinator.reload(*event.range);
+                        break;
+                    case timeline_exporter::method::export_began:
+                        coordinator.reload(*event.range);
+                        break;
+                }
+            })
+            .end();
 
     std::cout << to_string(system_path_utils::directory_url(system_path_utils::dir::document)) << std::endl;
 }
@@ -93,22 +115,7 @@ struct view_controller_cpp {
         track.push_back_module(std::move(module), process_range);
     }
 
-    proc::sync_source sync_src{proc::sample_rate_t(sample_rate), process_range.length};
-    proc::stream stream{sync_src};
-    timeline.process(process_range, stream);
-
-    if (!stream.has_channel(0)) {
-        return;
-    }
-
-    auto const &channel = stream.channel(0);
-
-    auto const filtered_events = channel.filtered_events<Float32, proc::signal_event>(
-        [process_range](auto const &pair) { return pair.first == process_range; });
-
-    if (filtered_events.size() == 0) {
-        return;
-    }
+    self->_cpp.timeline_exporter.set_timeline(std::move(timeline));
 }
 
 - (IBAction)start:(UIButton *)sender {

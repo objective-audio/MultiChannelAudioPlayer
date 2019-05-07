@@ -19,6 +19,7 @@ struct audio_player : base {
     void set_playing(bool const);
     void seek(int64_t const play_frame);
     void reload(int64_t const ch_idx, int64_t const frag_idx);
+    void reload_all();
 
     [[nodiscard]] std::string const &root_path() const;
     [[nodiscard]] std::vector<int64_t> const &ch_mapping() const;

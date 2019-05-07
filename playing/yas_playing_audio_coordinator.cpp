@@ -21,22 +21,9 @@ struct audio_coordinator::impl : base::impl {
 
     impl(std::string &&root_path) : _root_path(std::move(root_path)) {
     }
-
-    void prepare(audio_coordinator &coordinator) {
-        auto weak_coordinator = to_weak(coordinator);
-
-        this->_pool += this->_renderer.configuration_chain()
-                           .perform([weak_coordinator](auto const &configuration) {
-                               if (auto coordinator = weak_coordinator.lock()) {
-#warning todo configurationが変わったのでリロードする
-                               }
-                           })
-                           .sync();
-    }
 };
 
 audio_coordinator::audio_coordinator(std::string root_path) : base(std::make_shared<impl>(std::move(root_path))) {
-    impl_ptr<impl>()->prepare(*this);
 }
 
 audio_coordinator::audio_coordinator(std::nullptr_t) : base(nullptr) {
@@ -48,6 +35,14 @@ void audio_coordinator::set_playing(bool const is_playing) {
 
 void audio_coordinator::seek(int64_t const play_frame) {
     impl_ptr<impl>()->_player.seek(play_frame);
+}
+
+void audio_coordinator::reload_all() {
+#warning todo
+}
+
+void audio_coordinator::reload(proc::time::range const &range) {
+#warning todo
 }
 
 double audio_coordinator::sample_rate() const {

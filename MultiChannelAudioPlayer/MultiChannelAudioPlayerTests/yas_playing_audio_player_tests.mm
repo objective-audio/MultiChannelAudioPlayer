@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 #import <cpp_utils/cpp_utils.h>
 #import <playing/playing.h>
+#import <future>
 #import "yas_playing_test_audio_renderer.h"
 #import "yas_playing_test_utils.h"
 
@@ -217,11 +218,9 @@ struct cpp {
 
     render_buffer.clear();
 
-    auto overwrite_exp = [self expectationWithDescription:@"overwrite"];
-    //    test_utils::overwrite_file(*self->_cpp.exporter, [self ch_count], [&overwrite_exp] { [overwrite_exp fulfill];
-    //    });
+    self->_cpp.exporter.set_timeline(test_utils::test_timeline(100, self->_cpp.ch_count));
 
-    [self waitForExpectations:@[overwrite_exp] timeout:1.0];
+    self->_cpp.queue.wait_until_all_tasks_are_finished();
 
     player.reload(0, 0);
     player.reload(1, 0);
@@ -246,16 +245,19 @@ struct cpp {
 - (void)render:(audio::pcm_buffer &)render_buffer {
     render_buffer.clear();
 
-    auto render_exp = [self expectationWithDescription:@"render"];
+    std::promise<void> promise;
+    auto future = promise.get_future();
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_cpp.renderer, &render_buffer, &render_exp] {
+                   [&renderer = self->_cpp.renderer, &render_buffer, &promise] {
                        renderer.render(render_buffer);
 
-                       [render_exp fulfill];
+                       promise.set_value();
                    });
 
-    [self waitForExpectations:@[render_exp] timeout:1.0];
+    future.get();
+
+    self->_cpp.queue.wait_until_all_tasks_are_finished();
 }
 
 @end

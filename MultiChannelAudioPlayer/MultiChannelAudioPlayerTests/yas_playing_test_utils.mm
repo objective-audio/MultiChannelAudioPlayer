@@ -20,7 +20,7 @@ proc::timeline test_utils::test_timeline(int64_t const offset, uint32_t const ch
 
     if (auto track = proc::track{}) {
         if (auto module = proc::make_signal_module<int64_t>(proc::generator::kind::frame, offset)) {
-            module.connect_output(proc::to_connector_index(proc::generator::output::value), 0);
+            module.connect_output(proc::to_connector_index(proc::generator::output::value), -1);
             track.push_back_module(module, module_range);
         }
         timeline.insert_track(trk_idx++, track);
@@ -28,8 +28,8 @@ proc::timeline test_utils::test_timeline(int64_t const offset, uint32_t const ch
 
     if (auto track = proc::track{}) {
         if (auto module = proc::cast::make_signal_module<int64_t, int16_t>()) {
-            module.connect_input(proc::to_connector_index(proc::cast::input::value), 0);
-            module.connect_output(proc::to_connector_index(proc::cast::output::value), 0);
+            module.connect_input(proc::to_connector_index(proc::cast::input::value), -1);
+            module.connect_output(proc::to_connector_index(proc::cast::output::value), -1);
             track.push_back_module(module, module_range);
         }
         timeline.insert_track(trk_idx++, track);
@@ -49,7 +49,7 @@ proc::timeline test_utils::test_timeline(int64_t const offset, uint32_t const ch
 
         if (auto track = proc::track{}) {
             if (auto module = proc::make_signal_module<int16_t>(proc::math2::kind::plus)) {
-                module.connect_input(proc::to_connector_index(proc::math2::input::left), 0);
+                module.connect_input(proc::to_connector_index(proc::math2::input::left), -1);
                 module.connect_input(proc::to_connector_index(proc::math2::input::right), ch_idx);
                 module.connect_output(proc::to_connector_index(proc::math2::output::result), ch_idx);
                 track.push_back_module(module, module_range);

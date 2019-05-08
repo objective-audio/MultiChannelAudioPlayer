@@ -36,6 +36,13 @@ struct view_controller_cpp {
     [super viewDidLoad];
 
     self->_cpp.pool +=
+        self->_cpp.coordinator.configuration_chain()
+            .perform([&exporter = self->_cpp.timeline_exporter](audio_configuration const &configuration) {
+                exporter.set_sample_rate(configuration.sample_rate);
+            })
+            .end();
+
+    self->_cpp.pool +=
         self->_cpp.timeline_exporter.event_chain()
             .perform([&coordinator = self->_cpp.coordinator](playing::timeline_exporter::event const &event) {
                 if (!event.result) {

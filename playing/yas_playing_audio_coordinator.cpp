@@ -71,6 +71,6 @@ uint32_t audio_coordinator::channel_count() const {
     return impl_ptr<impl>()->_renderer.channel_count();
 }
 
-chaining::chain_sync_t<audio_configuration> audio_coordinator::chain_configuration() const {
+chaining::chain_sync_t<audio_configuration> audio_coordinator::configuration_chain() const {
     return impl_ptr<impl>()->_renderer.configuration_chain();
 }

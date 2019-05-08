@@ -26,6 +26,6 @@ struct audio_coordinator : base {
     [[nodiscard]] audio::pcm_format pcm_format() const;
     [[nodiscard]] uint32_t channel_count() const;
 
-    [[nodiscard]] chaining::chain_sync_t<audio_configuration> chain_configuration() const;
+    [[nodiscard]] chaining::chain_sync_t<audio_configuration> configuration_chain() const;
 };
 }  // namespace yas::playing

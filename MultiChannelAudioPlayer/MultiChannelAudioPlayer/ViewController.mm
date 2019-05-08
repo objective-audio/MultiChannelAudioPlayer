@@ -117,6 +117,14 @@ struct view_controller_cpp {
         track.push_back_module(std::move(module), process_range);
     }
 
+    if (auto track = proc::track{}) {
+        timeline.insert_track(trk_idx++, track);
+        auto module = proc::make_signal_module<Float32>(proc::routing::kind::copy);
+        module.connect_input(proc::to_connector_index(proc::routing::input::value), 0);
+        module.connect_output(proc::to_connector_index(proc::routing::output::value), 1);
+        track.push_back_module(std::move(module), process_range);
+    }
+
     self->_cpp.timeline_exporter.set_timeline(std::move(timeline));
 }
 

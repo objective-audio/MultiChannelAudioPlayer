@@ -181,8 +181,8 @@ struct audio_player::impl : base::impl {
                     out_buffer.copy_channel_from(
                         read_buffer, {.to_channel = idx, .to_begin_frame = to_frame, .length = info.length});
 
-                    if (info.next_file_idx.has_value()) {
-                        circular_buffer->rotate_buffer(*info.next_file_idx);
+                    if (info.next_frag_idx.has_value()) {
+                        circular_buffer->rotate_buffer(*info.next_frag_idx);
                     }
                 }
 

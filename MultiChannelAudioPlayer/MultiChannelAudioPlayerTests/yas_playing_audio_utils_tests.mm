@@ -27,7 +27,7 @@ using namespace yas::playing::audio_utils;
         processing_info info{0, 2, 3};
 
         XCTAssertEqual(info.length, 2);
-        XCTAssertFalse(info.next_file_idx);
+        XCTAssertFalse(info.next_frag_idx);
     }
 
     {
@@ -35,8 +35,8 @@ using namespace yas::playing::audio_utils;
         processing_info info{1, 3, 3};
 
         XCTAssertEqual(info.length, 2);
-        XCTAssertTrue(info.next_file_idx);
-        XCTAssertEqual(*info.next_file_idx, 1);
+        XCTAssertTrue(info.next_frag_idx);
+        XCTAssertEqual(*info.next_frag_idx, 1);
     }
 
     {
@@ -44,8 +44,8 @@ using namespace yas::playing::audio_utils;
         processing_info info{3, 6, 3};
 
         XCTAssertEqual(info.length, 3);
-        XCTAssertTrue(info.next_file_idx);
-        XCTAssertEqual(*info.next_file_idx, 2);
+        XCTAssertTrue(info.next_frag_idx);
+        XCTAssertEqual(*info.next_frag_idx, 2);
     }
 
     {
@@ -53,8 +53,8 @@ using namespace yas::playing::audio_utils;
         processing_info info{-3, 0, 3};
 
         XCTAssertEqual(info.length, 3);
-        XCTAssertTrue(info.next_file_idx);
-        XCTAssertEqual(*info.next_file_idx, 0);
+        XCTAssertTrue(info.next_frag_idx);
+        XCTAssertEqual(*info.next_frag_idx, 0);
     }
 
     {
@@ -62,8 +62,8 @@ using namespace yas::playing::audio_utils;
         processing_info info{-6, -3, 3};
 
         XCTAssertEqual(info.length, 3);
-        XCTAssertTrue(info.next_file_idx);
-        XCTAssertEqual(*info.next_file_idx, -1);
+        XCTAssertTrue(info.next_frag_idx);
+        XCTAssertEqual(*info.next_frag_idx, -1);
     }
 
     {
@@ -71,8 +71,8 @@ using namespace yas::playing::audio_utils;
         processing_info info{2, 4, 3};
 
         XCTAssertEqual(info.length, 1);
-        XCTAssertTrue(info.next_file_idx);
-        XCTAssertEqual(*info.next_file_idx, 1);
+        XCTAssertTrue(info.next_frag_idx);
+        XCTAssertEqual(*info.next_frag_idx, 1);
     }
 }
 

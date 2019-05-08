@@ -17,7 +17,7 @@ void audio_renderable::set_rendering_handler(audio_renderable::rendering_f handl
     impl_ptr<impl>()->set_rendering_handler(std::move(handler));
 }
 
-chaining::chain_sync_t<double> audio_renderable::chain_sample_rate() {
+chaining::chain_sync_t<proc::sample_rate_t> audio_renderable::chain_sample_rate() {
     return impl_ptr<impl>()->chain_sample_rate();
 }
 

@@ -4,13 +4,14 @@
 
 #include "yas_playing_test_audio_renderer.h"
 #include <audio/yas_audio_format.h>
+#include <processing/yas_processing_types.h>
 
 using namespace yas;
 using namespace yas::playing;
 using namespace yas::playing::test_utils;
 
 struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
-    chaining::value::holder<double> _sample_rate{0.0};
+    chaining::value::holder<proc::sample_rate_t> _sample_rate{proc::sample_rate_t{0}};
     chaining::value::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
     chaining::value::holder<uint32_t> _channel_count{uint32_t(0)};
     std::atomic<bool> _is_rendering = false;
@@ -22,7 +23,7 @@ struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
         this->_rendering_handler = std::move(handler);
     }
 
-    chaining::chain_sync_t<double> chain_sample_rate() override {
+    chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() override {
         return this->_sample_rate.chain();
     }
 

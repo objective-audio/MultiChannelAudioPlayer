@@ -20,11 +20,10 @@ namespace yas::playing::sample {
 struct view_controller_cpp {
     std::string root_path =
         system_path_utils::directory_url(system_path_utils::dir::document).appending("sample").path();
-    proc::sample_rate_t const sample_rate{48000};
+    audio_coordinator coordinator{this->root_path};
 #warning queueを共通にするかは後で考える
     playing::timeline_exporter timeline_exporter{this->root_path, yas::task_queue{queue_priority_count},
-                                                 this->sample_rate};
-    audio_coordinator coordinator{this->root_path};
+                                                 this->coordinator.sample_rate()};
     chaining::observer_pool pool;
 };
 }

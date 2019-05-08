@@ -13,11 +13,11 @@ using namespace yas::playing;
 
 struct audio_renderer::impl : base::impl, audio_renderable::impl {
     audio::engine::manager _manager;
-    chaining::value::holder<double> _sample_rate{0.0};
+    chaining::value::holder<proc::sample_rate_t> _sample_rate{proc::sample_rate_t{0}};
     chaining::value::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
     chaining::value::holder<uint32_t> _channel_count{uint32_t(0)};
     chaining::value::holder<audio_configuration> _configuration{
-        {.sample_rate = 0.0, .pcm_format = audio::pcm_format::float32, .channel_count = 0}};
+        {.sample_rate = 0, .pcm_format = audio::pcm_format::float32, .channel_count = 0}};
 
     void prepare(audio_renderer &renderer) {
         auto weak_renderer = to_weak(renderer);
@@ -75,7 +75,7 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
         this->_rendering_handler = handler;
     }
 
-    chaining::chain_sync_t<double> chain_sample_rate() override {
+    chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() override {
         return this->_sample_rate.chain();
     }
 
@@ -117,7 +117,8 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
 
     void _update_configuration() {
         audio::engine::au_io const &au_io = this->_output.au_io();
-        double const sample_rate = au_io.device_sample_rate();
+        proc::sample_rate_t const sample_rate =
+            static_cast<proc::sample_rate_t>(std::round(au_io.device_sample_rate()));
         uint32_t const ch_count = au_io.output_device_channel_count();
         this->_sample_rate.set_value(sample_rate);
         this->_channel_count.set_value(ch_count);
@@ -165,7 +166,7 @@ audio::engine::manager const &audio_renderer::manager() {
     return impl_ptr<impl>()->_manager;
 }
 
-double audio_renderer::sample_rate() const {
+proc::sample_rate_t audio_renderer::sample_rate() const {
     return impl_ptr<impl>()->_sample_rate.raw();
 }
 

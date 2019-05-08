@@ -4,9 +4,11 @@
 
 #pragma once
 
+#include <processing/yas_processing_types.h>
+
 namespace yas::playing {
 struct audio_configuration {
-    double sample_rate;
+    proc::sample_rate_t sample_rate;
     audio::pcm_format pcm_format = audio::pcm_format::float32;
     uint32_t channel_count;
 

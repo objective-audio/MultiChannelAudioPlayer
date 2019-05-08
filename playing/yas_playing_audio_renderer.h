@@ -6,6 +6,7 @@
 
 #include <audio/yas_audio_engine_manager.h>
 #include <cpp_utils/yas_base.h>
+#include <processing/yas_processing_types.h>
 #include "yas_playing_audio_configulation.h"
 #include "yas_playing_audio_player_protocol.h"
 
@@ -17,7 +18,7 @@ struct audio_renderer : base {
     audio_renderer(std::nullptr_t);
 
     [[nodiscard]] audio::engine::manager const &manager();
-    [[nodiscard]] double sample_rate() const;
+    [[nodiscard]] proc::sample_rate_t sample_rate() const;
     [[nodiscard]] audio::pcm_format pcm_format() const;
     [[nodiscard]] uint32_t channel_count() const;
 

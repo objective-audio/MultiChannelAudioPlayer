@@ -59,7 +59,7 @@ void audio_coordinator::reload(proc::time::range const &range) {
     }
 }
 
-double audio_coordinator::sample_rate() const {
+proc::sample_rate_t audio_coordinator::sample_rate() const {
     return impl_ptr<impl>()->_renderer.sample_rate();
 }
 

@@ -22,7 +22,8 @@ struct view_controller_cpp {
         system_path_utils::directory_url(system_path_utils::dir::document).appending("sample").path();
     proc::sample_rate_t const sample_rate{48000};
 #warning queueを共通にするかは後で考える
-    playing::timeline_exporter timeline_exporter{this->root_path, yas::task_queue{}, this->sample_rate};
+    playing::timeline_exporter timeline_exporter{this->root_path, yas::task_queue{queue_priority_count},
+                                                 this->sample_rate};
     audio_coordinator coordinator{this->root_path};
     chaining::observer_pool pool;
 };

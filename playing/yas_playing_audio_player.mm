@@ -240,6 +240,8 @@ struct audio_player::impl : base::impl {
                 auto const channel_path = path_utils::channel_path(this->_root_path, ch_idx);
                 auto buffer = make_audio_circular_buffer(
                     format, 3, this->_queue, [channel_path](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+                        buffer.clear();
+
                         auto const frag_path = path_utils::fragment_path(channel_path, frag_idx);
                         auto const paths_result = file_manager::content_paths_in_directory(frag_path);
                         if (!paths_result) {
@@ -380,7 +382,7 @@ void audio_player::reload(int64_t const ch_idx, int64_t const frag_idx) {
     impl_ptr<impl>()->reload(ch_idx, frag_idx);
 }
 
-void audio_player::reload_all(){
+void audio_player::reload_all() {
     impl_ptr<impl>()->reload_all();
 }
 

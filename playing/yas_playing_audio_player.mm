@@ -46,7 +46,7 @@ struct audio_player::impl : base::impl {
     void seek(int64_t const play_frame) {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-        uint32_t const file_length = this->_file_length();
+        uint32_t const file_length = this->_frag_length();
 
         this->_play_frame = play_frame;
 
@@ -54,7 +54,7 @@ struct audio_player::impl : base::impl {
             return;
         }
 
-        if (auto const top_file_idx = this->_top_file_idx()) {
+        if (auto const top_file_idx = this->_top_frag_idx()) {
             for (auto &buffer : this->_circular_buffers) {
                 buffer->reload_all(*top_file_idx);
             }
@@ -152,7 +152,7 @@ struct audio_player::impl : base::impl {
             uint32_t const out_length = out_buffer.frame_length();
             int64_t const next_frame = play_frame + out_length;
             player_impl->_play_frame = next_frame;
-            uint32_t const file_length = player_impl->_file_length();
+            uint32_t const file_length = player_impl->_frag_length();
             audio::format const &out_format = out_buffer.format();
             audio::format const read_format = audio::format{{.sample_rate = out_format.sample_rate(),
                                                              .pcm_format = out_format.pcm_format(),
@@ -191,11 +191,11 @@ struct audio_player::impl : base::impl {
         });
     }
 
-    uint32_t _file_length() {
+    proc::sample_rate_t _frag_length() {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
         if (auto const &format = this->_locked_format) {
-            return static_cast<uint32_t>(format->sample_rate());
+            return static_cast<proc::sample_rate_t>(format->sample_rate());
         } else {
             return 0;
         }
@@ -216,7 +216,7 @@ struct audio_player::impl : base::impl {
         this->_locked_format = format;
         this->_circular_buffers.clear();
 
-        if (auto top_file_idx = this->_top_file_idx(); top_file_idx && ch_count > 0) {
+        if (auto top_file_idx = this->_top_frag_idx(); top_file_idx && ch_count > 0) {
             auto each = make_fast_each(int64_t(ch_count));
             while (yas_each_next(each)) {
                 auto const ch_idx = ch_mapping.at(yas_each_index(each));
@@ -306,10 +306,10 @@ struct audio_player::impl : base::impl {
         return this->_read_buffer;
     }
 
-    std::optional<int64_t> _top_file_idx() {
+    std::optional<int64_t> _top_frag_idx() {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
-        uint32_t const file_length = this->_file_length();
+        uint32_t const file_length = this->_frag_length();
         if (file_length > 0) {
             return math::floor_int(this->_play_frame, file_length) / file_length;
         } else {

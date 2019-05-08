@@ -7,7 +7,6 @@
 #import <cpp_utils/cpp_utils.h>
 #import <playing/playing.h>
 #import <processing/processing.h>
-
 #import <iostream>
 
 using namespace yas;
@@ -46,12 +45,15 @@ struct view_controller_cpp {
                 switch (event.result.value()) {
                     case timeline_exporter::method::reset:
                         coordinator.reload_all();
+                        std::cout << "reset" << std::endl;
                         break;
                     case timeline_exporter::method::export_ended:
                         coordinator.reload(*event.range);
+                        std::cout << "export ended " << to_string(*event.range) << std::endl;
                         break;
                     case timeline_exporter::method::export_began:
                         coordinator.reload(*event.range);
+                        std::cout << "export began " << to_string(*event.range) << std::endl;
                         break;
                 }
             })

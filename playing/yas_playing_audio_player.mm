@@ -381,7 +381,7 @@ void audio_player::reload(int64_t const ch_idx, int64_t const frag_idx) {
 }
 
 void audio_player::reload_all(){
-#warning todo
+    impl_ptr<impl>()->reload_all();
 }
 
 std::string const &audio_player::root_path() const {

@@ -72,6 +72,23 @@ struct audio_player::impl : base::impl {
         buffer->reload(frag_idx);
     }
 
+    void reload_all() {
+        std::lock_guard<std::recursive_mutex> lock(this->_mutex);
+
+        auto const top_frag_idx = this->_top_frag_idx();
+        if (!top_frag_idx) {
+            return;
+        }
+
+        auto const ch_count = this->_ch_count.raw();
+
+        auto ch_each = make_fast_each(ch_count);
+        while (yas_each_next(ch_each)) {
+            auto &circular_buffer = this->_circular_buffers.at(yas_each_index(ch_each));
+            circular_buffer->reload_all(*top_frag_idx);
+        }
+    }
+
    private:
     chaining::observer_pool _pool;
 

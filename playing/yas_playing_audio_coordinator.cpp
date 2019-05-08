@@ -6,7 +6,9 @@
 #include <chaining/yas_chaining_umbrella.h>
 #include "yas_playing_audio_player.h"
 #include "yas_playing_audio_renderer.h"
+#include "yas_playing_timeline_utils.h"
 #include "yas_playing_types.h"
+#include <cpp_utils/yas_fast_each.h>
 
 using namespace yas;
 using namespace yas::playing;
@@ -38,10 +40,20 @@ void audio_coordinator::seek(int64_t const play_frame) {
 }
 
 void audio_coordinator::reload_all() {
-#warning todo
+    impl_ptr<impl>()->_player.reload_all();
 }
 
 void audio_coordinator::reload(proc::time::range const &range) {
+    auto &player = impl_ptr<impl>()->_player;
+    auto const sample_rate = static_cast<proc::sample_rate_t>(this->sample_rate());
+    proc::time::range const frags_range = timeline_utils::fragments_range(range, sample_rate);
+    auto const begin_frag_idx = frags_range.frame / sample_rate;
+    auto const next_frag_idx = frags_range.next_frame() / sample_rate;
+    auto each = make_fast_each(begin_frag_idx, next_frag_idx);
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+    }
+    
 #warning todo
 }
 

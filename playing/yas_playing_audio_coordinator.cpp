@@ -35,7 +35,7 @@ void audio_coordinator::set_playing(bool const is_playing) {
     impl_ptr<impl>()->_player.set_playing(is_playing);
 }
 
-void audio_coordinator::seek(int64_t const play_frame) {
+void audio_coordinator::seek(frame_index_t const play_frame) {
     impl_ptr<impl>()->_player.seek(play_frame);
 }
 

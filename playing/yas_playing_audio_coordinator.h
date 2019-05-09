@@ -9,6 +9,7 @@
 #include <cpp_utils/yas_base.h>
 #include <processing/yas_processing_time.h>
 #include "yas_playing_audio_configulation.h"
+#include "yas_playing_types.h"
 
 namespace yas::playing {
 struct audio_coordinator : base {
@@ -18,7 +19,7 @@ struct audio_coordinator : base {
     audio_coordinator(std::nullptr_t);
 
     void set_playing(bool const);
-    void seek(int64_t const);
+    void seek(frame_index_t const);
     void reload_all();
     void reload(proc::time::range const &);
 

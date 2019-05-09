@@ -10,17 +10,17 @@ using namespace yas::playing;
 audio_buffer_container::audio_buffer_container(audio::pcm_buffer &&buffer) : _buffer(std::move(buffer)) {
 }
 
-std::optional<int64_t> audio_buffer_container::fragment_idx() const {
+std::optional<fragment_index_t> audio_buffer_container::fragment_idx() const {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
     return this->_frag_idx;
 }
 
-std::optional<int64_t> audio_buffer_container::begin_frame() const {
+std::optional<frame_index_t> audio_buffer_container::begin_frame() const {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
     if (auto const &frag_idx = this->_frag_idx) {
-        return *frag_idx * static_cast<int64_t>(this->_buffer.frame_length());
+        return *frag_idx * static_cast<frame_index_t>(this->_buffer.frame_length());
     } else {
         return std::nullopt;
     }
@@ -30,25 +30,26 @@ audio::format const &audio_buffer_container::format() const {
     return this->_buffer.format();
 }
 
-bool audio_buffer_container::contains(int64_t const frame) const {
+bool audio_buffer_container::contains(frame_index_t const frame) const {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
     if (auto begin_frame_opt = this->begin_frame()) {
-        int64_t const &begin_frame = *begin_frame_opt;
+        frame_index_t const &begin_frame = *begin_frame_opt;
         return begin_frame <= frame && frame < (begin_frame + this->_buffer.frame_length());
     } else {
         return false;
     }
 }
 
-void audio_buffer_container::prepare_loading(int64_t const file_idx) {
+void audio_buffer_container::prepare_loading(fragment_index_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
     this->_state = state::unloaded;
-    this->_frag_idx = file_idx;
+    this->_frag_idx = frag_idx;
 }
 
-audio_buffer_container::load_result_t audio_buffer_container::load(int64_t const frag_idx, load_f const &handler) {
+audio_buffer_container::load_result_t audio_buffer_container::load(fragment_index_t const frag_idx,
+                                                                   load_f const &handler) {
     std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
     if (!this->_frag_idx) {
@@ -68,7 +69,7 @@ audio_buffer_container::load_result_t audio_buffer_container::load(int64_t const
 }
 
 audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(audio::pcm_buffer &to_buffer,
-                                                                               int64_t const play_frame) const {
+                                                                               frame_index_t const play_frame) const {
     auto lock = std::unique_lock<std::recursive_mutex>(this->_mutex, std::try_to_lock);
     if (!lock.owns_lock()) {
         return read_result_t{read_error::locked};
@@ -83,8 +84,8 @@ audio_buffer_container::read_result_t audio_buffer_container::read_into_buffer(a
         return read_result_t{read_error::begin_frame_is_null};
     }
 
-    int64_t const begin_frame = *begin_frame_opt;
-    int64_t const from_frame = play_frame - begin_frame;
+    frame_index_t const begin_frame = *begin_frame_opt;
+    frame_index_t const from_frame = play_frame - begin_frame;
 
     if (from_frame < 0 || this->_buffer.frame_length() <= from_frame) {
         return read_result_t{read_error::out_of_range_play_frame};

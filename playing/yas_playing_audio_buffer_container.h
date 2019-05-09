@@ -56,7 +56,7 @@ struct audio_buffer_container {
     [[nodiscard]] bool contains(int64_t const frame) const;
 
     void prepare_loading(fragment_index_t const frag_idx);
-    load_result_t load(int64_t const frag_idx, load_f const &);
+    load_result_t load(fragment_index_t const frag_idx, load_f const &);
     read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, frame_index_t const play_frame) const;
 
    protected:
@@ -64,7 +64,7 @@ struct audio_buffer_container {
 
    private:
     audio::pcm_buffer _buffer;
-    std::optional<int64_t> _frag_idx = std::nullopt;
+    std::optional<fragment_index_t> _frag_idx = std::nullopt;
     state _state = state::unloaded;
 
     std::recursive_mutex mutable _mutex;

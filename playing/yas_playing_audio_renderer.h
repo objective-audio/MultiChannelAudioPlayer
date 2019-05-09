@@ -20,7 +20,7 @@ struct audio_renderer : base {
     [[nodiscard]] audio::engine::manager const &manager();
     [[nodiscard]] proc::sample_rate_t sample_rate() const;
     [[nodiscard]] audio::pcm_format pcm_format() const;
-    [[nodiscard]] uint32_t channel_count() const;
+    [[nodiscard]] std::size_t channel_count() const;
 
     [[nodiscard]] chaining::chain_sync_t<audio_configuration> configuration_chain() const;
 

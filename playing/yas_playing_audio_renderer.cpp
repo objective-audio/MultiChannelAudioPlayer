@@ -15,7 +15,7 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
     audio::engine::manager _manager;
     chaining::value::holder<proc::sample_rate_t> _sample_rate{proc::sample_rate_t{0}};
     chaining::value::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
-    chaining::value::holder<uint32_t> _channel_count{uint32_t(0)};
+    chaining::value::holder<std::size_t> _channel_count{std::size_t(0)};
     chaining::value::holder<audio_configuration> _configuration{
         {.sample_rate = 0, .pcm_format = audio::pcm_format::float32, .channel_count = 0}};
 
@@ -83,7 +83,7 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
         return this->_pcm_format.chain();
     }
 
-    chaining::chain_sync_t<uint32_t> chain_channel_count() override {
+    chaining::chain_sync_t<std::size_t> chain_channel_count() override {
         return this->_channel_count.chain();
     }
 
@@ -131,10 +131,10 @@ struct audio_renderer::impl : base::impl, audio_renderable::impl {
         }
 
         double const &sample_rate = this->_sample_rate.raw();
-        uint32_t const ch_count = this->_channel_count.raw();
+        std::size_t const ch_count = this->_channel_count.raw();
 
         if (sample_rate > 0.0 && ch_count > 0) {
-            audio::format format{{.sample_rate = sample_rate, .channel_count = ch_count}};
+            audio::format format{{.sample_rate = sample_rate, .channel_count = static_cast<uint32_t>(ch_count)}};
             this->_connection = this->_manager.connect(this->_tap.node(), this->_output.au_io().au().node(), format);
         }
     }
@@ -174,7 +174,7 @@ audio::pcm_format audio_renderer::pcm_format() const {
     return impl_ptr<impl>()->_pcm_format.raw();
 }
 
-uint32_t audio_renderer::channel_count() const {
+std::size_t audio_renderer::channel_count() const {
     return impl_ptr<impl>()->_channel_count.raw();
 }
 

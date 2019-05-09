@@ -13,7 +13,7 @@ using namespace yas::playing::test_utils;
 struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
     chaining::value::holder<proc::sample_rate_t> _sample_rate{proc::sample_rate_t{0}};
     chaining::value::holder<audio::pcm_format> _pcm_format{audio::pcm_format::float32};
-    chaining::value::holder<uint32_t> _channel_count{uint32_t(0)};
+    chaining::value::holder<std::size_t> _channel_count{std::size_t(0)};
     std::atomic<bool> _is_rendering = false;
     audio_renderable::rendering_f _rendering_handler;
     std::recursive_mutex _rendering_mutex;
@@ -31,7 +31,7 @@ struct test_audio_renderer::impl : base::impl, audio_renderable::impl {
         return this->_pcm_format.chain();
     }
 
-    chaining::chain_sync_t<uint32_t> chain_channel_count() override {
+    chaining::chain_sync_t<std::size_t> chain_channel_count() override {
         return this->_channel_count.chain();
     }
 

@@ -18,7 +18,7 @@ struct audio_renderable : protocol {
         virtual void set_rendering_handler(rendering_f &&) = 0;
         virtual chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() = 0;
         virtual chaining::chain_sync_t<audio::pcm_format> chain_pcm_format() = 0;
-        virtual chaining::chain_sync_t<uint32_t> chain_channel_count() = 0;
+        virtual chaining::chain_sync_t<std::size_t> chain_channel_count() = 0;
         virtual void set_is_rendering(bool const) = 0;
     };
 
@@ -28,7 +28,7 @@ struct audio_renderable : protocol {
     void set_rendering_handler(rendering_f);
     chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate();
     chaining::chain_sync_t<audio::pcm_format> chain_pcm_format();
-    chaining::chain_sync_t<uint32_t> chain_channel_count();
+    chaining::chain_sync_t<std::size_t> chain_channel_count();
     void set_is_rendering(bool const);
 };
 }  // namespace yas::playing

@@ -67,7 +67,7 @@ audio::pcm_format audio_coordinator::pcm_format() const {
     return impl_ptr<impl>()->_renderer.pcm_format();
 }
 
-uint32_t audio_coordinator::channel_count() const {
+std::size_t audio_coordinator::channel_count() const {
     return impl_ptr<impl>()->_renderer.channel_count();
 }
 

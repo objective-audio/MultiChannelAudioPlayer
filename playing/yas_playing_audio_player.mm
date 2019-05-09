@@ -94,7 +94,7 @@ struct audio_player::impl : base::impl {
 
     task_queue _queue;
     audio_renderable _renderable;
-    chaining::value::holder<uint32_t> _ch_count{uint32_t(0)};
+    chaining::value::holder<std::size_t> _ch_count{std::size_t(0)};
     chaining::value::holder<std::optional<audio::format>> _format{std::nullopt};
     chaining::receiver<> _update_circular_buffers_receiver = nullptr;
 
@@ -225,7 +225,7 @@ struct audio_player::impl : base::impl {
         }
         auto const &format = *format_opt;
 
-        uint32_t const ch_count = this->_ch_count.raw();
+        std::size_t const ch_count = this->_ch_count.raw();
         std::vector<channel_index_t> const ch_mapping = this->_actually_ch_mapping();
 
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);

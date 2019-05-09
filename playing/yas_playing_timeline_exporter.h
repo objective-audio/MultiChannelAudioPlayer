@@ -25,6 +25,7 @@ struct timeline_exporter : base {
         create_directory_failed,
         open_signal_stream_failed,
         open_number_stream_failed,
+        write_number_stream_failed,
         get_content_paths_failed,
     };
 

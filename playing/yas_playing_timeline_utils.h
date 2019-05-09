@@ -9,10 +9,15 @@
 #include <processing/yas_processing_number_event.h>
 #include <processing/yas_processing_signal_event.h>
 #include <processing/yas_processing_time.h>
+#include "yas_playing_types.h"
 
 namespace yas::playing::timeline_utils {
 [[nodiscard]] proc::time::range fragments_range(proc::time::range const &, proc::sample_rate_t const);
 [[nodiscard]] std::string to_string(proc::number_event const &);
 [[nodiscard]] char const *char_data(proc::signal_event const &);
+[[nodiscard]] char const *char_frame_data(proc::time::frame::type const &);
+[[nodiscard]] sample_store_type to_sample_store_type(std::type_info const &);
+[[nodiscard]] std::type_info const &to_sample_type(sample_store_type const &);
+[[nodiscard]] char const *char_value_data(proc::number_event const &);
 [[nodiscard]] char *char_data(audio::pcm_buffer &);
 }  // namespace yas::playing::timeline_utils

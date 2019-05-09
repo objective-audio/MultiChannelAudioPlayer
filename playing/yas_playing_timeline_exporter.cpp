@@ -187,7 +187,7 @@ struct timeline_exporter::impl : base::impl {
                           exporter_impl->_export_fragments(frags_range, task, weak_exporter);
                       }
                   },
-                  {.priority = playing::queue_priority::timeline}};
+                  {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
 
         this->_queue.push_back(std::move(task));
     }
@@ -206,7 +206,7 @@ struct timeline_exporter::impl : base::impl {
                                    exporter.impl_ptr<impl>()->_bg.timeline.insert_track(trk_idx, std::move(track));
                                }
                            },
-                           {.priority = playing::queue_priority::timeline}};
+                           {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
 
             this->_queue.push_back(std::move(insert_op));
         }
@@ -230,7 +230,7 @@ struct timeline_exporter::impl : base::impl {
                                   exporter.impl_ptr<impl>()->_bg.timeline.erase_track(trk_idx);
                               }
                           },
-                          {.priority = playing::queue_priority::timeline}};
+                          {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
 
             this->_queue.push_back(std::move(erase_op));
         }
@@ -258,7 +258,7 @@ struct timeline_exporter::impl : base::impl {
                               }
                           }
                       },
-                      {.priority = playing::queue_priority::timeline}};
+                      {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
 
             this->_queue.push_back(std::move(task));
         }
@@ -286,7 +286,7 @@ struct timeline_exporter::impl : base::impl {
                               track.erase_modules_for_range(range);
                           }
                       },
-                      {.priority = playing::queue_priority::timeline}};
+                      {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
 
             this->_queue.push_back(std::move(task));
         }
@@ -309,7 +309,7 @@ struct timeline_exporter::impl : base::impl {
                           track.insert_module(std::move(module), module_idx, range);
                       }
                   },
-                  {.priority = playing::queue_priority::timeline}};
+                  {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
 
         this->_queue.push_back(std::move(task));
 
@@ -327,7 +327,7 @@ struct timeline_exporter::impl : base::impl {
                           track.erase_module_at(module_idx, range);
                       }
                   },
-                  {.priority = playing::queue_priority::timeline}};
+                  {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
 
         this->_queue.push_back(std::move(task));
 
@@ -354,7 +354,8 @@ struct timeline_exporter::impl : base::impl {
                                }
                            }
                        },
-                       {.priority = playing::queue_priority::exporting, .cancel_id = timeline_cancel_matcher(range)}};
+                       {.priority = static_cast<std::size_t>(playing::queue_priority::exporting),
+                        .cancel_id = timeline_cancel_matcher(range)}};
 
         this->_queue.push_back(std::move(export_op));
     }
@@ -431,19 +432,29 @@ struct timeline_exporter::impl : base::impl {
             if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
                 auto const number_path = path_utils::number_file_path(this->_root_path, ch_idx, frag_idx);
 
-                std::ofstream stream{number_path};
+                std::ofstream stream{number_path, std::ios_base::out | std::ios_base::binary};
                 if (!stream) {
                     return error::open_number_stream_failed;
                 }
 
                 for (auto const &event_pair : number_events) {
                     proc::time::frame::type const &frame = event_pair.first;
+
+                    if (char const *data = timeline_utils::char_frame_data(frame)) {
+                        stream.write(timeline_utils::char_frame_data(frame), sizeof(proc::time::frame::type));
+                        if (stream.fail()) {
+                            return error::write_number_stream_failed;
+                        }
+                    }
+
                     proc::number_event const &event = event_pair.second;
 
+                    /*
                     stream << std::to_string(frame);
                     stream << ",";
                     stream << timeline_utils::to_string(event);
                     stream << ",";
+                     */
                 }
 
                 stream.close();
@@ -569,6 +580,8 @@ std::string yas::to_string(timeline_exporter::error const &error) {
             return "open_signal_stream_failed";
         case timeline_exporter::error::open_number_stream_failed:
             return "open_number_stream_failed";
+        case timeline_exporter::error::write_number_stream_failed:
+            return "write_number_stream_failed";
         case timeline_exporter::error::get_content_paths_failed:
             return "get_content_paths_failed";
     }

@@ -13,7 +13,7 @@ using frame_index_t = proc::frame_index_t;
 using length_t = proc::length_t;
 using sample_rate_t = proc::sample_rate_t;
 
-enum sample_store_type : char {
+enum class sample_store_type : char {
     unknown = 0,
     f64 = 1,
     f32 = 2,
@@ -28,7 +28,7 @@ enum sample_store_type : char {
     b = 11,
 };
 
-enum queue_priority : std::size_t {
+enum class queue_priority : std::size_t {
     playing = 0,
     timeline = 1,
     exporting = 2,

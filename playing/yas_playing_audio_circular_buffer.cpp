@@ -83,7 +83,8 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
                   auto load_result = container_ptr->load(frag_idx, *load_handler_ptr);
 #warning todo エラーハンドリングする？
               },
-              task_option_t{.push_cancel_id = container_ptr->identifier, .priority = queue_priority::playing}};
+              task_option_t{.push_cancel_id = container_ptr->identifier,
+                            .priority = static_cast<std::size_t>(queue_priority::playing)}};
 
     this->_queue.push_back(std::move(task));
 }

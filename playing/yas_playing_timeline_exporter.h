@@ -14,13 +14,13 @@ namespace yas::playing {
 struct timeline_exporter : base {
     class impl;
 
-    enum method {
+    enum class method {
         reset,
         export_began,
         export_ended,
     };
 
-    enum error {
+    enum class error {
         remove_fragment_failed,
         create_directory_failed,
         open_signal_stream_failed,

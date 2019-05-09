@@ -17,7 +17,7 @@ struct audio_buffer_container {
     using ptr = std::shared_ptr<audio_buffer_container>;
     using wptr = std::weak_ptr<audio_buffer_container>;
 
-    enum state {
+    enum class state {
         unloaded,
         loaded,
     };

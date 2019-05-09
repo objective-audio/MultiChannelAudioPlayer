@@ -7,6 +7,7 @@
 #include <cpp_utils/yas_base.h>
 #include <cpp_utils/yas_task.h>
 #include "yas_playing_audio_player_protocol.h"
+#include "yas_playing_types.h"
 
 namespace yas::playing {
 struct audio_player : base {
@@ -17,13 +18,13 @@ struct audio_player : base {
 
     void set_ch_mapping(std::vector<int64_t>);
     void set_playing(bool const);
-    void seek(int64_t const play_frame);
-    void reload(int64_t const ch_idx, int64_t const frag_idx);
+    void seek(frame_index_t const play_frame);
+    void reload(channel_index_t const ch_idx, fragment_index_t const frag_idx);
     void reload_all();
 
     [[nodiscard]] std::string const &root_path() const;
-    [[nodiscard]] std::vector<int64_t> const &ch_mapping() const;
+    [[nodiscard]] std::vector<channel_index_t> const &ch_mapping() const;
     [[nodiscard]] bool is_playing() const;
-    [[nodiscard]] int64_t play_frame() const;
+    [[nodiscard]] frame_index_t play_frame() const;
 };
 }  // namespace yas::playing

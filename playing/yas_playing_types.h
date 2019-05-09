@@ -7,6 +7,7 @@
 #include <processing/yas_processing_types.h>
 
 namespace yas::playing {
+using channel_index_t = proc::channel_index_t;
 using fragment_index_t = int64_t;
 using frame_index_t = proc::frame_index_t;
 using length_t = proc::length_t;

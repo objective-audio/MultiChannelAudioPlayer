@@ -20,10 +20,10 @@ using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
     std::string const _root_path;
-    chaining::value::holder<std::vector<int64_t>> _ch_mapping{std::vector<int64_t>{}};
+    chaining::value::holder<std::vector<channel_index_t>> _ch_mapping{std::vector<channel_index_t>{}};
 
     // ロックここから
-    std::atomic<int64_t> _play_frame = 0;
+    std::atomic<frame_index_t> _play_frame = 0;
     std::atomic<bool> _is_playing = false;
     // ロックここまで
 
@@ -43,7 +43,7 @@ struct audio_player::impl : base::impl {
         this->_renderable.set_is_rendering(is_playing);
     }
 
-    void seek(int64_t const play_frame) {
+    void seek(frame_index_t const play_frame) {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
         uint32_t const file_length = this->_frag_length();
@@ -61,7 +61,7 @@ struct audio_player::impl : base::impl {
         }
     }
 
-    void reload(int64_t const ch_idx, int64_t const frag_idx) {
+    void reload(channel_index_t const ch_idx, fragment_index_t const frag_idx) {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
         if (this->_circular_buffers.size() <= ch_idx) {
@@ -164,12 +164,12 @@ struct audio_player::impl : base::impl {
                 return;
             }
 
-            int64_t const begin_play_frame = player_impl->_play_frame;
-            int64_t play_frame = begin_play_frame;
+            frame_index_t const begin_play_frame = player_impl->_play_frame;
+            frame_index_t play_frame = begin_play_frame;
             uint32_t const out_length = out_buffer.frame_length();
-            int64_t const next_frame = play_frame + out_length;
+            frame_index_t const next_frame = play_frame + out_length;
             player_impl->_play_frame = next_frame;
-            uint32_t const file_length = player_impl->_frag_length();
+            uint32_t const frag_length = player_impl->_frag_length();
             audio::format const &out_format = out_buffer.format();
             audio::format const read_format = audio::format{{.sample_rate = out_format.sample_rate(),
                                                              .pcm_format = out_format.pcm_format(),
@@ -178,7 +178,7 @@ struct audio_player::impl : base::impl {
             auto read_buffer = player_impl->_get_or_create_read_buffer(read_format, out_length);
 
             while (play_frame < next_frame) {
-                auto const info = audio_utils::processing_info{play_frame, next_frame, file_length};
+                auto const info = audio_utils::processing_info{play_frame, next_frame, frag_length};
                 uint32_t const to_frame = uint32_t(play_frame - begin_play_frame);
 
                 auto each = make_fast_each(out_format.channel_count());
@@ -226,7 +226,7 @@ struct audio_player::impl : base::impl {
         auto const &format = *format_opt;
 
         uint32_t const ch_count = this->_ch_count.raw();
-        std::vector<int64_t> const ch_mapping = this->_actually_ch_mapping();
+        std::vector<channel_index_t> const ch_mapping = this->_actually_ch_mapping();
 
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
@@ -234,12 +234,13 @@ struct audio_player::impl : base::impl {
         this->_circular_buffers.clear();
 
         if (auto top_file_idx = this->_top_frag_idx(); top_file_idx && ch_count > 0) {
-            auto each = make_fast_each(int64_t(ch_count));
+            auto each = make_fast_each(channel_index_t(ch_count));
             while (yas_each_next(each)) {
                 auto const ch_idx = ch_mapping.at(yas_each_index(each));
                 auto const channel_path = path_utils::channel_path(this->_root_path, ch_idx);
                 auto buffer = make_audio_circular_buffer(
-                    format, 3, this->_queue, [channel_path](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+                    format, 3, this->_queue,
+                    [channel_path](audio::pcm_buffer &buffer, fragment_index_t const frag_idx) {
                         buffer.clear();
 
                         auto const frag_path = path_utils::fragment_path(channel_path, frag_idx);
@@ -275,10 +276,10 @@ struct audio_player::impl : base::impl {
                             return true;
                         }
 
-                        int64_t const sample_rate = std::round(format.sample_rate());
-                        int64_t const buf_top_frame = frag_idx * sample_rate;
-                        int64_t const buf_next_frame = buf_top_frame + buffer.frame_length();
-                        int64_t const sample_byte_count = format.sample_byte_count();
+                        sample_rate_t const sample_rate = std::round(format.sample_rate());
+                        frame_index_t const buf_top_frame = frag_idx * sample_rate;
+                        frame_index_t const buf_next_frame = buf_top_frame + buffer.frame_length();
+                        frame_index_t const sample_byte_count = format.sample_byte_count();
 
                         for (signal_file_info const &info : infos) {
                             if (info.range.frame < buf_top_frame || buf_next_frame < info.range.next_frame()) {
@@ -290,8 +291,8 @@ struct audio_player::impl : base::impl {
                                 return false;
                             }
 
-                            int64_t const frame = (info.range.frame - buf_top_frame) * sample_byte_count;
-                            int64_t const length = info.range.length * sample_byte_count;
+                            frame_index_t const frame = (info.range.frame - buf_top_frame) * sample_byte_count;
+                            length_t const length = info.range.length * sample_byte_count;
                             char *data_ptr = timeline_utils::char_data(buffer);
 
                             stream.read(&data_ptr[frame], length);
@@ -325,7 +326,7 @@ struct audio_player::impl : base::impl {
         return this->_read_buffer;
     }
 
-    std::optional<int64_t> _top_frag_idx() {
+    std::optional<fragment_index_t> _top_frag_idx() {
         std::lock_guard<std::recursive_mutex> lock(this->_mutex);
 
         uint32_t const file_length = this->_frag_length();
@@ -336,8 +337,8 @@ struct audio_player::impl : base::impl {
         }
     }
 
-    std::vector<int64_t> _actually_ch_mapping() {
-        std::vector<int64_t> mapped;
+    std::vector<channel_index_t> _actually_ch_mapping() {
+        std::vector<channel_index_t> mapped;
 
         auto each = make_fast_each(this->_ch_count.raw());
         while (yas_each_next(each)) {
@@ -347,7 +348,7 @@ struct audio_player::impl : base::impl {
         return mapped;
     }
 
-    int64_t _map_ch_idx(int64_t ch_idx) {
+    channel_index_t _map_ch_idx(channel_index_t ch_idx) {
         auto const &mapping = this->_ch_mapping.raw();
 
         if (ch_idx < mapping.size()) {
@@ -366,7 +367,7 @@ audio_player::audio_player(audio_renderable renderable, std::string const &root_
 audio_player::audio_player(std::nullptr_t) : base(nullptr) {
 }
 
-void audio_player::set_ch_mapping(std::vector<int64_t> ch_mapping) {
+void audio_player::set_ch_mapping(std::vector<channel_index_t> ch_mapping) {
     impl_ptr<impl>()->_ch_mapping.set_value(std::move(ch_mapping));
 }
 
@@ -374,11 +375,11 @@ void audio_player::set_playing(bool const is_playing) {
     impl_ptr<impl>()->set_playing(is_playing);
 }
 
-void audio_player::seek(int64_t const play_frame) {
+void audio_player::seek(frame_index_t const play_frame) {
     impl_ptr<impl>()->seek(play_frame);
 }
 
-void audio_player::reload(int64_t const ch_idx, int64_t const frag_idx) {
+void audio_player::reload(channel_index_t const ch_idx, fragment_index_t const frag_idx) {
     impl_ptr<impl>()->reload(ch_idx, frag_idx);
 }
 
@@ -390,7 +391,7 @@ std::string const &audio_player::root_path() const {
     return impl_ptr<impl>()->_root_path;
 }
 
-std::vector<int64_t> const &audio_player::ch_mapping() const {
+std::vector<channel_index_t> const &audio_player::ch_mapping() const {
     return impl_ptr<impl>()->_ch_mapping.raw();
 }
 
@@ -398,6 +399,6 @@ bool audio_player::is_playing() const {
     return impl_ptr<impl>()->_is_playing;
 }
 
-int64_t audio_player::play_frame() const {
+frame_index_t audio_player::play_frame() const {
     return impl_ptr<impl>()->_play_frame;
 }

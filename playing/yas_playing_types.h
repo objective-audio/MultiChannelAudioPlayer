@@ -4,9 +4,14 @@
 
 #pragma once
 
-#include <audio/yas_audio_format.h>
+#include <processing/yas_processing_types.h>
 
 namespace yas::playing {
+using fragment_index_t = int64_t;
+using frame_index_t = proc::frame_index_t;
+using length_t = proc::length_t;
+using sample_rate_t = proc::sample_rate_t;
+
 enum queue_priority : std::size_t {
     playing = 0,
     timeline = 1,

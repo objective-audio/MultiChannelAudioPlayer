@@ -10,6 +10,7 @@
 #include <cpp_utils/yas_result.h>
 #include <mutex>
 #include <optional>
+#include "yas_playing_types.h"
 
 namespace yas::playing {
 struct audio_buffer_container {
@@ -49,14 +50,14 @@ struct audio_buffer_container {
 
     identifier const identifier;
 
-    [[nodiscard]] std::optional<int64_t> fragment_idx() const;
-    [[nodiscard]] std::optional<int64_t> begin_frame() const;
+    [[nodiscard]] std::optional<fragment_index_t> fragment_idx() const;
+    [[nodiscard]] std::optional<frame_index_t> begin_frame() const;
     [[nodiscard]] audio::format const &format() const;
     [[nodiscard]] bool contains(int64_t const frame) const;
 
-    void prepare_loading(int64_t const frag_idx);
+    void prepare_loading(fragment_index_t const frag_idx);
     load_result_t load(int64_t const frag_idx, load_f const &);
-    read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, int64_t const play_frame) const;
+    read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, frame_index_t const play_frame) const;
 
    protected:
     audio_buffer_container(audio::pcm_buffer &&buffer);

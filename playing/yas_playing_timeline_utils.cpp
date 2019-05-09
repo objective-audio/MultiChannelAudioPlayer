@@ -83,27 +83,27 @@ char const *timeline_utils::char_frame_data(proc::time::frame::type const &frame
 
 sample_store_type timeline_utils::to_sample_store_type(std::type_info const &type) {
     if (type == typeid(double)) {
-        return sample_store_type::f64;
+        return sample_store_type::float64;
     } else if (type == typeid(float)) {
-        return sample_store_type::f32;
+        return sample_store_type::float32;
     } else if (type == typeid(int64_t)) {
-        return sample_store_type::i64;
+        return sample_store_type::int64;
     } else if (type == typeid(uint64_t)) {
-        return sample_store_type::u64;
+        return sample_store_type::uint64;
     } else if (type == typeid(int32_t)) {
-        return sample_store_type::i32;
+        return sample_store_type::int32;
     } else if (type == typeid(uint32_t)) {
-        return sample_store_type::u32;
+        return sample_store_type::uint32;
     } else if (type == typeid(int16_t)) {
-        return sample_store_type::i16;
+        return sample_store_type::int16;
     } else if (type == typeid(uint16_t)) {
-        return sample_store_type::u16;
+        return sample_store_type::uint16;
     } else if (type == typeid(int8_t)) {
-        return sample_store_type::i8;
+        return sample_store_type::int8;
     } else if (type == typeid(uint8_t)) {
-        return sample_store_type::u8;
+        return sample_store_type::uint8;
     } else if (type == typeid(boolean)) {
-        return sample_store_type::b;
+        return sample_store_type::boolean;
     } else {
         return sample_store_type::unknown;
     }
@@ -111,27 +111,27 @@ sample_store_type timeline_utils::to_sample_store_type(std::type_info const &typ
 
 std::type_info const &timeline_utils::to_sample_type(sample_store_type const &store_type) {
     switch (store_type) {
-        case sample_store_type::f64:
+        case sample_store_type::float64:
             return typeid(double);
-        case sample_store_type::f32:
+        case sample_store_type::float32:
             return typeid(float);
-        case sample_store_type::i64:
+        case sample_store_type::int64:
             return typeid(int64_t);
-        case sample_store_type::u64:
+        case sample_store_type::uint64:
             return typeid(uint64_t);
-        case sample_store_type::i32:
+        case sample_store_type::int32:
             return typeid(int32_t);
-        case sample_store_type::u32:
+        case sample_store_type::uint32:
             return typeid(int32_t);
-        case sample_store_type::i16:
+        case sample_store_type::int16:
             return typeid(int16_t);
-        case sample_store_type::u16:
+        case sample_store_type::uint16:
             return typeid(uint16_t);
-        case sample_store_type::i8:
+        case sample_store_type::int8:
             return typeid(int8_t);
-        case sample_store_type::u8:
+        case sample_store_type::uint8:
             return typeid(uint8_t);
-        case sample_store_type::b:
+        case sample_store_type::boolean:
             return typeid(boolean);
         default:
             return typeid(std::nullptr_t);

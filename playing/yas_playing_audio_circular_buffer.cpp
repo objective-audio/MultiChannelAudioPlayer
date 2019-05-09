@@ -14,13 +14,13 @@ using namespace yas::playing;
 
 audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::size_t const count, task_queue &&queue,
                                              audio_buffer_container::load_f &&load_handler)
-    : _frag_length(static_cast<uint32_t>(format.sample_rate())),
+    : _frag_length(static_cast<length_t>(format.sample_rate())),
       _queue(std::move(queue)),
       _container_count(count),
       _load_handler_ptr(std::make_shared<audio_buffer_container::load_f>(std::move(load_handler))) {
     auto each = make_fast_each(count);
     while (yas_each_next(each)) {
-        auto ptr = make_audio_buffer_container(audio::pcm_buffer{format, this->_frag_length});
+        auto ptr = make_audio_buffer_container(audio::pcm_buffer{format, static_cast<uint32_t>(this->_frag_length)});
         this->_containers.push_back(std::move(ptr));
     }
 }

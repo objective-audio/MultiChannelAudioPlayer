@@ -24,7 +24,7 @@ struct audio_circular_buffer {
                           audio_buffer_container::load_f &&);
 
    private:
-    uint32_t const _frag_length;
+    length_t const _frag_length;
     std::size_t const _container_count;
     std::shared_ptr<audio_buffer_container::load_f> const _load_handler_ptr;
     std::deque<audio_buffer_container::ptr> _containers;

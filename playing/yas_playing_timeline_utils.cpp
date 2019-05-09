@@ -109,6 +109,10 @@ sample_store_type timeline_utils::to_sample_store_type(std::type_info const &typ
     }
 }
 
+char const *timeline_utils::char_sample_store_type_data(sample_store_type const &store_type) {
+    return reinterpret_cast<char const *>(&store_type);
+}
+
 std::type_info const &timeline_utils::to_sample_type(sample_store_type const &store_type) {
     switch (store_type) {
         case sample_store_type::float64:

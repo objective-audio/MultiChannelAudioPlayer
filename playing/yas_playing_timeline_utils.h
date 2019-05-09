@@ -17,6 +17,7 @@ namespace yas::playing::timeline_utils {
 [[nodiscard]] char const *char_data(proc::signal_event const &);
 [[nodiscard]] char const *char_frame_data(proc::time::frame::type const &);
 [[nodiscard]] sample_store_type to_sample_store_type(std::type_info const &);
+[[nodiscard]] char const *char_sample_store_type_data(sample_store_type const &);
 [[nodiscard]] std::type_info const &to_sample_type(sample_store_type const &);
 [[nodiscard]] char const *char_value_data(proc::number_event const &);
 [[nodiscard]] char *char_data(audio::pcm_buffer &);

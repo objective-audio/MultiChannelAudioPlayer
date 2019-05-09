@@ -441,7 +441,7 @@ struct timeline_exporter::impl : base::impl {
                     proc::time::frame::type const &frame = event_pair.first;
 
                     if (char const *data = timeline_utils::char_frame_data(frame)) {
-                        stream.write(timeline_utils::char_frame_data(frame), sizeof(proc::time::frame::type));
+                        stream.write(data, sizeof(proc::time::frame::type));
                         if (stream.fail()) {
                             return error::write_number_stream_failed;
                         }
@@ -449,12 +449,20 @@ struct timeline_exporter::impl : base::impl {
 
                     proc::number_event const &event = event_pair.second;
 
-                    /*
-                    stream << std::to_string(frame);
-                    stream << ",";
-                    stream << timeline_utils::to_string(event);
-                    stream << ",";
-                     */
+                    auto const store_type = timeline_utils::to_sample_store_type(event.sample_type());
+                    if (char const *data = timeline_utils::char_sample_store_type_data(store_type)) {
+                        stream.write(data, sizeof(sample_store_type));
+                        if (stream.fail()) {
+                            return error::write_number_stream_failed;
+                        }
+                    }
+
+                    if (char const *data = timeline_utils::char_value_data(event)) {
+                        stream.write(data, event.sample_byte_count());
+                        if (stream.fail()) {
+                            return error::write_number_stream_failed;
+                        }
+                    }
                 }
 
                 stream.close();

@@ -9,19 +9,19 @@
 
 using namespace yas::playing;
 
-std::string path_utils::channel_name(int64_t const ch_idx) {
+std::string path_utils::channel_name(channel_index_t const ch_idx) {
     return std::to_string(ch_idx);
 }
 
-std::string path_utils::fragment_name(int64_t const frag_idx) {
+std::string path_utils::fragment_name(fragment_index_t const frag_idx) {
     return std::to_string(frag_idx);
 }
 
-std::string path_utils::channel_path(std::string const &root_path, int64_t const ch_idx) {
+std::string path_utils::channel_path(std::string const &root_path, channel_index_t const ch_idx) {
     return file_path{root_path}.appending(channel_name(ch_idx)).string();
 }
 
-std::string path_utils::fragment_path(std::string const &channel_path, int64_t const frag_idx) {
+std::string path_utils::fragment_path(std::string const &channel_path, fragment_index_t const frag_idx) {
     return file_path{channel_path}.appending(fragment_name(frag_idx)).string();
 }
 
@@ -34,17 +34,20 @@ std::string path_utils::number_file_path(std::string const &fragment_path) {
     return file_path{fragment_path}.appending("number").string();
 }
 
-std::string path_utils::fragment_path(std::string const &root_path, int64_t const ch_idx, int64_t const frag_idx) {
+std::string path_utils::fragment_path(std::string const &root_path, channel_index_t const ch_idx,
+                                      fragment_index_t const frag_idx) {
     return file_path{channel_path(root_path, ch_idx)}.appending(fragment_name(frag_idx)).string();
 }
 
-std::string path_utils::signal_file_path(std::string const &root_path, int64_t const ch_idx, int64_t const frag_idx,
-                                         proc::time::range const &range, std::type_info const &type_info) {
+std::string path_utils::signal_file_path(std::string const &root_path, channel_index_t const ch_idx,
+                                         fragment_index_t const frag_idx, proc::time::range const &range,
+                                         std::type_info const &type_info) {
     return file_path{fragment_path(root_path, ch_idx, frag_idx)}
         .appending(to_signal_file_name(range, type_info))
         .string();
 }
 
-std::string path_utils::number_file_path(std::string const &root_path, int64_t const ch_idx, int64_t const frag_idx) {
+std::string path_utils::number_file_path(std::string const &root_path, channel_index_t const ch_idx,
+                                         fragment_index_t const frag_idx) {
     return file_path{fragment_path(root_path, ch_idx, frag_idx)}.appending("number").string();
 }

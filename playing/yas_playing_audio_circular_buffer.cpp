@@ -14,18 +14,18 @@ using namespace yas::playing;
 
 audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::size_t const count, task_queue &&queue,
                                              audio_buffer_container::load_f &&load_handler)
-    : _file_length(static_cast<uint32_t>(format.sample_rate())),
+    : _frag_length(static_cast<uint32_t>(format.sample_rate())),
       _queue(std::move(queue)),
       _container_count(count),
       _load_handler_ptr(std::make_shared<audio_buffer_container::load_f>(std::move(load_handler))) {
     auto each = make_fast_each(count);
     while (yas_each_next(each)) {
-        auto ptr = make_audio_buffer_container(audio::pcm_buffer{format, this->_file_length});
+        auto ptr = make_audio_buffer_container(audio::pcm_buffer{format, this->_frag_length});
         this->_containers.push_back(std::move(ptr));
     }
 }
 
-void audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer, int64_t const play_frame) {
+void audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer, frame_index_t const play_frame) {
     auto lock = std::unique_lock<std::recursive_mutex>(this->_container_mutex, std::try_to_lock);
     if (!lock.owns_lock()) {
         return;
@@ -36,7 +36,7 @@ void audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer, int6
     container_ptr->read_into_buffer(out_buffer, play_frame);
 }
 
-void audio_circular_buffer::rotate_buffer(int64_t const next_frag_idx) {
+void audio_circular_buffer::rotate_buffer(fragment_index_t const next_frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
     auto &container_ptr = this->_containers.front();
@@ -44,7 +44,7 @@ void audio_circular_buffer::rotate_buffer(int64_t const next_frag_idx) {
     if (container_ptr->fragment_idx() == next_frag_idx - 1) {
         this->_containers.push_back(container_ptr);
         this->_containers.pop_front();
-        int64_t const loading_frag_idx = next_frag_idx + this->_container_count - 1;
+        fragment_index_t const loading_frag_idx = next_frag_idx + this->_container_count - 1;
         container_ptr->prepare_loading(loading_frag_idx);
         this->_load_container(container_ptr, loading_frag_idx);
     } else {
@@ -52,8 +52,8 @@ void audio_circular_buffer::rotate_buffer(int64_t const next_frag_idx) {
     }
 }
 
-void audio_circular_buffer::reload_all(int64_t const top_frag_idx) {
-    int64_t load_frag_idx = top_frag_idx;
+void audio_circular_buffer::reload_all(fragment_index_t const top_frag_idx) {
+    fragment_index_t load_frag_idx = top_frag_idx;
 
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
@@ -64,7 +64,7 @@ void audio_circular_buffer::reload_all(int64_t const top_frag_idx) {
     }
 }
 
-void audio_circular_buffer::reload(int64_t const frag_idx) {
+void audio_circular_buffer::reload(fragment_index_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
     for (auto &container_ptr : this->_containers) {
@@ -75,7 +75,8 @@ void audio_circular_buffer::reload(int64_t const frag_idx) {
     }
 }
 
-void audio_circular_buffer::_load_container(audio_buffer_container::ptr container_ptr, int64_t const frag_idx) {
+void audio_circular_buffer::_load_container(audio_buffer_container::ptr container_ptr,
+                                            fragment_index_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
     task task{[container_ptr, frag_idx, load_handler_ptr = this->_load_handler_ptr](yas::task const &) {

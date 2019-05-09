@@ -53,7 +53,7 @@ struct audio_buffer_container {
     [[nodiscard]] std::optional<fragment_index_t> fragment_idx() const;
     [[nodiscard]] std::optional<frame_index_t> begin_frame() const;
     [[nodiscard]] audio::format const &format() const;
-    [[nodiscard]] bool contains(int64_t const frame) const;
+    [[nodiscard]] bool contains(frame_index_t const frame) const;
 
     void prepare_loading(fragment_index_t const frag_idx);
     load_result_t load(fragment_index_t const frag_idx, load_f const &);

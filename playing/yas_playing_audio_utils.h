@@ -6,12 +6,13 @@
 
 #include <cstdint>
 #include <optional>
+#include "yas_playing_types.h"
 
 namespace yas::playing::audio_utils {
 struct processing_info {
     uint32_t const length;
-    std::optional<int64_t> const next_frag_idx;
+    std::optional<fragment_index_t> const next_frag_idx;
 
-    processing_info(int64_t const play_frame, int64_t const next_frame, uint32_t const file_length);
+    processing_info(frame_index_t const play_frame, frame_index_t const next_frame, uint32_t const file_length);
 };
 }  // namespace yas::playing::audio_utils

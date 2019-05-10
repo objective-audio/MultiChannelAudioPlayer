@@ -6,6 +6,7 @@
 #include <audio/yas_audio_format.h>
 #include <cpp_utils/yas_boolean.h>
 #include "yas_playing_math.h"
+#include <fstream>
 
 using namespace yas;
 using namespace yas::playing;
@@ -170,6 +171,89 @@ char const *timeline_utils::char_value_data(proc::number_event const &event) {
     } else {
         return nullptr;
     }
+}
+
+std::multimap<frame_index_t, proc::number_event> timeline_utils::read_number_events(std::string const &path) {
+    std::multimap<frame_index_t, proc::number_event> events;
+    
+    auto stream = std::ifstream{path, std::ios_base::in | std::ios_base::binary};
+    if (stream.fail()) {
+        return events;
+    }
+    
+    while (!stream.fail() && !stream.eof()) {
+        proc::time::frame::type frame;
+        stream.read((char *)&frame, sizeof(proc::time::frame::type));
+        if (stream.fail() || stream.gcount() != sizeof(proc::time::frame::type)) {
+            return events;
+        }
+        
+        sample_store_type store_type;
+        stream.read((char *)&store_type, sizeof(sample_store_type));
+        if (stream.fail() || stream.gcount() != sizeof(sample_store_type)) {
+            return events;
+        }
+        
+        switch (store_type) {
+            case sample_store_type::float64: {
+                double value;
+                stream.read((char *)&value, sizeof(double));
+                if (stream.fail()) {
+                    return events;
+                }
+                
+            } break;
+            case sample_store_type::float32: {
+                float value;
+                stream.read((char *)&value, sizeof(float));
+            }break;
+            case sample_store_type::int64: {
+                int64_t value;
+                stream.read((char *)&value, sizeof(int64_t));
+            }break;
+            case sample_store_type::uint64: {
+                uint64_t value;
+                stream.read((char *)&value, sizeof(uint64_t));
+            }break;
+            case sample_store_type::int32: {
+                int32_t value;
+                stream.read((char *)&value, sizeof(int32_t));
+            }break;
+            case sample_store_type::uint32: {
+                uint32_t value;
+                stream.read((char *)&value, sizeof(uint32_t));
+            }break;
+            case sample_store_type::int16:{
+                int16_t value;
+                stream.read((char *)&value, sizeof(int16_t));
+            }break;
+            case sample_store_type::uint16:{
+                uint16_t value;
+                stream.read((char *)&value, sizeof(uint16_t));
+            }break;
+            case sample_store_type::int8:{
+                int8_t value;
+                stream.read((char *)&value, sizeof(int8_t));
+            }break;
+            case sample_store_type::uint8:{
+                uint8_t value;
+                stream.read((char *)&value, sizeof(uint8_t));
+            }break;
+            case sample_store_type::boolean:{
+                bool value;
+                stream.read((char *)&value, sizeof(bool));
+            }break;
+                
+            default:
+                return events;
+        }
+        int64_t value;
+        stream.read((char *)&value, sizeof(int64_t));
+        XCTAssertEqual(stream.gcount(), sizeof(int64_t));
+        XCTAssertEqual(value, 11);
+    }
+    
+    return events;
 }
 
 char *timeline_utils::char_data(audio::pcm_buffer &buffer) {

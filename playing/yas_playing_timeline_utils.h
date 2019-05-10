@@ -20,5 +20,6 @@ namespace yas::playing::timeline_utils {
 [[nodiscard]] char const *char_sample_store_type_data(sample_store_type const &);
 [[nodiscard]] std::type_info const &to_sample_type(sample_store_type const &);
 [[nodiscard]] char const *char_value_data(proc::number_event const &);
+    [[nodiscard]] std::multimap<frame_index_t, proc::number_event> read_number_events(std::string const &path);
 [[nodiscard]] char *char_data(audio::pcm_buffer &);
 }  // namespace yas::playing::timeline_utils

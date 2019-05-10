@@ -13,7 +13,6 @@
 
 namespace yas::playing::timeline_utils {
 [[nodiscard]] proc::time::range fragments_range(proc::time::range const &, proc::sample_rate_t const);
-[[nodiscard]] std::string to_string(proc::number_event const &);
 [[nodiscard]] char const *char_data(proc::signal_event const &);
 [[nodiscard]] char const *char_frame_data(proc::time::frame::type const &);
 [[nodiscard]] sample_store_type to_sample_store_type(std::type_info const &);

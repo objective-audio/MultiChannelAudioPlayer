@@ -39,7 +39,7 @@
 		B629BD822213A516008B2761 /* yas_playing_timeline_canceling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B629BD802213A516008B2761 /* yas_playing_timeline_canceling.cpp */; };
 		B629BD832213A516008B2761 /* yas_playing_timeline_canceling.h in Headers */ = {isa = PBXBuildFile; fileRef = B629BD812213A516008B2761 /* yas_playing_timeline_canceling.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6A9FF06226C778D00E0C565 /* yas_playing_timeline_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6A9FF04226C778D00E0C565 /* yas_playing_timeline_utils.cpp */; };
-		B6A9FF07226C778D00E0C565 /* yas_playing_timeline_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A9FF05226C778D00E0C565 /* yas_playing_timeline_utils.h */; };
+		B6A9FF07226C778D00E0C565 /* yas_playing_timeline_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A9FF05226C778D00E0C565 /* yas_playing_timeline_utils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B33BDB227F1A8F004F87CD /* yas_playing_audio_configulation.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B33BDA227F1A79004F87CD /* yas_playing_audio_configulation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D4C60D21EC6455004A95A8 /* yas_playing_umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B62879BE21EB623F00566CC1 /* yas_playing_umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */

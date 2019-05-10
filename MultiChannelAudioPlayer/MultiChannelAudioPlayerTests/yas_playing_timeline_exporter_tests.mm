@@ -16,11 +16,6 @@ struct cpp {
     std::string root_path = system_path_utils::directory_url(system_path_utils::dir::document).appending("root").path();
     task_queue queue{queue_priority_count};
 };
-
-static std::string string_from_number_file(std::string const &path) {
-    auto stream = std::ifstream{path};
-    return std::string((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
-}
 }
 
 @interface yas_playing_timeline_exporter_tests : XCTestCase
@@ -312,8 +307,13 @@ static std::string string_from_number_file(std::string const &path) {
     XCTAssertTrue(file_manager::content_exists(root_path));
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
-    XCTAssertEqual(timeline_exporter_test::string_from_number_file(path_utils::number_file_path(root_path, 0, 0)),
-                   "0,100,");
+    if (auto events = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
+        XCTAssertEqual(events->size(), 1);
+        XCTAssertEqual(events->begin()->first, 0);
+        XCTAssertEqual(events->begin()->second.get<int64_t>(), 100);
+    } else {
+        XCTAssert(0);
+    }
 
     auto module2 = proc::make_number_module<Float64>(1.0);
     module2.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
@@ -323,10 +323,15 @@ static std::string string_from_number_file(std::string const &path) {
 
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 1, 1)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 1, 1)));
-    XCTAssertEqual(timeline_exporter_test::string_from_number_file(path_utils::number_file_path(root_path, 1, 1)),
-                   "2,1.000000,");
+    if (auto events = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 1, 1))) {
+        XCTAssertEqual(events->size(), 1);
+        XCTAssertEqual(events->begin()->first, 2);
+        XCTAssertEqual(events->begin()->second.get<Float64>(), 1.0);
+    } else {
+        XCTAssert(0);
+    }
 
-    auto module3 = proc::make_number_module<Float64>(2.0);
+    auto module3 = proc::make_number_module<boolean>(true);
     module3.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
     track.push_back_module(module3, {0, 1});
 
@@ -334,8 +339,17 @@ static std::string string_from_number_file(std::string const &path) {
 
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
-    XCTAssertEqual(timeline_exporter_test::string_from_number_file(path_utils::number_file_path(root_path, 0, 0)),
-                   "0,100,0,2.000000,");
+    if (auto events = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
+        XCTAssertEqual(events->size(), 2);
+        auto iterator = events->begin();
+        XCTAssertEqual(iterator->first, 0);
+        XCTAssertEqual(iterator->second.get<int64_t>(), 100);
+        ++iterator;
+        XCTAssertEqual(iterator->first, 0);
+        XCTAssertEqual(iterator->second.get<boolean>(), true);
+    } else {
+        XCTAssert(0);
+    }
 
     track.erase_module(module3, {0, 1});
 
@@ -343,8 +357,13 @@ static std::string string_from_number_file(std::string const &path) {
 
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
-    XCTAssertEqual(timeline_exporter_test::string_from_number_file(path_utils::number_file_path(root_path, 0, 0)),
-                   "0,100,");
+    if (auto events = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
+        XCTAssertEqual(events->size(), 1);
+        XCTAssertEqual(events->begin()->first, 0);
+        XCTAssertEqual(events->begin()->second.get<int64_t>(), 100);
+    } else {
+        XCTAssert(0);
+    }
 
     track.erase_module(module1, {0, 1});
 

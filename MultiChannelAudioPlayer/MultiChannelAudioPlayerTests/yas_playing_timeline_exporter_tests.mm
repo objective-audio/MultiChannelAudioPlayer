@@ -150,9 +150,25 @@ static std::string string_from_number_file(std::string const &path) {
     }
 
     {
-        auto stream = std::ifstream{path_utils::number_file_path(root_path, 1, 5)};
-        std::string str((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
-        XCTAssertEqual(str, "10,11,");
+        auto stream =
+            std::ifstream{path_utils::number_file_path(root_path, 1, 5), std::ios_base::in | std::ios_base::binary};
+        XCTAssertFalse(stream.fail());
+        proc::time::frame::type frame;
+        stream.read((char *)&frame, sizeof(proc::time::frame::type));
+        XCTAssertEqual(stream.gcount(), sizeof(proc::time::frame::type));
+        XCTAssertEqual(frame, 10);
+        sample_store_type store_type;
+        stream.read((char *)&store_type, sizeof(sample_store_type));
+        XCTAssertEqual(stream.gcount(), sizeof(sample_store_type));
+        XCTAssertEqual(store_type, sample_store_type::int64);
+        int64_t value;
+        stream.read((char *)&value, sizeof(int64_t));
+        XCTAssertEqual(stream.gcount(), sizeof(int64_t));
+        XCTAssertEqual(value, 11);
+        char dummy;
+        stream.read(&dummy, sizeof(char));
+        XCTAssertEqual(stream.gcount(), 0);
+        XCTAssertTrue(stream.eof());
     }
 }
 
@@ -245,9 +261,25 @@ static std::string string_from_number_file(std::string const &path) {
     values[0] = values[1] = values[2] = 0;
 
     {
-        auto path = path_utils::number_file_path(root_path, 1, 3);
-        auto str = timeline_exporter_test::string_from_number_file(path);
-        XCTAssertEqual(str, "10,11,");
+        auto stream =
+            std::ifstream{path_utils::number_file_path(root_path, 1, 3), std::ios_base::in | std::ios_base::binary};
+        XCTAssertFalse(stream.fail());
+        proc::time::frame::type frame;
+        stream.read((char *)&frame, sizeof(proc::time::frame::type));
+        XCTAssertEqual(stream.gcount(), sizeof(proc::time::frame::type));
+        XCTAssertEqual(frame, 10);
+        sample_store_type store_type;
+        stream.read((char *)&store_type, sizeof(sample_store_type));
+        XCTAssertEqual(stream.gcount(), sizeof(sample_store_type));
+        XCTAssertEqual(store_type, sample_store_type::int64);
+        int64_t value;
+        stream.read((char *)&value, sizeof(int64_t));
+        XCTAssertEqual(stream.gcount(), sizeof(int64_t));
+        XCTAssertEqual(value, 11);
+        char dummy;
+        stream.read(&dummy, sizeof(char));
+        XCTAssertEqual(stream.gcount(), 0);
+        XCTAssertTrue(stream.eof());
     }
 }
 

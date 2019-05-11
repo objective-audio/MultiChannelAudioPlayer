@@ -418,10 +418,9 @@ struct timeline_exporter::impl : base::impl {
                 proc::time::range const &range = event_pair.first;
                 proc::signal_event const &event = event_pair.second;
 
-                auto const signal_path =
-                    path_utils::signal_file_path(this->_root_path, ch_idx, frag_idx, range, event.sample_type());
+                auto const signal_path = make_signal_event_path(frag_path, range, event.sample_type());
 
-                std::ofstream stream{signal_path, std::ios_base::out | std::ios_base::binary};
+                std::ofstream stream{signal_path.string(), std::ios_base::out | std::ios_base::binary};
                 if (!stream) {
                     return error::open_signal_stream_failed;
                 }

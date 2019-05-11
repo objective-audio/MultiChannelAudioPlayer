@@ -52,11 +52,3 @@ std::string path_utils::channel_name(channel_index_t const ch_idx) {
 std::string path_utils::fragment_name(fragment_index_t const frag_idx) {
     return std::to_string(frag_idx);
 }
-
-std::string path_utils::signal_file_path(std::string const &root_path, channel_index_t const ch_idx,
-                                         fragment_index_t const frag_idx, proc::time::range const &range,
-                                         std::type_info const &sample_type) {
-    auto const ch_path = make_channel_path(root_path, ch_idx);
-    auto const frag_path = make_fragment_path(ch_path, frag_idx);
-    return make_signal_event_path(frag_path, range, sample_type).string();
-}

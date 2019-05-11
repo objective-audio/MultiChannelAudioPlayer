@@ -95,10 +95,12 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(fragment_path{.channel_path = ch1_path, .fragment_index = 5}.string()));
     XCTAssertFalse(file_manager::content_exists(fragment_path{.channel_path = ch1_path, .fragment_index = 6}.string()));
 
-    XCTAssertTrue(
-        file_manager::content_exists(path_utils::signal_file_path(root_path, 0, -1, {-2, 2}, typeid(int64_t))));
-    XCTAssertTrue(file_manager::content_exists(path_utils::signal_file_path(root_path, 0, 0, {0, 2}, typeid(int64_t))));
-    XCTAssertTrue(file_manager::content_exists(path_utils::signal_file_path(root_path, 0, 1, {2, 1}, typeid(int64_t))));
+    XCTAssertTrue(file_manager::content_exists(
+        make_signal_event_path(make_fragment_path(ch0_path, -1), {-2, 2}, typeid(int64_t)).string()));
+    XCTAssertTrue(file_manager::content_exists(
+        make_signal_event_path(make_fragment_path(ch0_path, 0), {0, 2}, typeid(int64_t)).string()));
+    XCTAssertTrue(file_manager::content_exists(
+        make_signal_event_path(make_fragment_path(ch0_path, 1), {2, 1}, typeid(int64_t)).string()));
 
     XCTAssertTrue(file_manager::content_exists(make_number_events_path(make_fragment_path(ch1_path, 5)).string()));
 
@@ -107,8 +109,9 @@ struct cpp {
     values[0] = values[1] = 0;
 
     {
-        auto stream = std::ifstream{path_utils::signal_file_path(root_path, 0, -1, {-2, 2}, typeid(int64_t)),
-                                    std::ios_base::in | std::ios_base::binary};
+        auto signal_path_str =
+            make_signal_event_path(make_fragment_path(ch0_path, -1), {-2, 2}, typeid(int64_t)).string();
+        auto stream = std::ifstream{signal_path_str, std::ios_base::in | std::ios_base::binary};
         XCTAssertFalse(stream.fail());
         stream.read((char *)values, sizeof(values));
         XCTAssertEqual(stream.gcount(), sizeof(values));
@@ -122,8 +125,9 @@ struct cpp {
     values[0] = values[1] = 0;
 
     {
-        auto stream = std::ifstream{path_utils::signal_file_path(root_path, 0, 0, {0, 2}, typeid(int64_t)),
-                                    std::ios_base::in | std::ios_base::binary};
+        auto signal_path_str =
+            make_signal_event_path(make_fragment_path(ch0_path, 0), {0, 2}, typeid(int64_t)).string();
+        auto stream = std::ifstream{signal_path_str, std::ios_base::in | std::ios_base::binary};
         XCTAssertFalse(stream.fail());
         stream.read((char *)values, sizeof(values));
         XCTAssertEqual(stream.gcount(), sizeof(values));
@@ -137,8 +141,9 @@ struct cpp {
     values[0] = values[1] = 0;
 
     {
-        auto stream = std::ifstream{path_utils::signal_file_path(root_path, 0, 1, {2, 1}, typeid(int64_t)),
-                                    std::ios_base::in | std::ios_base::binary};
+        auto signal_path_str =
+            make_signal_event_path(make_fragment_path(ch0_path, 1), {2, 1}, typeid(int64_t)).string();
+        auto stream = std::ifstream{signal_path_str, std::ios_base::in | std::ios_base::binary};
         XCTAssertFalse(stream.fail());
         stream.read((char *)values, sizeof(values));
         XCTAssertEqual(stream.gcount(), sizeof(int64_t));
@@ -223,9 +228,10 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(fragment_path{.channel_path = ch1_path, .fragment_index = 3}.string()));
     XCTAssertFalse(file_manager::content_exists(fragment_path{.channel_path = ch1_path, .fragment_index = 4}.string()));
 
-    XCTAssertTrue(
-        file_manager::content_exists(path_utils::signal_file_path(root_path, 0, -1, {-2, 2}, typeid(int64_t))));
-    XCTAssertTrue(file_manager::content_exists(path_utils::signal_file_path(root_path, 0, 0, {0, 3}, typeid(int64_t))));
+    XCTAssertTrue(file_manager::content_exists(
+        make_signal_event_path(make_fragment_path(ch0_path, -1), {-2, 2}, typeid(int64_t)).string()));
+    XCTAssertTrue(file_manager::content_exists(
+        make_signal_event_path(make_fragment_path(ch0_path, 0), {0, 3}, typeid(int64_t)).string()));
 
     auto const numbers_1_3_path_str =
         make_number_events_path(make_fragment_path(make_channel_path(root_path, 1), 3)).string();
@@ -237,8 +243,9 @@ struct cpp {
     values[0] = values[1] = values[2] = 0;
 
     {
-        auto stream = std::ifstream{path_utils::signal_file_path(root_path, 0, -1, {-2, 2}, typeid(int64_t)),
-                                    std::ios_base::in | std::ios_base::binary};
+        auto signal_path_str =
+            make_signal_event_path(make_fragment_path(ch0_path, -1), {-2, 2}, typeid(int64_t)).string();
+        auto stream = std::ifstream{signal_path_str, std::ios_base::in | std::ios_base::binary};
         XCTAssertFalse(stream.fail());
         stream.read((char *)values, sizeof(values));
         XCTAssertEqual(stream.gcount(), sizeof(int64_t) * 2);
@@ -253,8 +260,9 @@ struct cpp {
     values[0] = values[1] = values[2] = 0;
 
     {
-        auto stream = std::ifstream{path_utils::signal_file_path(root_path, 0, 0, {0, 3}, typeid(int64_t)),
-                                    std::ios_base::in | std::ios_base::binary};
+        auto signal_path_str =
+            make_signal_event_path(make_fragment_path(ch0_path, 0), {0, 3}, typeid(int64_t)).string();
+        auto stream = std::ifstream{signal_path_str, std::ios_base::in | std::ios_base::binary};
         XCTAssertFalse(stream.fail());
         stream.read((char *)values, sizeof(values));
         XCTAssertEqual(stream.gcount(), sizeof(values));

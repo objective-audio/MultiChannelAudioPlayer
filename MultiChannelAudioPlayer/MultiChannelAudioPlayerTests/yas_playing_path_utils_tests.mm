@@ -37,10 +37,4 @@ using namespace yas::playing;
 
 #warning todo
 
-- (void)test_signal_file_path {
-    auto signal_path = path_utils::signal_file_path("/root", 1, 2, {10, 11}, typeid(int64_t));
-
-    XCTAssertEqual(signal_path, "/root/1/2/signal_10_11_i64");
-}
-
 @end

@@ -100,7 +100,7 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(path_utils::signal_file_path(root_path, 0, 0, {0, 2}, typeid(int64_t))));
     XCTAssertTrue(file_manager::content_exists(path_utils::signal_file_path(root_path, 0, 1, {2, 1}, typeid(int64_t))));
 
-    XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 1, 5)));
+    XCTAssertTrue(file_manager::content_exists(make_number_events_path(make_fragment_path(ch1_path, 5)).string()));
 
     int64_t values[2];
 
@@ -150,8 +150,8 @@ struct cpp {
     }
 
     {
-        auto stream =
-            std::ifstream{path_utils::number_file_path(root_path, 1, 5), std::ios_base::in | std::ios_base::binary};
+        auto stream = std::ifstream{make_number_events_path(make_fragment_path(ch1_path, 5)).string(),
+                                    std::ios_base::in | std::ios_base::binary};
         XCTAssertFalse(stream.fail());
         proc::time::frame::type frame;
         stream.read((char *)&frame, sizeof(proc::time::frame::type));
@@ -227,7 +227,10 @@ struct cpp {
         file_manager::content_exists(path_utils::signal_file_path(root_path, 0, -1, {-2, 2}, typeid(int64_t))));
     XCTAssertTrue(file_manager::content_exists(path_utils::signal_file_path(root_path, 0, 0, {0, 3}, typeid(int64_t))));
 
-    XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 1, 3)));
+    auto const numbers_1_3_path_str =
+        make_number_events_path(make_fragment_path(make_channel_path(root_path, 1), 3)).string();
+
+    XCTAssertTrue(file_manager::content_exists(numbers_1_3_path_str));
 
     int64_t values[3];
 
@@ -266,8 +269,7 @@ struct cpp {
     values[0] = values[1] = values[2] = 0;
 
     {
-        auto stream =
-            std::ifstream{path_utils::number_file_path(root_path, 1, 3), std::ios_base::in | std::ios_base::binary};
+        auto stream = std::ifstream{numbers_1_3_path_str, std::ios_base::in | std::ios_base::binary};
         XCTAssertFalse(stream.fail());
         proc::time::frame::type frame;
         stream.read((char *)&frame, sizeof(proc::time::frame::type));
@@ -318,8 +320,9 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(root_path));
     XCTAssertTrue(file_manager::content_exists(fragment_path{.channel_path = ch0_path, .fragment_index = 0}.string()));
-    XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
-    if (auto result = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
+    auto const frag_0_0_path_str = make_number_events_path(make_fragment_path(ch0_path, 0)).string();
+    XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
+    if (auto result = playing::timeline_utils::read_number_events(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 0);
         XCTAssertEqual(result.value().begin()->second.get<int64_t>(), 100);
@@ -335,8 +338,9 @@ struct cpp {
 
     channel_path const ch1_path{.root_path = root_path, .channel_index = 1};
     XCTAssertTrue(file_manager::content_exists(fragment_path{.channel_path = ch1_path, .fragment_index = 1}.string()));
-    XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 1, 1)));
-    if (auto result = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 1, 1))) {
+    auto const frag_1_1_path_str = make_number_events_path(make_fragment_path(ch1_path, 1)).string();
+    XCTAssertTrue(file_manager::content_exists(frag_1_1_path_str));
+    if (auto result = playing::timeline_utils::read_number_events(frag_1_1_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 2);
         XCTAssertEqual(result.value().begin()->second.get<Float64>(), 1.0);
@@ -351,8 +355,8 @@ struct cpp {
     queue.wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(fragment_path{.channel_path = ch0_path, .fragment_index = 0}.string()));
-    XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
-    if (auto result = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
+    XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
+    if (auto result = playing::timeline_utils::read_number_events(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 2);
         auto iterator = result.value().begin();
         XCTAssertEqual(iterator->first, 0);
@@ -369,8 +373,8 @@ struct cpp {
     queue.wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(fragment_path{.channel_path = ch0_path, .fragment_index = 0}.string()));
-    XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
-    if (auto result = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
+    XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
+    if (auto result = playing::timeline_utils::read_number_events(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 0);
         XCTAssertEqual(result.value().begin()->second.get<int64_t>(), 100);

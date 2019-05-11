@@ -397,9 +397,10 @@ struct timeline_exporter::impl : base::impl {
             auto const &channel = ch_pair.second;
 
             channel_path const ch_path{.root_path = this->_root_path, .channel_index = ch_idx};
-            std::string const frag_path = fragment_path{.channel_path = ch_path, .fragment_index = frag_idx}.string();
+            auto const frag_path = make_fragment_path(make_channel_path(this->_root_path, ch_idx), frag_idx);
+            std::string const frag_path_str = frag_path.string();
 
-            auto remove_result = file_manager::remove_content(frag_path);
+            auto remove_result = file_manager::remove_content(frag_path_str);
             if (!remove_result) {
                 return error::remove_fragment_failed;
             }
@@ -408,7 +409,7 @@ struct timeline_exporter::impl : base::impl {
                 return std::nullopt;
             }
 
-            auto create_result = file_manager::create_directory_if_not_exists(frag_path);
+            auto create_result = file_manager::create_directory_if_not_exists(frag_path_str);
             if (!create_result) {
                 return error::create_directory_failed;
             }
@@ -433,9 +434,9 @@ struct timeline_exporter::impl : base::impl {
             }
 
             if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
-                auto const number_path = path_utils::number_file_path(this->_root_path, ch_idx, frag_idx);
+                auto const number_path_str = make_number_events_path(frag_path).string();
 
-                std::ofstream stream{number_path, std::ios_base::out | std::ios_base::binary};
+                std::ofstream stream{number_path_str, std::ios_base::out | std::ios_base::binary};
                 if (!stream) {
                     return error::open_number_stream_failed;
                 }

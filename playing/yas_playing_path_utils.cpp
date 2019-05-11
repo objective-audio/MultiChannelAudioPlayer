@@ -41,7 +41,7 @@ signal_event_path playing::make_signal_event_path(fragment_path const &frag_path
     return signal_event_path{.fragment_path = frag_path, .range = range, .sample_type = sample_type};
 }
 
-number_events_path playing::make_number_event_path(fragment_path const &frag_path) {
+number_events_path playing::make_number_events_path(fragment_path const &frag_path) {
     return number_events_path{.fragment_path = frag_path};
 }
 
@@ -59,11 +59,4 @@ std::string path_utils::signal_file_path(std::string const &root_path, channel_i
     auto const ch_path = make_channel_path(root_path, ch_idx);
     auto const frag_path = make_fragment_path(ch_path, frag_idx);
     return make_signal_event_path(frag_path, range, sample_type).string();
-}
-
-std::string path_utils::number_file_path(std::string const &root_path, channel_index_t const ch_idx,
-                                         fragment_index_t const frag_idx) {
-    auto const ch_path = make_channel_path(root_path, ch_idx);
-    auto const frag_path = make_fragment_path(ch_path, frag_idx);
-    return make_number_event_path(frag_path).string();
 }

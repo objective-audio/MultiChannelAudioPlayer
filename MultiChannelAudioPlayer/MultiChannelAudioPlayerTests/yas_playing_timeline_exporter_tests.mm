@@ -307,10 +307,10 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(root_path));
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
-    if (auto events = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
-        XCTAssertEqual(events->size(), 1);
-        XCTAssertEqual(events->begin()->first, 0);
-        XCTAssertEqual(events->begin()->second.get<int64_t>(), 100);
+    if (auto result = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
+        XCTAssertEqual(result.value().size(), 1);
+        XCTAssertEqual(result.value().begin()->first, 0);
+        XCTAssertEqual(result.value().begin()->second.get<int64_t>(), 100);
     } else {
         XCTAssert(0);
     }
@@ -323,10 +323,10 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 1, 1)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 1, 1)));
-    if (auto events = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 1, 1))) {
-        XCTAssertEqual(events->size(), 1);
-        XCTAssertEqual(events->begin()->first, 2);
-        XCTAssertEqual(events->begin()->second.get<Float64>(), 1.0);
+    if (auto result = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 1, 1))) {
+        XCTAssertEqual(result.value().size(), 1);
+        XCTAssertEqual(result.value().begin()->first, 2);
+        XCTAssertEqual(result.value().begin()->second.get<Float64>(), 1.0);
     } else {
         XCTAssert(0);
     }
@@ -339,9 +339,9 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
-    if (auto events = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
-        XCTAssertEqual(events->size(), 2);
-        auto iterator = events->begin();
+    if (auto result = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
+        XCTAssertEqual(result.value().size(), 2);
+        auto iterator = result.value().begin();
         XCTAssertEqual(iterator->first, 0);
         XCTAssertEqual(iterator->second.get<int64_t>(), 100);
         ++iterator;
@@ -357,10 +357,10 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, 0)));
     XCTAssertTrue(file_manager::content_exists(path_utils::number_file_path(root_path, 0, 0)));
-    if (auto events = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
-        XCTAssertEqual(events->size(), 1);
-        XCTAssertEqual(events->begin()->first, 0);
-        XCTAssertEqual(events->begin()->second.get<int64_t>(), 100);
+    if (auto result = playing::timeline_utils::read_number_events(path_utils::number_file_path(root_path, 0, 0))) {
+        XCTAssertEqual(result.value().size(), 1);
+        XCTAssertEqual(result.value().begin()->first, 0);
+        XCTAssertEqual(result.value().begin()->second.get<int64_t>(), 100);
     } else {
         XCTAssert(0);
     }

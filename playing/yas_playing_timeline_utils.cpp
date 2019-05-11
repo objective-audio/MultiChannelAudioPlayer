@@ -143,13 +143,12 @@ char const *timeline_utils::char_value_data(proc::number_event const &event) {
     }
 }
 
-std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::read_number_events(
-    std::string const &path) {
+timeline_utils::read_number_result_t timeline_utils::read_number_events(std::string const &path) {
     std::multimap<frame_index_t, proc::number_event> events;
 
     auto stream = std::ifstream{path, std::ios_base::in | std::ios_base::binary};
     if (stream.fail()) {
-        return std::nullopt;
+        return read_number_result_t{read_number_error::open_stream_failed};
     }
 
     while (!stream.fail() && !stream.eof()) {
@@ -159,13 +158,13 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
             break;
         }
         if (stream.fail() || stream.gcount() != sizeof(proc::time::frame::type)) {
-            return std::nullopt;
+            return read_number_result_t{read_number_error::read_frame_failed};
         }
 
         sample_store_type store_type;
         stream.read((char *)&store_type, sizeof(sample_store_type));
         if (stream.fail() || stream.gcount() != sizeof(sample_store_type)) {
-            return std::nullopt;
+            return read_number_result_t{read_number_error::read_store_type_failed};
         }
 
         switch (store_type) {
@@ -173,7 +172,7 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 double value;
                 stream.read((char *)&value, sizeof(double));
                 if (stream.fail() || stream.gcount() != sizeof(double)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(value));
             } break;
@@ -181,7 +180,7 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 float value;
                 stream.read((char *)&value, sizeof(float));
                 if (stream.fail() || stream.gcount() != sizeof(float)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(value));
             } break;
@@ -189,7 +188,7 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 int64_t value;
                 stream.read((char *)&value, sizeof(int64_t));
                 if (stream.fail() || stream.gcount() != sizeof(int64_t)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(value));
             } break;
@@ -197,7 +196,7 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 uint64_t value;
                 stream.read((char *)&value, sizeof(uint64_t));
                 if (stream.fail() || stream.gcount() != sizeof(uint64_t)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(value));
             } break;
@@ -205,7 +204,7 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 int32_t value;
                 stream.read((char *)&value, sizeof(int32_t));
                 if (stream.fail() || stream.gcount() != sizeof(int32_t)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(value));
             } break;
@@ -213,7 +212,7 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 uint32_t value;
                 stream.read((char *)&value, sizeof(uint32_t));
                 if (stream.fail() || stream.gcount() != sizeof(uint32_t)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(value));
             } break;
@@ -221,7 +220,7 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 int16_t value;
                 stream.read((char *)&value, sizeof(int16_t));
                 if (stream.fail() || stream.gcount() != sizeof(int16_t)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(value));
             } break;
@@ -229,7 +228,7 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 uint16_t value;
                 stream.read((char *)&value, sizeof(uint16_t));
                 if (stream.fail() || stream.gcount() != sizeof(uint16_t)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(value));
             } break;
@@ -237,7 +236,7 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 int8_t value;
                 stream.read((char *)&value, sizeof(int8_t));
                 if (stream.fail() || stream.gcount() != sizeof(int8_t)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(value));
             } break;
@@ -245,7 +244,7 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 uint8_t value;
                 stream.read((char *)&value, sizeof(uint8_t));
                 if (stream.fail() || stream.gcount() != sizeof(uint8_t)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(value));
             } break;
@@ -253,17 +252,17 @@ std::optional<std::multimap<frame_index_t, proc::number_event>> timeline_utils::
                 bool value;
                 stream.read((char *)&value, sizeof(bool));
                 if (stream.fail() || stream.gcount() != sizeof(bool)) {
-                    return std::nullopt;
+                    return read_number_result_t{read_number_error::read_value_failed};
                 }
                 events.emplace(std::move(frame), proc::make_number_event(boolean(value)));
             } break;
 
             default:
-                return std::nullopt;
+                return read_number_result_t{read_number_error::store_type_not_found};
         }
     }
 
-    return events;
+    return read_number_result_t{std::move(events)};
 }
 
 char *timeline_utils::char_data(audio::pcm_buffer &buffer) {

@@ -7,6 +7,7 @@
 #include "yas_playing_math.h"
 #include "yas_playing_signal_file_info.h"
 
+using namespace yas;
 using namespace yas::playing;
 
 std::string channel_path::string() const {
@@ -25,6 +26,14 @@ std::string signal_file_path::string() const {
 
 std::string number_file_path::string() const {
     return file_path{this->fragment_path.string()}.appending("number").string();
+}
+
+channel_path playing::make_channel_path(std::string const &root_path, channel_index_t const ch_idx) {
+    return channel_path{.root_path = root_path, .channel_index = ch_idx};
+}
+
+fragment_path playing::make_fragment_path(channel_path const &ch_path, fragment_index_t const frag_idx) {
+    return fragment_path{.channel_path = ch_path, .fragment_index = frag_idx};
 }
 
 std::string path_utils::channel_name(channel_index_t const ch_idx) {

@@ -38,6 +38,9 @@ struct number_file_path {
 
     std::string string() const;
 };
+
+channel_path make_channel_path(std::string const &root_path, channel_index_t const);
+fragment_path make_fragment_path(channel_path const &, fragment_index_t const);
 }  // namespace yas::playing
 
 namespace yas::playing::path_utils {

@@ -418,9 +418,9 @@ struct timeline_exporter::impl : base::impl {
                 proc::time::range const &range = event_pair.first;
                 proc::signal_event const &event = event_pair.second;
 
-                auto const signal_path = make_signal_event_path(frag_path, range, event.sample_type());
+                auto const signal_path_str = make_signal_event_path(frag_path, range, event.sample_type()).string();
 
-                std::ofstream stream{signal_path.string(), std::ios_base::out | std::ios_base::binary};
+                std::ofstream stream{signal_path_str, std::ios_base::out | std::ios_base::binary};
                 if (!stream) {
                     return error::open_signal_stream_failed;
                 }
@@ -510,8 +510,8 @@ struct timeline_exporter::impl : base::impl {
             auto each = make_fast_each(begin_frag_idx, end_frag_idx);
             while (yas_each_next(each)) {
                 auto const &frag_idx = yas_each_index(each);
-                auto const frag_path = fragment_path{.channel_path = ch_path, .fragment_index = frag_idx}.string();
-                auto const remove_result = file_manager::remove_content(frag_path);
+                auto const frag_path_str = make_fragment_path(ch_path, frag_idx).string();
+                auto const remove_result = file_manager::remove_content(frag_path_str);
                 if (!remove_result) {
                     return error::remove_fragment_failed;
                 }

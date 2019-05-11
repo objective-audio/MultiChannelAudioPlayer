@@ -75,12 +75,12 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(root_path));
 
-    XCTAssertFalse(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = -1}.string()));
-    XCTAssertTrue(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 0}.string()));
-    XCTAssertTrue(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 1}.string()));
-    XCTAssertFalse(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 2}.string()));
+    XCTAssertFalse(file_manager::content_exists(make_channel_path(root_path, -1).string()));
+    XCTAssertTrue(file_manager::content_exists(make_channel_path(root_path, 0).string()));
+    XCTAssertTrue(file_manager::content_exists(make_channel_path(root_path, 1).string()));
+    XCTAssertFalse(file_manager::content_exists(make_channel_path(root_path, 2).string()));
 
-    channel_path const ch0_path{.root_path = root_path, .channel_index = 0};
+    auto const ch0_path = make_channel_path(root_path, 0);
 
     XCTAssertFalse(
         file_manager::content_exists(fragment_path{.channel_path = ch0_path, .fragment_index = -2}.string()));
@@ -89,7 +89,7 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(fragment_path{.channel_path = ch0_path, .fragment_index = 1}.string()));
     XCTAssertFalse(file_manager::content_exists(fragment_path{.channel_path = ch0_path, .fragment_index = 2}.string()));
 
-    channel_path const ch1_path{.root_path = root_path, .channel_index = 1};
+    auto const ch1_path = make_channel_path(root_path, 1);
 
     XCTAssertFalse(file_manager::content_exists(fragment_path{.channel_path = ch1_path, .fragment_index = 4}.string()));
     XCTAssertTrue(file_manager::content_exists(fragment_path{.channel_path = ch1_path, .fragment_index = 5}.string()));
@@ -204,12 +204,12 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(root_path));
 
-    XCTAssertFalse(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = -1}.string()));
-    XCTAssertTrue(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 0}.string()));
-    XCTAssertTrue(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 1}.string()));
-    XCTAssertFalse(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 2}.string()));
+    XCTAssertFalse(file_manager::content_exists(make_channel_path(root_path, -1).string()));
+    XCTAssertTrue(file_manager::content_exists(make_channel_path(root_path, 0).string()));
+    XCTAssertTrue(file_manager::content_exists(make_channel_path(root_path, 1).string()));
+    XCTAssertFalse(file_manager::content_exists(make_channel_path(root_path, 2).string()));
 
-    channel_path const ch0_path{.root_path = root_path, .channel_index = 0};
+    auto const ch0_path = make_channel_path(root_path, 0);
 
     XCTAssertFalse(
         file_manager::content_exists(fragment_path{.channel_path = ch0_path, .fragment_index = -2}.string()));
@@ -217,7 +217,7 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(fragment_path{.channel_path = ch0_path, .fragment_index = 0}.string()));
     XCTAssertFalse(file_manager::content_exists(fragment_path{.channel_path = ch0_path, .fragment_index = 1}.string()));
 
-    channel_path const ch1_path{.root_path = root_path, .channel_index = 1};
+    auto const ch1_path = make_channel_path(root_path, 1);
 
     XCTAssertFalse(file_manager::content_exists(fragment_path{.channel_path = ch1_path, .fragment_index = 2}.string()));
     XCTAssertTrue(file_manager::content_exists(fragment_path{.channel_path = ch1_path, .fragment_index = 3}.string()));

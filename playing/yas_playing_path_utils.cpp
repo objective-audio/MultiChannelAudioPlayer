@@ -47,14 +47,14 @@ std::string path_utils::fragment_name(fragment_index_t const frag_idx) {
 std::string path_utils::signal_file_path(std::string const &root_path, channel_index_t const ch_idx,
                                          fragment_index_t const frag_idx, proc::time::range const &range,
                                          std::type_info const &type_info) {
-    channel_path const ch_path{.root_path = root_path, .channel_index = ch_idx};
-    fragment_path const frag_path{.channel_path = ch_path, .fragment_index = frag_idx};
+    auto const ch_path = make_channel_path(root_path, ch_idx);
+    auto const frag_path = make_fragment_path(ch_path, frag_idx);
     return file_path{frag_path.string()}.appending(to_signal_file_name(range, type_info)).string();
 }
 
 std::string path_utils::number_file_path(std::string const &root_path, channel_index_t const ch_idx,
                                          fragment_index_t const frag_idx) {
-    channel_path const ch_path{.root_path = root_path, .channel_index = ch_idx};
-    fragment_path const frag_path{.channel_path = ch_path, .fragment_index = frag_idx};
+    auto const ch_path = make_channel_path(root_path, ch_idx);
+    auto const frag_path = make_fragment_path(ch_path, frag_idx);
     return file_path{frag_path.string()}.appending("number").string();
 }

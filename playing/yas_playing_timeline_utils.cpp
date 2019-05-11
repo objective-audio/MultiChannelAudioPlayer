@@ -48,8 +48,57 @@ char const *timeline_utils::char_data(proc::signal_event const &event) {
     }
 }
 
-char const *timeline_utils::char_frame_data(proc::time::frame::type const &frame) {
+char const *timeline_utils::char_data(proc::time::frame::type const &frame) {
     return reinterpret_cast<char const *>(&frame);
+}
+
+char const *timeline_utils::char_data(sample_store_type const &store_type) {
+    return reinterpret_cast<char const *>(&store_type);
+}
+
+char const *timeline_utils::char_data(proc::number_event const &event) {
+    auto const &type = event.sample_type();
+
+    if (type == typeid(double)) {
+        return reinterpret_cast<char const *>(&event.get<double>());
+    } else if (type == typeid(float)) {
+        return reinterpret_cast<char const *>(&event.get<float>());
+    } else if (type == typeid(int64_t)) {
+        return reinterpret_cast<char const *>(&event.get<int64_t>());
+    } else if (type == typeid(uint64_t)) {
+        return reinterpret_cast<char const *>(&event.get<uint64_t>());
+    } else if (type == typeid(int32_t)) {
+        return reinterpret_cast<char const *>(&event.get<int32_t>());
+    } else if (type == typeid(uint32_t)) {
+        return reinterpret_cast<char const *>(&event.get<uint32_t>());
+    } else if (type == typeid(int16_t)) {
+        return reinterpret_cast<char const *>(&event.get<int16_t>());
+    } else if (type == typeid(uint16_t)) {
+        return reinterpret_cast<char const *>(&event.get<uint16_t>());
+    } else if (type == typeid(int8_t)) {
+        return reinterpret_cast<char const *>(&event.get<int8_t>());
+    } else if (type == typeid(uint8_t)) {
+        return reinterpret_cast<char const *>(&event.get<uint8_t>());
+    } else if (type == typeid(boolean)) {
+        return reinterpret_cast<char const *>(&event.get<boolean>().raw());
+    } else {
+        return nullptr;
+    }
+}
+
+char *timeline_utils::char_data(audio::pcm_buffer &buffer) {
+    switch (buffer.format().pcm_format()) {
+        case audio::pcm_format::float32:
+            return reinterpret_cast<char *>(buffer.data_ptr_at_index<float>(0));
+        case audio::pcm_format::float64:
+            return reinterpret_cast<char *>(buffer.data_ptr_at_index<double>(0));
+        case audio::pcm_format::int16:
+            return reinterpret_cast<char *>(buffer.data_ptr_at_index<int16_t>(0));
+        case audio::pcm_format::fixed824:
+            return reinterpret_cast<char *>(buffer.data_ptr_at_index<int32_t>(0));
+        case audio::pcm_format::other:
+            return nullptr;
+    }
 }
 
 sample_store_type timeline_utils::to_sample_store_type(std::type_info const &type) {
@@ -80,10 +129,6 @@ sample_store_type timeline_utils::to_sample_store_type(std::type_info const &typ
     }
 }
 
-char const *timeline_utils::char_sample_store_type_data(sample_store_type const &store_type) {
-    return reinterpret_cast<char const *>(&store_type);
-}
-
 std::type_info const &timeline_utils::to_sample_type(sample_store_type const &store_type) {
     switch (store_type) {
         case sample_store_type::float64:
@@ -110,36 +155,6 @@ std::type_info const &timeline_utils::to_sample_type(sample_store_type const &st
             return typeid(boolean);
         default:
             return typeid(std::nullptr_t);
-    }
-}
-
-char const *timeline_utils::char_value_data(proc::number_event const &event) {
-    auto const &type = event.sample_type();
-
-    if (type == typeid(double)) {
-        return reinterpret_cast<char const *>(&event.get<double>());
-    } else if (type == typeid(float)) {
-        return reinterpret_cast<char const *>(&event.get<float>());
-    } else if (type == typeid(int64_t)) {
-        return reinterpret_cast<char const *>(&event.get<int64_t>());
-    } else if (type == typeid(uint64_t)) {
-        return reinterpret_cast<char const *>(&event.get<uint64_t>());
-    } else if (type == typeid(int32_t)) {
-        return reinterpret_cast<char const *>(&event.get<int32_t>());
-    } else if (type == typeid(uint32_t)) {
-        return reinterpret_cast<char const *>(&event.get<uint32_t>());
-    } else if (type == typeid(int16_t)) {
-        return reinterpret_cast<char const *>(&event.get<int16_t>());
-    } else if (type == typeid(uint16_t)) {
-        return reinterpret_cast<char const *>(&event.get<uint16_t>());
-    } else if (type == typeid(int8_t)) {
-        return reinterpret_cast<char const *>(&event.get<int8_t>());
-    } else if (type == typeid(uint8_t)) {
-        return reinterpret_cast<char const *>(&event.get<uint8_t>());
-    } else if (type == typeid(boolean)) {
-        return reinterpret_cast<char const *>(&event.get<boolean>().raw());
-    } else {
-        return nullptr;
     }
 }
 
@@ -263,19 +278,4 @@ timeline_utils::read_number_result_t timeline_utils::read_number_events(std::str
     }
 
     return read_number_result_t{std::move(events)};
-}
-
-char *timeline_utils::char_data(audio::pcm_buffer &buffer) {
-    switch (buffer.format().pcm_format()) {
-        case audio::pcm_format::float32:
-            return reinterpret_cast<char *>(buffer.data_ptr_at_index<float>(0));
-        case audio::pcm_format::float64:
-            return reinterpret_cast<char *>(buffer.data_ptr_at_index<double>(0));
-        case audio::pcm_format::int16:
-            return reinterpret_cast<char *>(buffer.data_ptr_at_index<int16_t>(0));
-        case audio::pcm_format::fixed824:
-            return reinterpret_cast<char *>(buffer.data_ptr_at_index<int32_t>(0));
-        case audio::pcm_format::other:
-            return nullptr;
-    }
 }

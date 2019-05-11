@@ -24,11 +24,12 @@ using read_number_result_t = result<std::multimap<frame_index_t, proc::number_ev
 
 [[nodiscard]] proc::time::range fragments_range(proc::time::range const &, proc::sample_rate_t const);
 [[nodiscard]] char const *char_data(proc::signal_event const &);
-[[nodiscard]] char const *char_frame_data(proc::time::frame::type const &);
-[[nodiscard]] sample_store_type to_sample_store_type(std::type_info const &);
-[[nodiscard]] char const *char_sample_store_type_data(sample_store_type const &);
-[[nodiscard]] std::type_info const &to_sample_type(sample_store_type const &);
-[[nodiscard]] char const *char_value_data(proc::number_event const &);
-[[nodiscard]] read_number_result_t read_number_events(std::string const &path);
+[[nodiscard]] char const *char_data(proc::time::frame::type const &);
+[[nodiscard]] char const *char_data(sample_store_type const &);
+[[nodiscard]] char const *char_data(proc::number_event const &);
+
 [[nodiscard]] char *char_data(audio::pcm_buffer &);
+[[nodiscard]] sample_store_type to_sample_store_type(std::type_info const &);
+[[nodiscard]] std::type_info const &to_sample_type(sample_store_type const &);
+[[nodiscard]] read_number_result_t read_number_events(std::string const &path);
 }  // namespace yas::playing::timeline_utils

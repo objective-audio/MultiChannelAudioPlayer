@@ -35,11 +35,7 @@ using namespace yas::playing;
     XCTAssertEqual(path_utils::fragment_name(-1), "-1");
 }
 
-- (void)test_fragment_path {
-    auto frag_path = path_utils::fragment_path("/root", 1, 2);
-
-    XCTAssertEqual(frag_path, "/root/1/2");
-}
+#warning todo
 
 - (void)test_signal_file_path {
     auto signal_path = path_utils::signal_file_path("/root", 1, 2, {10, 11}, typeid(int64_t));

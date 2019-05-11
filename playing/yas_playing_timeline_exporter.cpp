@@ -10,6 +10,7 @@
 #include <cpp_utils/yas_file_manager.h>
 #include <cpp_utils/yas_task.h>
 #include <cpp_utils/yas_thread.h>
+#include <cpp_utils/yas_to_integer.h>
 #include <processing/yas_processing_umbrella.h>
 #include <fstream>
 #include "yas_playing_math.h"
@@ -395,7 +396,8 @@ struct timeline_exporter::impl : base::impl {
             auto const &ch_idx = ch_pair.first;
             auto const &channel = ch_pair.second;
 
-            auto const frag_path = path_utils::fragment_path(this->_root_path, ch_idx, frag_idx);
+            channel_path const ch_path{.root_path = this->_root_path, .channel_index = ch_idx};
+            std::string const frag_path = fragment_path{.channel_path = ch_path, .fragment_index = frag_idx}.string();
 
             auto remove_result = file_manager::remove_content(frag_path);
             if (!remove_result) {
@@ -502,10 +504,13 @@ struct timeline_exporter::impl : base::impl {
                 return std::nullopt;
             }
 
+            auto const ch_idx = yas::to_integer<channel_index_t>(ch_name);
+            channel_path const ch_path{.root_path = root_path, .channel_index = ch_idx};
+
             auto each = make_fast_each(begin_frag_idx, end_frag_idx);
             while (yas_each_next(each)) {
                 auto const &frag_idx = yas_each_index(each);
-                auto const frag_path = path_utils::fragment_path(root_path, std::stoll(ch_name), frag_idx);
+                auto const frag_path = fragment_path{.channel_path = ch_path, .fragment_index = frag_idx}.string();
                 auto const remove_result = file_manager::remove_content(frag_path);
                 if (!remove_result) {
                     return error::remove_fragment_failed;

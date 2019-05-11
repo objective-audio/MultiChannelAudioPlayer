@@ -35,22 +35,17 @@ std::string path_utils::fragment_name(fragment_index_t const frag_idx) {
     return std::to_string(frag_idx);
 }
 
-std::string path_utils::fragment_path(std::string const &root_path, channel_index_t const ch_idx,
-                                      fragment_index_t const frag_idx) {
-    return file_path{channel_path{.root_path = root_path, .channel_index = ch_idx}.string()}
-        .appending(fragment_name(frag_idx))
-        .string();
-}
-
 std::string path_utils::signal_file_path(std::string const &root_path, channel_index_t const ch_idx,
                                          fragment_index_t const frag_idx, proc::time::range const &range,
                                          std::type_info const &type_info) {
-    return file_path{fragment_path(root_path, ch_idx, frag_idx)}
-        .appending(to_signal_file_name(range, type_info))
-        .string();
+    channel_path const ch_path{.root_path = root_path, .channel_index = ch_idx};
+    fragment_path const frag_path{.channel_path = ch_path, .fragment_index = frag_idx};
+    return file_path{frag_path.string()}.appending(to_signal_file_name(range, type_info)).string();
 }
 
 std::string path_utils::number_file_path(std::string const &root_path, channel_index_t const ch_idx,
                                          fragment_index_t const frag_idx) {
-    return file_path{fragment_path(root_path, ch_idx, frag_idx)}.appending("number").string();
+    channel_path const ch_path{.root_path = root_path, .channel_index = ch_idx};
+    fragment_path const frag_path{.channel_path = ch_path, .fragment_index = frag_idx};
+    return file_path{frag_path.string()}.appending("number").string();
 }

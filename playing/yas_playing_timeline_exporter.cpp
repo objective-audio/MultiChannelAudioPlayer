@@ -370,10 +370,9 @@ struct timeline_exporter::impl : base::impl {
 
         this->_bg.timeline.process(
             frags_range, this->_sync_source_on_bg(),
-            [&task, this, &weak_exporter](proc::time::range const &range, proc::stream const &stream, bool &stop) {
+            [&task, this, &weak_exporter](proc::time::range const &range, proc::stream const &stream) {
                 if (task.is_canceled()) {
-                    stop = true;
-                    return;
+                    return proc::continuation::abort;
                 }
 
                 if (auto error = this->_export_fragment_on_bg(range, stream)) {
@@ -381,6 +380,8 @@ struct timeline_exporter::impl : base::impl {
                 } else {
                     this->_send_method_on_bg(method::export_ended, range, weak_exporter);
                 }
+
+                return proc::continuation::keep;
             });
     }
 

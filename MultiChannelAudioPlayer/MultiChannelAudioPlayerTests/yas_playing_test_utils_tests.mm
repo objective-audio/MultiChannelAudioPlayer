@@ -28,7 +28,7 @@ using namespace yas::playing;
     expectation.expectedFulfillmentCount = 5;
 
     timeline.process({-5, 25}, proc::sync_source{5, 5},
-                     [&expectation, self](proc::time::range const &range, proc::stream const &stream, bool &stop) {
+                     [&expectation, self](proc::time::range const &range, proc::stream const &stream) {
                          if (range == proc::time::range{-5, 5}) {
                              if (auto const events = stream.channel(0).filtered_events<int16_t, proc::signal_event>();
                                  events.size() == 1) {
@@ -140,6 +140,8 @@ using namespace yas::playing;
                          }
 
                          [expectation fulfill];
+
+                         return proc::continuation::keep;
                      });
 
     [self waitForExpectations:@[expectation] timeout:10.0];

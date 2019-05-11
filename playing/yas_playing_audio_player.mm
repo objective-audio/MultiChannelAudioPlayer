@@ -243,8 +243,9 @@ struct audio_player::impl : base::impl {
                     [channel_path](audio::pcm_buffer &buffer, fragment_index_t const frag_idx) {
                         buffer.clear();
 
-                        auto const frag_path = path_utils::fragment_path(channel_path.string(), frag_idx);
-                        auto const paths_result = file_manager::content_paths_in_directory(frag_path);
+                        auto const frag_path =
+                            fragment_path{.channel_path = channel_path.string(), .fragment_index = frag_idx};
+                        auto const paths_result = file_manager::content_paths_in_directory(frag_path.string());
                         if (!paths_result) {
                             if (paths_result.error() == file_manager::content_paths_error::directory_not_found) {
                                 return true;

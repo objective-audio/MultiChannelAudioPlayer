@@ -35,15 +35,6 @@ std::string path_utils::fragment_name(fragment_index_t const frag_idx) {
     return std::to_string(frag_idx);
 }
 
-std::string path_utils::signal_file_path(std::string const &fragment_path, proc::time::range const &range,
-                                         std::type_info const &type_info) {
-    return file_path{fragment_path}.appending(to_signal_file_name(range, type_info)).string();
-}
-
-std::string path_utils::number_file_path(std::string const &fragment_path) {
-    return file_path{fragment_path}.appending("number").string();
-}
-
 std::string path_utils::fragment_path(std::string const &root_path, channel_index_t const ch_idx,
                                       fragment_index_t const frag_idx) {
     return file_path{channel_path{.root_path = root_path, .channel_index = ch_idx}.string()}

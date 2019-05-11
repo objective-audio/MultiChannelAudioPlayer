@@ -44,10 +44,6 @@ namespace yas::playing::path_utils {
 [[nodiscard]] std::string channel_name(channel_index_t const ch_idx);
 [[nodiscard]] std::string fragment_name(fragment_index_t const frag_idx);
 
-[[nodiscard]] std::string signal_file_path(std::string const &fragment_path, proc::time::range const &,
-                                           std::type_info const &);
-[[nodiscard]] std::string number_file_path(std::string const &fragment_path);
-
 [[nodiscard]] std::string fragment_path(std::string const &root_path, channel_index_t const ch_idx,
                                         fragment_index_t const frag_idx);
 [[nodiscard]] std::string signal_file_path(std::string const &root_path, channel_index_t const ch_idx,

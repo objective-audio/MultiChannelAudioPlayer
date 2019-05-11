@@ -237,13 +237,13 @@ struct audio_player::impl : base::impl {
             auto each = make_fast_each(channel_index_t(ch_count));
             while (yas_each_next(each)) {
                 auto const ch_idx = ch_mapping.at(yas_each_index(each));
-                auto const channel_path = path_utils::channel_path(this->_root_path, ch_idx);
+                auto const channel_path = playing::channel_path{.root_path = this->_root_path, .channel_index = ch_idx};
                 auto buffer = make_audio_circular_buffer(
                     format, 3, this->_queue,
                     [channel_path](audio::pcm_buffer &buffer, fragment_index_t const frag_idx) {
                         buffer.clear();
 
-                        auto const frag_path = path_utils::fragment_path(channel_path, frag_idx);
+                        auto const frag_path = path_utils::fragment_path(channel_path.string(), frag_idx);
                         auto const paths_result = file_manager::content_paths_in_directory(frag_path);
                         if (!paths_result) {
                             if (paths_result.error() == file_manager::content_paths_error::directory_not_found) {

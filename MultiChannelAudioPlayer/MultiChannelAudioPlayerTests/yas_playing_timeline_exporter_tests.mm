@@ -75,10 +75,10 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(root_path));
 
-    XCTAssertFalse(file_manager::content_exists(path_utils::channel_path(root_path, -1)));
-    XCTAssertTrue(file_manager::content_exists(path_utils::channel_path(root_path, 0)));
-    XCTAssertTrue(file_manager::content_exists(path_utils::channel_path(root_path, 1)));
-    XCTAssertFalse(file_manager::content_exists(path_utils::channel_path(root_path, 2)));
+    XCTAssertFalse(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = -1}.string()));
+    XCTAssertTrue(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 0}.string()));
+    XCTAssertTrue(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 1}.string()));
+    XCTAssertFalse(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 2}.string()));
 
     XCTAssertFalse(file_manager::content_exists(path_utils::fragment_path(root_path, 0, -2)));
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, -1)));
@@ -199,10 +199,10 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(root_path));
 
-    XCTAssertFalse(file_manager::content_exists(path_utils::channel_path(root_path, -1)));
-    XCTAssertTrue(file_manager::content_exists(path_utils::channel_path(root_path, 0)));
-    XCTAssertTrue(file_manager::content_exists(path_utils::channel_path(root_path, 1)));
-    XCTAssertFalse(file_manager::content_exists(path_utils::channel_path(root_path, 2)));
+    XCTAssertFalse(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = -1}.string()));
+    XCTAssertTrue(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 0}.string()));
+    XCTAssertTrue(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 1}.string()));
+    XCTAssertFalse(file_manager::content_exists(channel_path{.root_path = root_path, .channel_index = 2}.string()));
 
     XCTAssertFalse(file_manager::content_exists(path_utils::fragment_path(root_path, 0, -2)));
     XCTAssertTrue(file_manager::content_exists(path_utils::fragment_path(root_path, 0, -1)));

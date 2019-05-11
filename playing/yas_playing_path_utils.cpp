@@ -9,16 +9,30 @@
 
 using namespace yas::playing;
 
+std::string channel_path::string() const {
+    return file_path{this->root_path}.appending(path_utils::channel_name(this->channel_index)).string();
+}
+
+std::string fragment_path::string() const {
+    return file_path{this->channel_path.string()}.appending(path_utils::fragment_name(this->fragment_index)).string();
+}
+
+std::string signal_file_path::string() const {
+    return file_path{this->fragment_path.string()}
+        .appending(to_signal_file_name(this->range, this->sample_type))
+        .string();
+}
+
+std::string number_file_path::string() const {
+    return file_path{this->fragment_path.string()}.appending("number").string();
+}
+
 std::string path_utils::channel_name(channel_index_t const ch_idx) {
     return std::to_string(ch_idx);
 }
 
 std::string path_utils::fragment_name(fragment_index_t const frag_idx) {
     return std::to_string(frag_idx);
-}
-
-std::string path_utils::channel_path(std::string const &root_path, channel_index_t const ch_idx) {
-    return file_path{root_path}.appending(channel_name(ch_idx)).string();
 }
 
 std::string path_utils::fragment_path(std::string const &channel_path, fragment_index_t const frag_idx) {
@@ -36,7 +50,9 @@ std::string path_utils::number_file_path(std::string const &fragment_path) {
 
 std::string path_utils::fragment_path(std::string const &root_path, channel_index_t const ch_idx,
                                       fragment_index_t const frag_idx) {
-    return file_path{channel_path(root_path, ch_idx)}.appending(fragment_name(frag_idx)).string();
+    return file_path{channel_path{.root_path = root_path, .channel_index = ch_idx}.string()}
+        .appending(fragment_name(frag_idx))
+        .string();
 }
 
 std::string path_utils::signal_file_path(std::string const &root_path, channel_index_t const ch_idx,

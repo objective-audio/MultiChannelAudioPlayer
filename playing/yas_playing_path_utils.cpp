@@ -18,14 +18,14 @@ std::string fragment_path::string() const {
     return file_path{this->channel_path.string()}.appending(path_utils::fragment_name(this->fragment_index)).string();
 }
 
-std::string signal_file_path::string() const {
+std::string signal_event_path::string() const {
     return file_path{this->fragment_path.string()}
         .appending(to_signal_file_name(this->range, this->sample_type))
         .string();
 }
 
-std::string number_file_path::string() const {
-    return file_path{this->fragment_path.string()}.appending("number").string();
+std::string number_events_path::string() const {
+    return file_path{this->fragment_path.string()}.appending("numbers").string();
 }
 
 channel_path playing::make_channel_path(std::string const &root_path, channel_index_t const ch_idx) {
@@ -34,6 +34,15 @@ channel_path playing::make_channel_path(std::string const &root_path, channel_in
 
 fragment_path playing::make_fragment_path(channel_path const &ch_path, fragment_index_t const frag_idx) {
     return fragment_path{.channel_path = ch_path, .fragment_index = frag_idx};
+}
+
+signal_event_path playing::make_signal_event_path(fragment_path const &frag_path, proc::time::range const &range,
+                                                  std::type_info const &sample_type) {
+    return signal_event_path{.fragment_path = frag_path, .range = range, .sample_type = sample_type};
+}
+
+number_events_path playing::make_number_event_path(fragment_path const &frag_path) {
+    return number_events_path{.fragment_path = frag_path};
 }
 
 std::string path_utils::channel_name(channel_index_t const ch_idx) {
@@ -46,15 +55,15 @@ std::string path_utils::fragment_name(fragment_index_t const frag_idx) {
 
 std::string path_utils::signal_file_path(std::string const &root_path, channel_index_t const ch_idx,
                                          fragment_index_t const frag_idx, proc::time::range const &range,
-                                         std::type_info const &type_info) {
+                                         std::type_info const &sample_type) {
     auto const ch_path = make_channel_path(root_path, ch_idx);
     auto const frag_path = make_fragment_path(ch_path, frag_idx);
-    return file_path{frag_path.string()}.appending(to_signal_file_name(range, type_info)).string();
+    return make_signal_event_path(frag_path, range, sample_type).string();
 }
 
 std::string path_utils::number_file_path(std::string const &root_path, channel_index_t const ch_idx,
                                          fragment_index_t const frag_idx) {
     auto const ch_path = make_channel_path(root_path, ch_idx);
     auto const frag_path = make_fragment_path(ch_path, frag_idx);
-    return file_path{frag_path.string()}.appending("number").string();
+    return make_number_event_path(frag_path).string();
 }

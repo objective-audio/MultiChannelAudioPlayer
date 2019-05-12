@@ -37,9 +37,17 @@ using namespace yas::playing;
 }
 
 - (void)test_signal_event {
+    path::signal_event signal_event_path{path::fragment{path::channel{"/root", 1}, 2}, {3, 4}, typeid(int64_t)};
+
+    XCTAssertEqual(signal_event_path.range, (proc::time::range{3, 4}));
+    XCTAssertTrue(signal_event_path.sample_type == typeid(int64_t));
+    XCTAssertEqual(signal_event_path.string(), "/root/1/2/signal_3_4_i64");
 }
 
 - (void)test_number_events {
+    path::number_events number_events_path{path::fragment{path::channel{"/root", 1}, 2}};
+
+    XCTAssertEqual(number_events_path.string(), "/root/1/2/numbers");
 }
 
 - (void)test_channel_name {

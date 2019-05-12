@@ -179,7 +179,7 @@ timeline_utils::read_number_result_t timeline_utils::read_number_events(std::str
         sample_store_type store_type;
         stream.read((char *)&store_type, sizeof(sample_store_type));
         if (stream.fail() || stream.gcount() != sizeof(sample_store_type)) {
-            return read_number_result_t{read_number_error::read_store_type_failed};
+            return read_number_result_t{read_number_error::read_sample_store_type_failed};
         }
 
         switch (store_type) {
@@ -273,7 +273,7 @@ timeline_utils::read_number_result_t timeline_utils::read_number_events(std::str
             } break;
 
             default:
-                return read_number_result_t{read_number_error::store_type_not_found};
+                return read_number_result_t{read_number_error::sample_store_type_not_found};
         }
     }
 

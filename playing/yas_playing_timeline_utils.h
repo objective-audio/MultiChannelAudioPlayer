@@ -16,9 +16,9 @@ namespace yas::playing::timeline_utils {
 enum class read_number_error {
     open_stream_failed,
     read_frame_failed,
-    read_store_type_failed,
+    read_sample_store_type_failed,
     read_value_failed,
-    store_type_not_found,
+    sample_store_type_not_found,
 };
 using read_number_result_t = result<std::multimap<frame_index_t, proc::number_event>, read_number_error>;
 

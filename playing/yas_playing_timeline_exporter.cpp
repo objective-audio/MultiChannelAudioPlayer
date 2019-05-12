@@ -433,7 +433,7 @@ struct timeline_exporter::impl : base::impl {
             }
 
             if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
-                auto const number_path_str = make_number_events_path(frag_path).string();
+                auto const number_path_str = number_events_path{frag_path}.string();
 
                 std::ofstream stream{number_path_str, std::ios_base::out | std::ios_base::binary};
                 if (!stream) {

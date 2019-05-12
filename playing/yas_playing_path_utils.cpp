@@ -56,11 +56,6 @@ signal_event_path playing::make_signal_event_path(fragment_path const &frag_path
                                                   std::type_info const &sample_type) {
     return signal_event_path{frag_path, range, sample_type};
 }
-
-number_events_path playing::make_number_events_path(fragment_path const &frag_path) {
-    return number_events_path{frag_path};
-}
-
 std::string path_utils::channel_name(channel_index_t const ch_idx) {
     return std::to_string(ch_idx);
 }

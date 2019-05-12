@@ -51,7 +51,6 @@ struct number_events_path {
 [[nodiscard]] fragment_path make_fragment_path(channel_path const &, fragment_index_t const);
 [[nodiscard]] signal_event_path make_signal_event_path(fragment_path const &, proc::time::range const &,
                                                        std::type_info const &);
-[[nodiscard]] number_events_path make_number_events_path(fragment_path const &);
 }  // namespace yas::playing
 
 namespace yas::playing::path_utils {

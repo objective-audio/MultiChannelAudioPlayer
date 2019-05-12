@@ -101,7 +101,7 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(
         make_signal_event_path(make_fragment_path(ch0_path, 1), {2, 1}, typeid(int64_t)).string()));
 
-    XCTAssertTrue(file_manager::content_exists(make_number_events_path(make_fragment_path(ch1_path, 5)).string()));
+    XCTAssertTrue(file_manager::content_exists(number_events_path{make_fragment_path(ch1_path, 5)}.string()));
 
     int64_t values[2];
 
@@ -154,7 +154,7 @@ struct cpp {
     }
 
     {
-        auto stream = std::ifstream{make_number_events_path(make_fragment_path(ch1_path, 5)).string(),
+        auto stream = std::ifstream{number_events_path{make_fragment_path(ch1_path, 5)}.string(),
                                     std::ios_base::in | std::ios_base::binary};
         XCTAssertFalse(stream.fail());
         proc::time::frame::type frame;
@@ -232,7 +232,7 @@ struct cpp {
         make_signal_event_path(make_fragment_path(ch0_path, 0), {0, 3}, typeid(int64_t)).string()));
 
     auto const numbers_1_3_path_str =
-        make_number_events_path(make_fragment_path(make_channel_path(root_path, 1), 3)).string();
+        number_events_path{make_fragment_path(make_channel_path(root_path, 1), 3)}.string();
 
     XCTAssertTrue(file_manager::content_exists(numbers_1_3_path_str));
 
@@ -326,7 +326,7 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(root_path));
     XCTAssertTrue(file_manager::content_exists(make_fragment_path(ch0_path, 0).string()));
-    auto const frag_0_0_path_str = make_number_events_path(make_fragment_path(ch0_path, 0)).string();
+    auto const frag_0_0_path_str = number_events_path{make_fragment_path(ch0_path, 0)}.string();
     XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
     if (auto result = playing::timeline_utils::read_number_events(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
@@ -344,7 +344,7 @@ struct cpp {
 
     channel_path const ch1_path{root_path, 1};
     XCTAssertTrue(file_manager::content_exists(make_fragment_path(ch1_path, 1).string()));
-    auto const frag_1_1_path_str = make_number_events_path(make_fragment_path(ch1_path, 1)).string();
+    auto const frag_1_1_path_str = number_events_path{make_fragment_path(ch1_path, 1)}.string();
     XCTAssertTrue(file_manager::content_exists(frag_1_1_path_str));
     if (auto result = playing::timeline_utils::read_number_events(frag_1_1_path_str)) {
         XCTAssertEqual(result.value().size(), 1);

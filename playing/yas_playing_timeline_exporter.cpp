@@ -390,14 +390,17 @@ struct timeline_exporter::impl : base::impl {
                                                               proc::stream const &stream) {
         assert(!thread::is_main());
 
+        auto const &sync_source = this->_sync_source_on_bg();
+        path::timeline const tl_path{this->_root_path, "0", sync_source.sample_rate};
+
         auto const frag_idx = frag_range.frame / stream.sync_source().sample_rate;
 
         for (auto const &ch_pair : stream.channels()) {
             auto const &ch_idx = ch_pair.first;
             auto const &channel = ch_pair.second;
 
-            path::channel const ch_path{this->_root_path, ch_idx};
-            auto const frag_path = path::fragment{path::channel{this->_root_path, ch_idx}, frag_idx};
+            path::channel const ch_path{tl_path, ch_idx};
+            auto const frag_path = path::fragment{ch_path, frag_idx};
             std::string const frag_path_str = frag_path.string();
 
             auto remove_result = file_manager::remove_content(frag_path_str);
@@ -480,8 +483,11 @@ struct timeline_exporter::impl : base::impl {
         assert(!thread::is_main());
 
         auto const &root_path = this->_root_path;
+        auto const &sync_source = this->_sync_source_on_bg();
+        auto const &sample_rate = sync_source.sample_rate;
+        path::timeline const tl_path{root_path, "0", sample_rate};
 
-        auto ch_paths_result = file_manager::content_paths_in_directory(root_path);
+        auto ch_paths_result = file_manager::content_paths_in_directory(tl_path.string());
         if (!ch_paths_result) {
             if (ch_paths_result.error() == file_manager::content_paths_error::directory_not_found) {
                 return std::nullopt;
@@ -489,9 +495,6 @@ struct timeline_exporter::impl : base::impl {
                 return error::get_content_paths_failed;
             }
         }
-
-        auto const &sync_source = this->_sync_source_on_bg();
-        auto const &sample_rate = sync_source.sample_rate;
 
         auto const ch_names = to_vector<std::string>(ch_paths_result.value(),
                                                      [](auto const &path) { return url{path}.last_path_component(); });
@@ -505,7 +508,7 @@ struct timeline_exporter::impl : base::impl {
             }
 
             auto const ch_idx = yas::to_integer<channel_index_t>(ch_name);
-            path::channel const ch_path{root_path, ch_idx};
+            path::channel const ch_path{tl_path, ch_idx};
 
             auto each = make_fast_each(begin_frag_idx, end_frag_idx);
             while (yas_each_next(each)) {

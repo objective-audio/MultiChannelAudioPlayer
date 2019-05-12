@@ -233,14 +233,17 @@ struct audio_player::impl : base::impl {
         this->_locked_format = format;
         this->_circular_buffers.clear();
 
+        sample_rate_t const sample_rate = std::round(format.sample_rate());
+        path::timeline const tl_path{this->_root_path, "0", sample_rate};
+
         if (auto top_file_idx = this->_top_frag_idx(); top_file_idx && ch_count > 0) {
             auto each = make_fast_each(channel_index_t(ch_count));
             while (yas_each_next(each)) {
                 auto const ch_idx = ch_mapping.at(yas_each_index(each));
                 auto buffer = make_audio_circular_buffer(
                     format, 3, this->_queue,
-                    [ch_path = path::channel{this->_root_path, ch_idx}](audio::pcm_buffer &buffer,
-                                                                        fragment_index_t const frag_idx) {
+                    [ch_path = path::channel{tl_path, ch_idx}](audio::pcm_buffer &buffer,
+                                                               fragment_index_t const frag_idx) {
                         buffer.clear();
 
                         auto const frag_path = path::fragment{ch_path, frag_idx};

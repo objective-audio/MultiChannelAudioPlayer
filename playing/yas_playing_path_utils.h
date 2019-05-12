@@ -22,10 +22,10 @@ struct timeline {
 };
 
 struct channel {
-    std::string const root_path;
+    timeline const timeline_path;
     channel_index_t const channel_index;
 
-    channel(std::string const &root_path, channel_index_t const);
+    channel(timeline const &, channel_index_t const);
 
     std::string string() const;
 };

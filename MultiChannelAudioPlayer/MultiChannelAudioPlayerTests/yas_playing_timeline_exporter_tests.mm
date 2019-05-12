@@ -52,6 +52,7 @@ struct cpp {
     std::string const &root_path = self->_cpp.root_path;
     task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
+    path::timeline const tl_path{root_path, "0", sample_rate};
 
     timeline_exporter exporter{root_path, queue, sample_rate};
 
@@ -75,12 +76,12 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(root_path));
 
-    XCTAssertFalse(file_manager::content_exists(path::channel{root_path, -1}.string()));
-    XCTAssertTrue(file_manager::content_exists(path::channel{root_path, 0}.string()));
-    XCTAssertTrue(file_manager::content_exists(path::channel{root_path, 1}.string()));
-    XCTAssertFalse(file_manager::content_exists(path::channel{root_path, 2}.string()));
+    XCTAssertFalse(file_manager::content_exists(path::channel{tl_path, -1}.string()));
+    XCTAssertTrue(file_manager::content_exists(path::channel{tl_path, 0}.string()));
+    XCTAssertTrue(file_manager::content_exists(path::channel{tl_path, 1}.string()));
+    XCTAssertFalse(file_manager::content_exists(path::channel{tl_path, 2}.string()));
 
-    auto const ch0_path = path::channel{root_path, 0};
+    auto const ch0_path = path::channel{tl_path, 0};
 
     XCTAssertFalse(file_manager::content_exists(path::fragment{ch0_path, -2}.string()));
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, -1}.string()));
@@ -88,7 +89,7 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 1}.string()));
     XCTAssertFalse(file_manager::content_exists(path::fragment{ch0_path, 2}.string()));
 
-    auto const ch1_path = path::channel{root_path, 1};
+    auto const ch1_path = path::channel{tl_path, 1};
 
     XCTAssertFalse(file_manager::content_exists(path::fragment{ch1_path, 4}.string()));
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch1_path, 5}.string()));
@@ -178,6 +179,7 @@ struct cpp {
     task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const pre_sample_rate = 2;
     proc::sample_rate_t const post_sample_rate = 3;
+    path::timeline const tl_path{root_path, "0", post_sample_rate};
 
     timeline_exporter exporter{root_path, queue, pre_sample_rate};
 
@@ -205,19 +207,19 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(root_path));
 
-    XCTAssertFalse(file_manager::content_exists(path::channel{root_path, -1}.string()));
-    XCTAssertTrue(file_manager::content_exists(path::channel{root_path, 0}.string()));
-    XCTAssertTrue(file_manager::content_exists(path::channel{root_path, 1}.string()));
-    XCTAssertFalse(file_manager::content_exists(path::channel{root_path, 2}.string()));
+    XCTAssertFalse(file_manager::content_exists(path::channel{tl_path, -1}.string()));
+    XCTAssertTrue(file_manager::content_exists(path::channel{tl_path, 0}.string()));
+    XCTAssertTrue(file_manager::content_exists(path::channel{tl_path, 1}.string()));
+    XCTAssertFalse(file_manager::content_exists(path::channel{tl_path, 2}.string()));
 
-    auto const ch0_path = path::channel{root_path, 0};
+    auto const ch0_path = path::channel{tl_path, 0};
 
     XCTAssertFalse(file_manager::content_exists(path::fragment{ch0_path, -2}.string()));
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, -1}.string()));
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
     XCTAssertFalse(file_manager::content_exists(path::fragment{ch0_path, 1}.string()));
 
-    auto const ch1_path = path::channel{root_path, 1};
+    auto const ch1_path = path::channel{tl_path, 1};
 
     XCTAssertFalse(file_manager::content_exists(path::fragment{ch1_path, 2}.string()));
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch1_path, 3}.string()));
@@ -228,7 +230,7 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(
         path::signal_event{path::fragment{ch0_path, 0}, {0, 3}, typeid(int64_t)}.string()));
 
-    auto const numbers_1_3_path_str = path::number_events{path::fragment{path::channel{root_path, 1}, 3}}.string();
+    auto const numbers_1_3_path_str = path::number_events{path::fragment{ch1_path, 3}}.string();
 
     XCTAssertTrue(file_manager::content_exists(numbers_1_3_path_str));
 
@@ -294,6 +296,7 @@ struct cpp {
     std::string const &root_path = self->_cpp.root_path;
     task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
+    path::timeline const tl_path{root_path, "0", sample_rate};
 
     timeline_exporter exporter{root_path, queue, sample_rate};
 
@@ -316,7 +319,7 @@ struct cpp {
 
     queue.wait_until_all_tasks_are_finished();
 
-    path::channel const ch0_path{root_path, 0};
+    path::channel const ch0_path{tl_path, 0};
 
     XCTAssertTrue(file_manager::content_exists(root_path));
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
@@ -336,7 +339,8 @@ struct cpp {
 
     queue.wait_until_all_tasks_are_finished();
 
-    path::channel const ch1_path{root_path, 1};
+    path::channel const ch1_path{tl_path, 1};
+
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch1_path, 1}.string()));
     auto const frag_1_1_path_str = path::number_events{path::fragment{ch1_path, 1}}.string();
     XCTAssertTrue(file_manager::content_exists(frag_1_1_path_str));

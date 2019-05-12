@@ -19,12 +19,12 @@ std::string timeline::string() const {
     return file_path{this->root_path}.appending(timeline_name(this->identifier, this->sample_rate)).string();
 }
 
-channel::channel(std::string const &root_path, channel_index_t const ch_idx)
-    : root_path(root_path), channel_index(ch_idx) {
+channel::channel(timeline const &timeline_path, channel_index_t const ch_idx)
+    : timeline_path(timeline_path), channel_index(ch_idx) {
 }
 
 std::string channel::string() const {
-    return file_path{this->root_path}.appending(channel_name(this->channel_index)).string();
+    return file_path{this->timeline_path.string()}.appending(channel_name(this->channel_index)).string();
 }
 
 fragment::fragment(path::channel const &ch_path, fragment_index_t const frag_idx)

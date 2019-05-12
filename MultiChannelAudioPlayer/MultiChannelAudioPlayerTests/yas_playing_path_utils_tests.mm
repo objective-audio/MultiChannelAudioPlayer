@@ -30,32 +30,39 @@ using namespace yas::playing;
 }
 
 - (void)test_channel {
-    path::channel ch_path{"/root", 1};
+    path::timeline tl_path{"/root", "0", 48000};
+    path::channel ch_path{tl_path, 1};
 
-    XCTAssertEqual(ch_path.root_path, "/root");
     XCTAssertEqual(ch_path.channel_index, 1);
-    XCTAssertEqual(ch_path.string(), "/root/1");
+    XCTAssertEqual(ch_path.string(), "/root/0_48000/1");
 }
 
 - (void)test_fragment {
-    path::fragment frag_path{path::channel{"/root", 1}, 2};
+    path::timeline tl_path{"/root", "0", 48000};
+    path::fragment frag_path{path::channel{tl_path, 1}, 2};
 
     XCTAssertEqual(frag_path.fragment_index, 2);
-    XCTAssertEqual(frag_path.string(), "/root/1/2");
+    XCTAssertEqual(frag_path.string(), "/root/0_48000/1/2");
 }
 
 - (void)test_signal_event {
-    path::signal_event signal_event_path{path::fragment{path::channel{"/root", 1}, 2}, {3, 4}, typeid(int64_t)};
+    path::timeline tl_path{"/root", "0", 48000};
+    path::channel ch_path{tl_path, 1};
+    path::fragment frag_path{ch_path, 2};
+    path::signal_event signal_event_path{frag_path, {3, 4}, typeid(int64_t)};
 
     XCTAssertEqual(signal_event_path.range, (proc::time::range{3, 4}));
     XCTAssertTrue(signal_event_path.sample_type == typeid(int64_t));
-    XCTAssertEqual(signal_event_path.string(), "/root/1/2/signal_3_4_i64");
+    XCTAssertEqual(signal_event_path.string(), "/root/0_48000/1/2/signal_3_4_i64");
 }
 
 - (void)test_number_events {
-    path::number_events number_events_path{path::fragment{path::channel{"/root", 1}, 2}};
+    path::timeline tl_path{"/root", "0", 48000};
+    path::channel ch_path{tl_path, 1};
+    path::fragment frag_path{ch_path, 2};
+    path::number_events number_events_path{frag_path};
 
-    XCTAssertEqual(number_events_path.string(), "/root/1/2/numbers");
+    XCTAssertEqual(number_events_path.string(), "/root/0_48000/1/2/numbers");
 }
 
 - (void)test_timeline_name {

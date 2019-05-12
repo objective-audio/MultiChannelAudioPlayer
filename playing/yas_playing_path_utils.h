@@ -15,12 +15,16 @@ struct channel_path {
     std::string const root_path;
     channel_index_t const channel_index;
 
+    channel_path(std::string const &root_path, channel_index_t const);
+
     std::string string() const;
 };
 
 struct fragment_path {
     channel_path const channel_path;
     fragment_index_t const fragment_index;
+
+    fragment_path(playing::channel_path const &, fragment_index_t const);
 
     std::string string() const;
 };
@@ -30,11 +34,15 @@ struct signal_event_path {
     proc::time::range const range;
     std::type_info const &sample_type;
 
+    signal_event_path(playing::fragment_path const &, proc::time::range const &, std::type_info const &);
+
     std::string string() const;
 };
 
 struct number_events_path {
     fragment_path const fragment_path;
+
+    number_events_path(playing::fragment_path const &);
 
     std::string string() const;
 };

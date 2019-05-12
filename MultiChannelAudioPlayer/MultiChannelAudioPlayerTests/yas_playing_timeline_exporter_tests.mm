@@ -322,7 +322,7 @@ struct cpp {
 
     queue.wait_until_all_tasks_are_finished();
 
-    channel_path const ch0_path{.root_path = root_path, .channel_index = 0};
+    channel_path const ch0_path{root_path, 0};
 
     XCTAssertTrue(file_manager::content_exists(root_path));
     XCTAssertTrue(file_manager::content_exists(make_fragment_path(ch0_path, 0).string()));
@@ -342,7 +342,7 @@ struct cpp {
 
     queue.wait_until_all_tasks_are_finished();
 
-    channel_path const ch1_path{.root_path = root_path, .channel_index = 1};
+    channel_path const ch1_path{root_path, 1};
     XCTAssertTrue(file_manager::content_exists(make_fragment_path(ch1_path, 1).string()));
     auto const frag_1_1_path_str = make_number_events_path(make_fragment_path(ch1_path, 1)).string();
     XCTAssertTrue(file_manager::content_exists(frag_1_1_path_str));

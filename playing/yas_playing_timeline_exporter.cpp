@@ -396,7 +396,7 @@ struct timeline_exporter::impl : base::impl {
             auto const &ch_idx = ch_pair.first;
             auto const &channel = ch_pair.second;
 
-            channel_path const ch_path{.root_path = this->_root_path, .channel_index = ch_idx};
+            channel_path const ch_path{this->_root_path, ch_idx};
             auto const frag_path = make_fragment_path(make_channel_path(this->_root_path, ch_idx), frag_idx);
             std::string const frag_path_str = frag_path.string();
 
@@ -505,7 +505,7 @@ struct timeline_exporter::impl : base::impl {
             }
 
             auto const ch_idx = yas::to_integer<channel_index_t>(ch_name);
-            channel_path const ch_path{.root_path = root_path, .channel_index = ch_idx};
+            channel_path const ch_path{root_path, ch_idx};
 
             auto each = make_fast_each(begin_frag_idx, end_frag_idx);
             while (yas_each_next(each)) {

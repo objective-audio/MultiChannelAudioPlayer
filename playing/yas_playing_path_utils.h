@@ -13,9 +13,10 @@
 namespace yas::playing::path {
 struct timeline {
     std::string const root_path;
+    std::string const identifier;
     proc::sample_rate_t const sample_rate;
 
-    timeline(std::string const &root_path, proc::sample_rate_t const);
+    timeline(std::string const &root_path, std::string const identifier, proc::sample_rate_t const);
 
     std::string string() const;
 };
@@ -56,6 +57,7 @@ struct number_events {
     std::string string() const;
 };
 
+[[nodiscard]] std::string timeline_name(std::string const &identifier, sample_rate_t const);
 [[nodiscard]] std::string channel_name(channel_index_t const ch_idx);
 [[nodiscard]] std::string fragment_name(fragment_index_t const frag_idx);
 }  // namespace yas::playing::path

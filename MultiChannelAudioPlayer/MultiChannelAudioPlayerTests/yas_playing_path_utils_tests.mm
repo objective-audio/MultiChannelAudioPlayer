@@ -21,6 +21,14 @@ using namespace yas::playing;
 - (void)tearDown {
 }
 
+- (void)test_timeline {
+    path::timeline tl_path{"/root", "0", 48000};
+
+    XCTAssertEqual(tl_path.identifier, "0");
+    XCTAssertEqual(tl_path.sample_rate, 48000);
+    XCTAssertEqual(tl_path.string(), "/root/0_48000");
+}
+
 - (void)test_channel {
     path::channel ch_path{"/root", 1};
 

@@ -11,12 +11,12 @@ using namespace yas;
 using namespace yas::playing;
 using namespace yas::playing::path;
 
-timeline::timeline(std::string const &root_path, proc::sample_rate_t const sample_rate)
-    : root_path(root_path), sample_rate(sample_rate) {
+timeline::timeline(std::string const &root_path, std::string const identifier, proc::sample_rate_t const sample_rate)
+    : root_path(root_path), identifier(identifier), sample_rate(sample_rate) {
 }
 
 std::string timeline::string() const {
-    return file_path{this->root_path}.appending(std::to_string(this->sample_rate)).string();
+    return file_path{this->root_path}.appending(timeline_name(this->identifier, this->sample_rate)).string();
 }
 
 channel::channel(std::string const &root_path, channel_index_t const ch_idx)
@@ -51,6 +51,10 @@ number_events::number_events(path::fragment const &frag_path) : fragment_path(fr
 
 std::string number_events::string() const {
     return file_path{this->fragment_path.string()}.appending("numbers").string();
+}
+
+std::string path::timeline_name(std::string const &identifier, sample_rate_t const sr) {
+    return identifier + "_" + std::to_string(sr);
 }
 
 std::string path::channel_name(channel_index_t const ch_idx) {

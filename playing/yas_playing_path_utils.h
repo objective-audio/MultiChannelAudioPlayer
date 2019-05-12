@@ -11,6 +11,15 @@
 #include "yas_playing_types.h"
 
 namespace yas::playing::path {
+struct timeline {
+    std::string const root_path;
+    proc::sample_rate_t const sample_rate;
+
+    timeline(std::string const &root_path, proc::sample_rate_t const);
+
+    std::string string() const;
+};
+
 struct channel {
     std::string const root_path;
     channel_index_t const channel_index;

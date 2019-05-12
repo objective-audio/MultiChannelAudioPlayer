@@ -11,6 +11,14 @@ using namespace yas;
 using namespace yas::playing;
 using namespace yas::playing::path;
 
+timeline::timeline(std::string const &root_path, proc::sample_rate_t const sample_rate)
+    : root_path(root_path), sample_rate(sample_rate) {
+}
+
+std::string timeline::string() const {
+    return file_path{this->root_path}.appending(std::to_string(this->sample_rate)).string();
+}
+
 channel::channel(std::string const &root_path, channel_index_t const ch_idx)
     : root_path(root_path), channel_index(ch_idx) {
 }

@@ -58,6 +58,10 @@ using namespace yas::playing;
     XCTAssertEqual(number_events_path.string(), "/root/1/2/numbers");
 }
 
+- (void)test_timeline_name {
+    XCTAssertEqual(path::timeline_name("testid", 48000), "testid_48000");
+}
+
 - (void)test_channel_name {
     XCTAssertEqual(path::channel_name(0), "0");
     XCTAssertEqual(path::channel_name(1), "1");

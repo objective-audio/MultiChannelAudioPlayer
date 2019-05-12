@@ -22,17 +22,17 @@ using namespace yas::playing;
 }
 
 - (void)test_channel_name {
-    XCTAssertEqual(path_utils::channel_name(0), "0");
-    XCTAssertEqual(path_utils::channel_name(1), "1");
-    XCTAssertEqual(path_utils::channel_name(1000), "1000");
-    XCTAssertEqual(path_utils::channel_name(-1), "-1");
+    XCTAssertEqual(path::channel_name(0), "0");
+    XCTAssertEqual(path::channel_name(1), "1");
+    XCTAssertEqual(path::channel_name(1000), "1000");
+    XCTAssertEqual(path::channel_name(-1), "-1");
 }
 
 - (void)test_fragment_name {
-    XCTAssertEqual(path_utils::fragment_name(0), "0");
-    XCTAssertEqual(path_utils::fragment_name(1), "1");
-    XCTAssertEqual(path_utils::fragment_name(1000), "1000");
-    XCTAssertEqual(path_utils::fragment_name(-1), "-1");
+    XCTAssertEqual(path::fragment_name(0), "0");
+    XCTAssertEqual(path::fragment_name(1), "1");
+    XCTAssertEqual(path::fragment_name(1000), "1000");
+    XCTAssertEqual(path::fragment_name(-1), "-1");
 }
 
 #warning todo

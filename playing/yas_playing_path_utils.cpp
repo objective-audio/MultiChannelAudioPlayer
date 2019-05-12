@@ -9,45 +9,46 @@
 
 using namespace yas;
 using namespace yas::playing;
+using namespace yas::playing::path;
 
-channel_path::channel_path(std::string const &root_path, channel_index_t const ch_idx)
+channel::channel(std::string const &root_path, channel_index_t const ch_idx)
     : root_path(root_path), channel_index(ch_idx) {
 }
 
-std::string channel_path::string() const {
-    return file_path{this->root_path}.appending(path_utils::channel_name(this->channel_index)).string();
+std::string channel::string() const {
+    return file_path{this->root_path}.appending(channel_name(this->channel_index)).string();
 }
 
-fragment_path::fragment_path(playing::channel_path const &ch_path, fragment_index_t const frag_idx)
+fragment::fragment(path::channel const &ch_path, fragment_index_t const frag_idx)
     : channel_path(ch_path), fragment_index(frag_idx) {
 }
 
-std::string fragment_path::string() const {
-    return file_path{this->channel_path.string()}.appending(path_utils::fragment_name(this->fragment_index)).string();
+std::string fragment::string() const {
+    return file_path{this->channel_path.string()}.appending(fragment_name(this->fragment_index)).string();
 }
 
-signal_event_path::signal_event_path(playing::fragment_path const &frag_path, proc::time::range const &range,
-                                     std::type_info const &sample_type)
+signal_event::signal_event(path::fragment const &frag_path, proc::time::range const &range,
+                           std::type_info const &sample_type)
     : fragment_path(frag_path), range(range), sample_type(sample_type) {
 }
 
-std::string signal_event_path::string() const {
+std::string signal_event::string() const {
     return file_path{this->fragment_path.string()}
         .appending(to_signal_file_name(this->range, this->sample_type))
         .string();
 }
 
-number_events_path::number_events_path(playing::fragment_path const &frag_path) : fragment_path(frag_path) {
+number_events::number_events(path::fragment const &frag_path) : fragment_path(frag_path) {
 }
 
-std::string number_events_path::string() const {
+std::string number_events::string() const {
     return file_path{this->fragment_path.string()}.appending("numbers").string();
 }
 
-std::string path_utils::channel_name(channel_index_t const ch_idx) {
+std::string path::channel_name(channel_index_t const ch_idx) {
     return std::to_string(ch_idx);
 }
 
-std::string path_utils::fragment_name(fragment_index_t const frag_idx) {
+std::string path::fragment_name(fragment_index_t const frag_idx) {
     return std::to_string(frag_idx);
 }

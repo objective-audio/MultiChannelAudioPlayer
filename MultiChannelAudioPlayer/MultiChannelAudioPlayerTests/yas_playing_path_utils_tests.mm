@@ -64,6 +64,4 @@ using namespace yas::playing;
     XCTAssertEqual(path::fragment_name(-1), "-1");
 }
 
-#warning todo
-
 @end

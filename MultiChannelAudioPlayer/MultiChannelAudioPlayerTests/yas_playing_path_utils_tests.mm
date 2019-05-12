@@ -21,6 +21,27 @@ using namespace yas::playing;
 - (void)tearDown {
 }
 
+- (void)test_channel {
+    path::channel ch_path{"/root", 1};
+
+    XCTAssertEqual(ch_path.root_path, "/root");
+    XCTAssertEqual(ch_path.channel_index, 1);
+    XCTAssertEqual(ch_path.string(), "/root/1");
+}
+
+- (void)test_fragment {
+    path::fragment frag_path{path::channel{"/root", 1}, 2};
+
+    XCTAssertEqual(frag_path.fragment_index, 2);
+    XCTAssertEqual(frag_path.string(), "/root/1/2");
+}
+
+- (void)test_signal_event {
+}
+
+- (void)test_number_events {
+}
+
 - (void)test_channel_name {
     XCTAssertEqual(path::channel_name(0), "0");
     XCTAssertEqual(path::channel_name(1), "1");

@@ -11,50 +11,50 @@
 #include "yas_playing_types.h"
 
 namespace yas::playing::path {
-struct timeline {
+struct [[nodiscard]] timeline {
     std::string const root_path;
     std::string const identifier;
     proc::sample_rate_t const sample_rate;
 
     timeline(std::string const &root_path, std::string const identifier, proc::sample_rate_t const);
 
-    std::string string() const;
+    [[nodiscard]] std::string string() const;
 };
 
-struct channel {
+struct [[nodiscard]] channel {
     timeline const timeline_path;
     channel_index_t const channel_index;
 
     channel(timeline const &, channel_index_t const);
 
-    std::string string() const;
+    [[nodiscard]] std::string string() const;
 };
 
-struct fragment {
+struct [[nodiscard]] fragment {
     channel const channel_path;
     fragment_index_t const fragment_index;
 
     fragment(path::channel const &, fragment_index_t const);
 
-    std::string string() const;
+    [[nodiscard]] std::string string() const;
 };
 
-struct signal_event {
+struct [[nodiscard]] signal_event {
     fragment const fragment_path;
     proc::time::range const range;
     std::type_info const &sample_type;
 
     signal_event(path::fragment const &, proc::time::range const &, std::type_info const &);
 
-    std::string string() const;
+    [[nodiscard]] std::string string() const;
 };
 
-struct number_events {
+struct [[nodiscard]] number_events {
     fragment const fragment_path;
 
     number_events(path::fragment const &);
 
-    std::string string() const;
+    [[nodiscard]] std::string string() const;
 };
 
 [[nodiscard]] std::string timeline_name(std::string const &identifier, sample_rate_t const);

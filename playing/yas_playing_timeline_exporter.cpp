@@ -397,7 +397,7 @@ struct timeline_exporter::impl : base::impl {
             auto const &channel = ch_pair.second;
 
             channel_path const ch_path{this->_root_path, ch_idx};
-            auto const frag_path = make_fragment_path(make_channel_path(this->_root_path, ch_idx), frag_idx);
+            auto const frag_path = fragment_path{channel_path{this->_root_path, ch_idx}, frag_idx};
             std::string const frag_path_str = frag_path.string();
 
             auto remove_result = file_manager::remove_content(frag_path_str);
@@ -418,7 +418,7 @@ struct timeline_exporter::impl : base::impl {
                 proc::time::range const &range = event_pair.first;
                 proc::signal_event const &event = event_pair.second;
 
-                auto const signal_path_str = make_signal_event_path(frag_path, range, event.sample_type()).string();
+                auto const signal_path_str = signal_event_path{frag_path, range, event.sample_type()}.string();
 
                 std::ofstream stream{signal_path_str, std::ios_base::out | std::ios_base::binary};
                 if (!stream) {
@@ -510,7 +510,7 @@ struct timeline_exporter::impl : base::impl {
             auto each = make_fast_each(begin_frag_idx, end_frag_idx);
             while (yas_each_next(each)) {
                 auto const &frag_idx = yas_each_index(each);
-                auto const frag_path_str = make_fragment_path(ch_path, frag_idx).string();
+                auto const frag_path_str = fragment_path{ch_path, frag_idx}.string();
                 auto const remove_result = file_manager::remove_content(frag_path_str);
                 if (!remove_result) {
                     return error::remove_fragment_failed;

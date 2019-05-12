@@ -44,18 +44,6 @@ std::string number_events_path::string() const {
     return file_path{this->fragment_path.string()}.appending("numbers").string();
 }
 
-channel_path playing::make_channel_path(std::string const &root_path, channel_index_t const ch_idx) {
-    return channel_path{root_path, ch_idx};
-}
-
-fragment_path playing::make_fragment_path(channel_path const &ch_path, fragment_index_t const frag_idx) {
-    return fragment_path{ch_path, frag_idx};
-}
-
-signal_event_path playing::make_signal_event_path(fragment_path const &frag_path, proc::time::range const &range,
-                                                  std::type_info const &sample_type) {
-    return signal_event_path{frag_path, range, sample_type};
-}
 std::string path_utils::channel_name(channel_index_t const ch_idx) {
     return std::to_string(ch_idx);
 }

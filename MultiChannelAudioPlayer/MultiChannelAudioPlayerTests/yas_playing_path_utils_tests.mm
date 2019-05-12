@@ -4,7 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <cpp_utils/cpp_utils.h>
-#import <playing/yas_playing_path_utils.h>
+#import <playing/yas_playing_path.h>
 
 using namespace yas;
 using namespace yas::playing;

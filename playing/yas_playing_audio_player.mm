@@ -11,7 +11,7 @@
 #include "yas_playing_audio_circular_buffer.h"
 #include "yas_playing_audio_utils.h"
 #include "yas_playing_math.h"
-#include "yas_playing_path_utils.h"
+#include "yas_playing_path.h"
 #include "yas_playing_signal_file_info.h"
 #include "yas_playing_timeline_utils.h"
 

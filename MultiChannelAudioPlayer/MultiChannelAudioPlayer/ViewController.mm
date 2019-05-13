@@ -35,12 +35,9 @@ struct view_controller_cpp {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    //    self->_cpp.pool +=
-    //        self->_cpp.coordinator.configuration_chain()
-    //            .perform([&exporter = self->_cpp.timeline_exporter](audio_configuration const &configuration) {
-    //                exporter.set_sample_rate(configuration.sample_rate);
-    //            })
-    //            .end();
+    self->_cpp.pool += self->_cpp.coordinator.configuration_chain()
+                           .perform([&self](audio_configuration const &configuration) { [self exportSine]; })
+                           .end();
 
     self->_cpp.pool +=
         self->_cpp.timeline_exporter.event_chain()
@@ -70,6 +67,10 @@ struct view_controller_cpp {
 }
 
 - (IBAction)exportSine:(UIButton *)sender {
+    [self exportSine];
+}
+
+- (void)exportSine {
     audio_coordinator &coordinator = self->_cpp.coordinator;
     proc::sample_rate_t const sample_rate = std::round(coordinator.sample_rate());
 

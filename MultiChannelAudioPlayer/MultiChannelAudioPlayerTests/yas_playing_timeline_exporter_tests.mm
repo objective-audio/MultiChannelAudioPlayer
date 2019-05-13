@@ -52,7 +52,8 @@ struct cpp {
     std::string const &root_path = self->_cpp.root_path;
     task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
-    path::timeline const tl_path{root_path, "0", sample_rate};
+    std::string const identifier = "0";
+    path::timeline const tl_path{root_path, identifier, sample_rate};
 
     timeline_exporter exporter{root_path, queue, sample_rate};
 
@@ -70,7 +71,7 @@ struct cpp {
 
     proc::timeline timeline{{{0, track0}, {1, track1}}};
 
-    exporter.set_timeline(timeline);
+    exporter.set_timeline_container({identifier, sample_rate, timeline});
 
     queue.wait_until_all_tasks_are_finished();
 
@@ -179,7 +180,8 @@ struct cpp {
     task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const pre_sample_rate = 2;
     proc::sample_rate_t const post_sample_rate = 3;
-    path::timeline const tl_path{root_path, "0", post_sample_rate};
+    std::string const identifier = "0";
+    path::timeline const tl_path{root_path, identifier, post_sample_rate};
 
     timeline_exporter exporter{root_path, queue, pre_sample_rate};
 
@@ -197,11 +199,11 @@ struct cpp {
 
     proc::timeline timeline{{{0, track0}, {1, track1}}};
 
-    exporter.set_timeline(timeline);
+    exporter.set_timeline_container({identifier, pre_sample_rate, timeline});
 
     queue.wait_until_all_tasks_are_finished();
 
-    exporter.set_sample_rate(post_sample_rate);
+    exporter.set_timeline_container({identifier, post_sample_rate, timeline});
 
     queue.wait_until_all_tasks_are_finished();
 
@@ -296,7 +298,8 @@ struct cpp {
     std::string const &root_path = self->_cpp.root_path;
     task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
-    path::timeline const tl_path{root_path, "0", sample_rate};
+    std::string const identifier = "0";
+    path::timeline const tl_path{root_path, identifier, sample_rate};
 
     timeline_exporter exporter{root_path, queue, sample_rate};
 
@@ -304,7 +307,7 @@ struct cpp {
 
     proc::timeline timeline;
 
-    exporter.set_timeline(timeline);
+    exporter.set_timeline_container({identifier, sample_rate, timeline});
 
     queue.wait_until_all_tasks_are_finished();
 

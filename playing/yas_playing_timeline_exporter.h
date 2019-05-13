@@ -40,8 +40,6 @@ struct timeline_exporter : base {
     timeline_exporter(std::string const &root_path, task_queue, proc::sample_rate_t const);
     timeline_exporter(std::nullptr_t);
 
-    void set_timeline(proc::timeline);
-    void set_sample_rate(proc::sample_rate_t const);
     void set_timeline_container(timeline_container);
 
     chaining::chain_unsync_t<event> event_chain() const;

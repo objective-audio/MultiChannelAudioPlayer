@@ -218,7 +218,8 @@ struct cpp {
 
     render_buffer.clear();
 
-    self->_cpp.exporter.set_timeline(test_utils::test_timeline(100, self->_cpp.ch_count));
+    self->_cpp.exporter.set_timeline_container(
+        {"0", self->_cpp.sample_rate, test_utils::test_timeline(100, self->_cpp.ch_count)});
 
     self->_cpp.queue.wait_until_all_tasks_are_finished();
 
@@ -238,7 +239,8 @@ struct cpp {
 #pragma mark -
 
 - (void)setup_files {
-    self->_cpp.exporter.set_timeline(test_utils::test_timeline(0, self->_cpp.ch_count));
+    self->_cpp.exporter.set_timeline_container(
+        {"0", self->_cpp.sample_rate, test_utils::test_timeline(0, self->_cpp.ch_count)});
     self->_cpp.queue.wait_until_all_tasks_are_finished();
 }
 

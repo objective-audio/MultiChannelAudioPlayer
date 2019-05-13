@@ -28,32 +28,21 @@ struct timeline_exporter::impl : base::impl {
     chaining::notifier<event> _event_notifier;
 
     impl(std::string const &root_path, task_queue &&queue, proc::sample_rate_t const sample_rate)
-        : _root_path(root_path),
-          _queue(std::move(queue)),
-          _src_sample_rate(sample_rate),
-          _src_container(timeline_container{sample_rate}) {
+        : _root_path(root_path), _queue(std::move(queue)), _src_container(timeline_container{sample_rate}) {
     }
 
     void prepare(timeline_exporter &exporter) {
-        this->_pool += this->_src_sample_rate.chain()
-                           .perform([weak_exporter = to_weak(exporter)](auto const &) {
-                               if (auto exporter = weak_exporter.lock()) {
-                                   exporter.impl_ptr<impl>()->_update_timeline(exporter);
-                               }
-                           })
-                           .end();
-
-        this->_pool += this->_src_timeline.chain()
+        this->_pool += this->_src_container.chain()
                            .perform([observer = chaining::any_observer{nullptr},
-                                     weak_exporter = to_weak(exporter)](proc::timeline const &timeline) mutable {
+                                     weak_exporter = to_weak(exporter)](timeline_container const &container) mutable {
                                if (observer) {
                                    observer.invalidate();
                                    observer = nullptr;
                                }
 
-                               if (proc::timeline mutable_timeline = timeline) {
+                               if (proc::timeline timeline = container.timeline()) {
                                    observer =
-                                       mutable_timeline.chain()
+                                       timeline.chain()
                                            .perform([weak_exporter](proc::timeline::event_t const &event) {
                                                if (auto exporter = weak_exporter.lock()) {
                                                    exporter.impl_ptr<impl>()->_receive_timeline_event(event, exporter);
@@ -71,25 +60,12 @@ struct timeline_exporter::impl : base::impl {
         this->_src_container.set_value(std::move(container));
     }
 
-    void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
-        assert(thread::is_main());
-
-        this->_src_timeline.set_value(std::move(timeline));
-    }
-
-    void set_sample_rate(proc::sample_rate_t const sample_rate, timeline_exporter &exporter) {
-        assert(thread::is_main());
-
-        this->_src_sample_rate.set_value(sample_rate);
-    }
-
    private:
     chaining::value::holder<timeline_container> _src_container;
-    chaining::value::holder<proc::timeline> _src_timeline{proc::timeline{nullptr}};
-    chaining::value::holder<proc::sample_rate_t> _src_sample_rate;
     chaining::observer_pool _pool;
 
     struct background {
+        std::string identifier;
         proc::timeline timeline;
         std::optional<proc::sync_source> sync_source;
     };
@@ -148,57 +124,56 @@ struct timeline_exporter::impl : base::impl {
         }
     }
 
-    void _update_timeline(timeline_exporter &exporter) {
-        this->_update_timeline(proc::copy_tracks(this->_src_timeline.raw().tracks()), exporter);
-    }
-
     void _update_timeline(proc::timeline::track_map_t &&tracks, timeline_exporter &exporter) {
         assert(thread::is_main());
 
         this->_queue.cancel_all();
 
-        task task{[tracks = std::move(tracks), sample_rate = this->_src_sample_rate.raw(),
-                   weak_exporter = to_weak(exporter)](yas::task const &task) mutable {
-                      if (auto exporter = weak_exporter.lock()) {
-                          auto exporter_impl = exporter.impl_ptr<impl>();
-                          auto &bg = exporter_impl->_bg;
-                          bg.timeline = proc::timeline{std::move(tracks)};
-                          bg.sync_source.emplace(sample_rate, sample_rate);
+        auto const &container = this->_src_container.raw();
 
-                          if (task.is_canceled()) {
-                              return;
-                          }
+        task task{
+            [tracks = std::move(tracks), identifier = container.identifier(), sample_rate = container.sample_rate(),
+             weak_exporter = to_weak(exporter)](yas::task const &task) mutable {
+                if (auto exporter = weak_exporter.lock()) {
+                    auto exporter_impl = exporter.impl_ptr<impl>();
+                    auto &bg = exporter_impl->_bg;
+                    bg.identifier = identifier;
+                    bg.timeline = proc::timeline{std::move(tracks)};
+                    bg.sync_source.emplace(sample_rate, sample_rate);
 
-                          exporter_impl->_send_method_on_bg(method::reset, std::nullopt, weak_exporter);
+                    if (task.is_canceled()) {
+                        return;
+                    }
 
-                          auto const &root_path = exporter_impl->_root_path;
+                    exporter_impl->_send_method_on_bg(method::reset, std::nullopt, weak_exporter);
 
-                          auto result = file_manager::remove_content(root_path);
-                          if (!result) {
-                              std::runtime_error("remove timeline root directory failed.");
-                          }
+                    auto const &root_path = exporter_impl->_root_path;
 
-                          if (task.is_canceled()) {
-                              return;
-                          }
+                    auto result = file_manager::remove_content(root_path);
+                    if (!result) {
+                        std::runtime_error("remove timeline root directory failed.");
+                    }
 
-                          proc::timeline &timeline = exporter_impl->_bg.timeline;
+                    if (task.is_canceled()) {
+                        return;
+                    }
 
-                          auto total_range = timeline.total_range();
-                          if (!total_range.has_value()) {
-                              return;
-                          }
+                    proc::timeline &timeline = exporter_impl->_bg.timeline;
 
-                          auto const &sync_source = exporter_impl->_sync_source_on_bg();
-                          auto const frags_range =
-                              timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
+                    auto total_range = timeline.total_range();
+                    if (!total_range.has_value()) {
+                        return;
+                    }
 
-                          exporter_impl->_send_method_on_bg(method::export_began, frags_range, weak_exporter);
+                    auto const &sync_source = exporter_impl->_sync_source_on_bg();
+                    auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
 
-                          exporter_impl->_export_fragments(frags_range, task, weak_exporter);
-                      }
-                  },
-                  {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
+                    exporter_impl->_send_method_on_bg(method::export_began, frags_range, weak_exporter);
+
+                    exporter_impl->_export_fragments(frags_range, task, weak_exporter);
+                }
+            },
+            {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
 
         this->_queue.push_back(std::move(task));
     }
@@ -572,14 +547,6 @@ timeline_exporter::timeline_exporter(std::string const &root_path, task_queue qu
 }
 
 timeline_exporter::timeline_exporter(std::nullptr_t) : base(nullptr) {
-}
-
-void timeline_exporter::set_timeline(proc::timeline timeline) {
-    impl_ptr<impl>()->set_timeline(std::move(timeline), *this);
-}
-
-void timeline_exporter::set_sample_rate(proc::sample_rate_t const sample_rate) {
-    impl_ptr<impl>()->set_sample_rate(sample_rate, *this);
 }
 
 void timeline_exporter::set_timeline_container(timeline_container container) {

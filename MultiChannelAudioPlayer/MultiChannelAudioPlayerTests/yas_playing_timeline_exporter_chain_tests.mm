@@ -36,6 +36,7 @@ struct cpp {
     std::string const &root_path = self->_cpp.root_path;
     task_queue &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
+    std::string const identifier = "0";
 
     timeline_exporter exporter{root_path, queue, sample_rate};
 
@@ -55,7 +56,7 @@ struct cpp {
                             })
                             .end();
 
-        exporter.set_timeline(timeline);
+        exporter.set_timeline_container({identifier, sample_rate, timeline});
 
         [self waitForExpectations:@[expectation] timeout:10.0];
 

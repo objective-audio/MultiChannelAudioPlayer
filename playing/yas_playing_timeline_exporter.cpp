@@ -61,6 +61,12 @@ struct timeline_exporter::impl : base::impl {
                            })
                            .end();
     }
+    
+    void set_timeline_container(timeline_container &&container) {
+        assert(thread::is_main());
+        
+        this->_src_container.set_value(std::move(container));
+    }
 
     void set_timeline(proc::timeline &&timeline, timeline_exporter &exporter) {
         assert(thread::is_main());
@@ -75,6 +81,7 @@ struct timeline_exporter::impl : base::impl {
     }
 
    private:
+    chaining::value::holder<timeline_container> _src_container;
     chaining::value::holder<proc::timeline> _src_timeline{proc::timeline{nullptr}};
     chaining::value::holder<proc::sample_rate_t> _src_sample_rate;
     chaining::observer_pool _pool;
@@ -570,6 +577,10 @@ void timeline_exporter::set_timeline(proc::timeline timeline) {
 
 void timeline_exporter::set_sample_rate(proc::sample_rate_t const sample_rate) {
     impl_ptr<impl>()->set_sample_rate(sample_rate, *this);
+}
+
+void timeline_exporter::set_timeline_container(timeline_container container) {
+    impl_ptr<impl>()->set_timeline_container(std::move(container));
 }
 
 chaining::chain_unsync_t<timeline_exporter::event> timeline_exporter::event_chain() const {

@@ -9,6 +9,7 @@
 #include <cpp_utils/yas_result.h>
 #include <cpp_utils/yas_task.h>
 #include <processing/yas_processing_timeline.h>
+#include "yas_playing_timeline_container.h"
 
 namespace yas::playing {
 struct timeline_exporter : base {
@@ -41,6 +42,7 @@ struct timeline_exporter : base {
 
     void set_timeline(proc::timeline);
     void set_sample_rate(proc::sample_rate_t const);
+    void set_timeline_container(timeline_container);
 
     chaining::chain_unsync_t<event> event_chain() const;
 };

@@ -10,6 +10,6 @@ namespace yas::playing {
 struct timeline_container {
     std::string const identifier;
     proc::sample_rate_t const sample_rate;
-    proc::timeline const timeline;
+    proc::timeline const timeline{nullptr};
 };
 }  // namespace yas::playing

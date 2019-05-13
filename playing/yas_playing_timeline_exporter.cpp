@@ -28,7 +28,10 @@ struct timeline_exporter::impl : base::impl {
     chaining::notifier<event> _event_notifier;
 
     impl(std::string const &root_path, task_queue &&queue, proc::sample_rate_t const sample_rate)
-        : _root_path(root_path), _queue(std::move(queue)), _src_sample_rate(sample_rate) {
+        : _root_path(root_path),
+          _queue(std::move(queue)),
+          _src_sample_rate(sample_rate),
+          _src_container(timeline_container{sample_rate}) {
     }
 
     void prepare(timeline_exporter &exporter) {
@@ -61,10 +64,10 @@ struct timeline_exporter::impl : base::impl {
                            })
                            .end();
     }
-    
+
     void set_timeline_container(timeline_container &&container) {
         assert(thread::is_main());
-        
+
         this->_src_container.set_value(std::move(container));
     }
 

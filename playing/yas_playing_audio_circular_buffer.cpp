@@ -89,6 +89,14 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
     this->_queue.push_back(std::move(task));
 }
 
+void audio_circular_buffer::_send_event_on_main(event event) {
+    auto handler = [](){};
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        handler();
+    });
+}
+
 #pragma mark -
 
 namespace yas::playing {

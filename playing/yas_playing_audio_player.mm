@@ -12,6 +12,7 @@
 #include "yas_playing_audio_utils.h"
 #include "yas_playing_math.h"
 #include "yas_playing_path.h"
+#include "yas_playing_signal_file.h"
 #include "yas_playing_signal_file_info.h"
 #include "yas_playing_timeline_utils.h"
 
@@ -281,26 +282,9 @@ struct audio_player::impl : base::impl {
 
                         sample_rate_t const sample_rate = std::round(format.sample_rate());
                         frame_index_t const buf_top_frame = frag_idx * sample_rate;
-                        frame_index_t const buf_next_frame = buf_top_frame + buffer.frame_length();
-                        frame_index_t const sample_byte_count = format.sample_byte_count();
 
                         for (signal_file_info const &info : infos) {
-                            if (info.range.frame < buf_top_frame || buf_next_frame < info.range.next_frame()) {
-                                return false;
-                            }
-
-                            auto stream = std::fstream{info.path, std::ios_base::in | std::ios_base::binary};
-                            if (!stream) {
-                                return false;
-                            }
-
-                            frame_index_t const frame = (info.range.frame - buf_top_frame) * sample_byte_count;
-                            length_t const length = info.range.length * sample_byte_count;
-                            char *data_ptr = timeline_utils::char_data(buffer);
-
-                            stream.read(&data_ptr[frame], length);
-
-                            if (stream.gcount() != length) {
+                            if (auto result = signal_file::read(info, buffer, buf_top_frame); !result) {
                                 return false;
                             }
                         }

@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_signal_file.h"
+#include <audio/yas_audio_format.h>
 #include <fstream>
 #include "yas_playing_timeline_utils.h"
 
@@ -12,22 +13,57 @@ using namespace yas::playing;
 signal_file::write_result_t signal_file::write(std::string const &path, proc::signal_event const &event) {
     std::ofstream stream{path, std::ios_base::out | std::ios_base::binary};
     if (!stream) {
-        return write_result_t{error::open_stream_failed};
+        return write_result_t{write_error::open_stream_failed};
     }
 
     if (char const *data = timeline_utils::char_data(event)) {
         stream.write(data, event.byte_size());
 
         if (stream.fail()) {
-            return write_result_t{error::write_to_stream_failed};
+            return write_result_t{write_error::write_to_stream_failed};
         }
     }
 
     stream.close();
 
     if (stream.fail()) {
-        return write_result_t{error::close_stream_failed};
+        return write_result_t{write_error::close_stream_failed};
     }
 
     return write_result_t{nullptr};
+}
+
+signal_file::read_result_t signal_file::read(signal_file_info const &info, audio::pcm_buffer &buffer,
+                                             playing::frame_index_t const buf_top_frame) {
+    frame_index_t const buf_next_frame = buf_top_frame + buffer.frame_length();
+
+    if (info.range.frame < buf_top_frame || buf_next_frame < info.range.next_frame()) {
+        return read_result_t{read_error::out_of_range};
+    }
+
+    auto stream = std::fstream{info.path, std::ios_base::in | std::ios_base::binary};
+    if (!stream) {
+        return read_result_t{read_error::open_stream_failed};
+    }
+
+    std::size_t const sample_byte_count = buffer.format().sample_byte_count();
+    frame_index_t const frame = (info.range.frame - buf_top_frame) * sample_byte_count;
+    length_t const length = info.range.length * sample_byte_count;
+    char *data_ptr = timeline_utils::char_data(buffer);
+
+    stream.read(&data_ptr[frame], length);
+    if (stream.fail()) {
+        return read_result_t{read_error::read_from_stream_failed};
+    }
+
+    if (stream.gcount() != length) {
+        return read_result_t{read_error::read_count_not_match};
+    }
+
+    stream.close();
+    if (stream.fail()) {
+        return read_result_t{read_error::close_stream_failed};
+    }
+
+    return read_result_t{nullptr};
 }

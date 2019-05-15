@@ -9,11 +9,8 @@
 using namespace yas;
 using namespace yas::playing;
 
-signal_file::signal_file(std::string const &path) : _path(path) {
-}
-
-signal_file::write_result_t signal_file::write(proc::signal_event const &event) {
-    std::ofstream stream{this->_path, std::ios_base::out | std::ios_base::binary};
+signal_file::write_result_t signal_file::write(std::string const &path, proc::signal_event const &event) {
+    std::ofstream stream{path, std::ios_base::out | std::ios_base::binary};
     if (!stream) {
         return write_result_t{error::open_stream_failed};
     }

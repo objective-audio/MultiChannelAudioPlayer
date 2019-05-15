@@ -409,9 +409,7 @@ struct timeline_exporter::impl : base::impl {
 
                 auto const signal_path_str = path::signal_event{frag_path, range, event.sample_type()}.string();
 
-                signal_file file{signal_path_str};
-
-                if (auto result = file.write(event); !result) {
+                if (auto result = signal_file::write(signal_path_str, event); !result) {
                     return error::write_signal_failed;
                 }
             }

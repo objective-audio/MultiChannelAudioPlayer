@@ -90,8 +90,8 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 }
 
 void audio_circular_buffer::_send_event_on_main(event event) {
-    auto handler = [](){};
-    
+    auto handler = []() {};
+
     dispatch_async(dispatch_get_main_queue(), ^{
         handler();
     });

@@ -12,8 +12,8 @@
 #include <cpp_utils/yas_thread.h>
 #include <cpp_utils/yas_to_integer.h>
 #include <processing/yas_processing_umbrella.h>
-#include <fstream>
 #include "yas_playing_math.h"
+#include "yas_playing_numbers_file.h"
 #include "yas_playing_path.h"
 #include "yas_playing_signal_file.h"
 #include "yas_playing_timeline_canceling.h"
@@ -417,40 +417,9 @@ struct timeline_exporter::impl : base::impl {
             if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
                 auto const number_path_str = path::number_events{frag_path}.string();
 
-                std::ofstream stream{number_path_str, std::ios_base::out | std::ios_base::binary};
-                if (!stream) {
-                    return error::open_number_stream_failed;
+                if (auto result = numbers_file::write(number_path_str, number_events); !result) {
+                    return error::write_numbers_failed;
                 }
-
-                for (auto const &event_pair : number_events) {
-                    proc::time::frame::type const &frame = event_pair.first;
-
-                    if (char const *data = timeline_utils::char_data(frame)) {
-                        stream.write(data, sizeof(proc::time::frame::type));
-                        if (stream.fail()) {
-                            return error::write_number_stream_failed;
-                        }
-                    }
-
-                    proc::number_event const &event = event_pair.second;
-
-                    auto const store_type = timeline_utils::to_sample_store_type(event.sample_type());
-                    if (char const *data = timeline_utils::char_data(store_type)) {
-                        stream.write(data, sizeof(sample_store_type));
-                        if (stream.fail()) {
-                            return error::write_number_stream_failed;
-                        }
-                    }
-
-                    if (char const *data = timeline_utils::char_data(event)) {
-                        stream.write(data, event.sample_byte_count());
-                        if (stream.fail()) {
-                            return error::write_number_stream_failed;
-                        }
-                    }
-                }
-
-                stream.close();
             }
         }
 
@@ -570,12 +539,8 @@ std::string yas::to_string(timeline_exporter::error const &error) {
             return "create_directory_failed";
         case timeline_exporter::error::write_signal_failed:
             return "write_signal_failed";
-        case timeline_exporter::error::open_signal_stream_failed:
-            return "open_signal_stream_failed";
-        case timeline_exporter::error::open_number_stream_failed:
-            return "open_number_stream_failed";
-        case timeline_exporter::error::write_number_stream_failed:
-            return "write_number_stream_failed";
+        case timeline_exporter::error::write_numbers_failed:
+            return "write_numbers_failed";
         case timeline_exporter::error::get_content_paths_failed:
             return "get_content_paths_failed";
     }

@@ -24,6 +24,7 @@ struct timeline_exporter : base {
     enum class error {
         remove_fragment_failed,
         create_directory_failed,
+        write_signal_failed,
         open_signal_stream_failed,
         open_number_stream_failed,
         write_number_stream_failed,

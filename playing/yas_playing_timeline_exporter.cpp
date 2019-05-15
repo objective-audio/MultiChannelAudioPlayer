@@ -15,6 +15,7 @@
 #include <fstream>
 #include "yas_playing_math.h"
 #include "yas_playing_path.h"
+#include "yas_playing_signal_file.h"
 #include "yas_playing_timeline_canceling.h"
 #include "yas_playing_timeline_utils.h"
 #include "yas_playing_types.h"
@@ -408,16 +409,11 @@ struct timeline_exporter::impl : base::impl {
 
                 auto const signal_path_str = path::signal_event{frag_path, range, event.sample_type()}.string();
 
-                std::ofstream stream{signal_path_str, std::ios_base::out | std::ios_base::binary};
-                if (!stream) {
-                    return error::open_signal_stream_failed;
-                }
+                signal_file file{signal_path_str};
 
-                if (char const *data = timeline_utils::char_data(event)) {
-                    stream.write(data, event.byte_size());
+                if (auto result = file.write(event); !result) {
+                    return error::write_signal_failed;
                 }
-
-                stream.close();
             }
 
             if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
@@ -574,6 +570,8 @@ std::string yas::to_string(timeline_exporter::error const &error) {
             return "remove_fragment_failed";
         case timeline_exporter::error::create_directory_failed:
             return "create_directory_failed";
+        case timeline_exporter::error::write_signal_failed:
+            return "write_signal_failed";
         case timeline_exporter::error::open_signal_stream_failed:
             return "open_signal_stream_failed";
         case timeline_exporter::error::open_number_stream_failed:

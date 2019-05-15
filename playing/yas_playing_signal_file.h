@@ -21,7 +21,7 @@ struct signal_file {
 
     signal_file(std::string const &path);
 
-    write_result_t write(proc::time::range const &range, proc::signal_event const &event);
+    write_result_t write(proc::signal_event const &event);
 
    private:
     std::string const _path;

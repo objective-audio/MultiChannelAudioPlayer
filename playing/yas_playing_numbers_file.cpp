@@ -9,12 +9,9 @@
 using namespace yas;
 using namespace yas::playing;
 
-numbers_file::numbers_file(std::string const &path) : path(path) {
-}
-
 numbers_file::write_result_t numbers_file::write(
-    std::multimap<playing::frame_index_t, proc::number_event> const &events) {
-    std::ofstream stream{this->path, std::ios_base::out | std::ios_base::binary};
+    std::string const &path, std::multimap<playing::frame_index_t, proc::number_event> const &events) {
+    std::ofstream stream{path, std::ios_base::out | std::ios_base::binary};
     if (!stream) {
         return write_result_t{error::open_stream_failed};
     }

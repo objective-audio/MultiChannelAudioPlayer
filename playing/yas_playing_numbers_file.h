@@ -9,21 +9,14 @@
 #include <string>
 #include "yas_playing_types.h"
 
-namespace yas::playing {
-struct numbers_file {
-    enum class error {
-        open_stream_failed,
-        write_to_stream_failed,
-        close_stream_failed,
-    };
-
-    using write_result_t = result<std::nullptr_t, error>;
-
-    numbers_file(std::string const &);
-
-    write_result_t write(std::multimap<playing::frame_index_t, proc::number_event> const &);
-
-   private:
-    std::string const path;
+namespace yas::playing::numbers_file {
+enum class error {
+    open_stream_failed,
+    write_to_stream_failed,
+    close_stream_failed,
 };
-}  // namespace yas::playing
+
+using write_result_t = result<std::nullptr_t, error>;
+
+write_result_t write(std::string const &, std::multimap<playing::frame_index_t, proc::number_event> const &);
+}  // namespace yas::playing::numbers_file

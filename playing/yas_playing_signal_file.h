@@ -11,7 +11,7 @@
 
 namespace yas::playing {
 struct signal_file {
-    enum error {
+    enum class error {
         open_stream_failed,
         write_to_stream_failed,
         close_stream_failed,

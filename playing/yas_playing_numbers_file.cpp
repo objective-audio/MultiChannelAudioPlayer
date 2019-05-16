@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_numbers_file.h"
+#include <cpp_utils/yas_boolean.h>
 #include <fstream>
 #include "yas_playing_timeline_utils.h"
 
@@ -11,7 +12,7 @@ using namespace yas::playing;
 
 numbers_file::write_result_t numbers_file::write(std::string const &path, event_map_t const &events) {
     std::ofstream stream{path, std::ios_base::out | std::ios_base::binary};
-    if (!stream) {
+    if (stream.fail()) {
         return write_result_t{write_error::open_stream_failed};
     }
 
@@ -51,15 +52,127 @@ numbers_file::write_result_t numbers_file::write(std::string const &path, event_
     return write_result_t{nullptr};
 }
 
+namespace yas::playing::numbers_file {
+using readk_value_result_t = result<proc::number_event, std::nullptr_t>;
+
+template <typename T>
+readk_value_result_t read_value(std::ifstream &stream) {
+    T value;
+    stream.read(reinterpret_cast<char *>(&value), sizeof(T));
+    if (stream.fail() || stream.gcount() != sizeof(T)) {
+        return readk_value_result_t{nullptr};
+    }
+    return readk_value_result_t{proc::make_number_event(value)};
+}
+}  // namespace yas::playing::numbers_file
+
 numbers_file::read_result_t numbers_file::read(std::string const &path) {
-    std::ofstream stream{path, std::ios_base::in | std::ios_base::binary};
-    if (!stream) {
+    std::ifstream stream{path, std::ios_base::in | std::ios_base::binary};
+    if (stream.fail()) {
         return read_result_t{read_error::open_stream_failed};
     }
 
     event_map_t result;
 
-#warning todo
+    while (true) {
+        proc::time::frame::type frame;
+        stream.read((char *)&frame, sizeof(proc::time::frame::type));
+        if (stream.eof()) {
+            break;
+        }
+        if (stream.fail() || stream.gcount() != sizeof(proc::time::frame::type)) {
+            return read_result_t{read_error::read_from_stream_failed};
+        }
+
+        sample_store_type store_type;
+        stream.read((char *)&store_type, sizeof(sample_store_type));
+        if (stream.fail() || stream.gcount() != sizeof(sample_store_type)) {
+            return read_result_t{read_error::read_from_stream_failed};
+        }
+
+        switch (store_type) {
+            case sample_store_type::float64: {
+                if (auto read_result = read_value<double>(stream)) {
+                    result.emplace(frame, std::move(read_result.value()));
+                } else {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+            } break;
+            case sample_store_type::float32: {
+                if (auto read_result = read_value<float>(stream)) {
+                    result.emplace(frame, std::move(read_result.value()));
+                } else {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+            } break;
+            case sample_store_type::int64: {
+                if (auto read_result = read_value<int64_t>(stream)) {
+                    result.emplace(frame, std::move(read_result.value()));
+                } else {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+            } break;
+            case sample_store_type::uint64: {
+                if (auto read_result = read_value<uint64_t>(stream)) {
+                    result.emplace(frame, std::move(read_result.value()));
+                } else {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+            } break;
+            case sample_store_type::int32:
+                if (auto read_result = read_value<int32_t>(stream)) {
+                    result.emplace(frame, std::move(read_result.value()));
+                } else {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+                break;
+            case sample_store_type::uint32:
+                if (auto read_result = read_value<uint32_t>(stream)) {
+                    result.emplace(frame, std::move(read_result.value()));
+                } else {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+                break;
+            case sample_store_type::int16:
+                if (auto read_result = read_value<int16_t>(stream)) {
+                    result.emplace(frame, std::move(read_result.value()));
+                } else {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+                break;
+            case sample_store_type::uint16:
+                if (auto read_result = read_value<uint16_t>(stream)) {
+                    result.emplace(frame, std::move(read_result.value()));
+                } else {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+                break;
+            case sample_store_type::int8:
+                if (auto read_result = read_value<int8_t>(stream)) {
+                    result.emplace(frame, std::move(read_result.value()));
+                } else {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+                break;
+            case sample_store_type::uint8:
+                if (auto read_result = read_value<uint8_t>(stream)) {
+                    result.emplace(frame, std::move(read_result.value()));
+                } else {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+                break;
+            case sample_store_type::boolean:
+                bool value;
+                stream.read(reinterpret_cast<char *>(&value), sizeof(bool));
+                if (stream.fail() || stream.gcount() != sizeof(bool)) {
+                    return read_result_t{read_error::read_from_stream_failed};
+                }
+                result.emplace(frame, proc::make_number_event(yas::boolean{value}));
+                break;
+            case sample_store_type::unknown:
+                return read_result_t{read_error::invalid_sample_store_type};
+        }
+    }
 
     stream.close();
     if (stream.fail()) {

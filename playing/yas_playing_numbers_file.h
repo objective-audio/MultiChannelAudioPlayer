@@ -19,6 +19,7 @@ enum class write_error {
 enum class read_error {
     open_stream_failed,
     read_from_stream_failed,
+    invalid_sample_store_type,
     close_stream_failed,
 };
 

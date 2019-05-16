@@ -113,45 +113,30 @@ struct cpp {
 
     {
         auto signal_path_str = path::signal_event{path::fragment{ch0_path, -1}, {-2, 2}, typeid(int64_t)}.string();
-        auto stream = std::ifstream{signal_path_str, std::ios_base::in | std::ios_base::binary};
-        XCTAssertFalse(stream.fail());
-        stream.read((char *)values, sizeof(values));
-        XCTAssertEqual(stream.gcount(), sizeof(values));
+        auto result = playing::signal_file::read(signal_path_str, &values, sizeof(values));
+        XCTAssertTrue(result);
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 10);
-        stream.read((char *)values, sizeof(values));
-        XCTAssertEqual(stream.gcount(), 0);
-        XCTAssertTrue(stream.eof());
     }
 
     values[0] = values[1] = 0;
 
     {
         auto signal_path_str = path::signal_event{path::fragment{ch0_path, 0}, {0, 2}, typeid(int64_t)}.string();
-        auto stream = std::ifstream{signal_path_str, std::ios_base::in | std::ios_base::binary};
-        XCTAssertFalse(stream.fail());
-        stream.read((char *)values, sizeof(values));
-        XCTAssertEqual(stream.gcount(), sizeof(values));
+        auto result = playing::signal_file::read(signal_path_str, &values, sizeof(values));
+        XCTAssertTrue(result);
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 10);
-        stream.read((char *)values, sizeof(values));
-        XCTAssertEqual(stream.gcount(), 0);
-        XCTAssertTrue(stream.eof());
     }
 
     values[0] = values[1] = 0;
 
     {
         auto signal_path_str = path::signal_event{path::fragment{ch0_path, 1}, {2, 1}, typeid(int64_t)}.string();
-        auto stream = std::ifstream{signal_path_str, std::ios_base::in | std::ios_base::binary};
-        XCTAssertFalse(stream.fail());
-        stream.read((char *)values, sizeof(values));
-        XCTAssertEqual(stream.gcount(), sizeof(int64_t));
+        auto result = playing::signal_file::read(signal_path_str, &values, sizeof(int64_t));
+        XCTAssertTrue(result);
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 0);
-        stream.read((char *)values, sizeof(values));
-        XCTAssertEqual(stream.gcount(), 0);
-        XCTAssertTrue(stream.eof());
     }
 
     {
@@ -232,32 +217,22 @@ struct cpp {
 
     {
         auto signal_path_str = path::signal_event{path::fragment{ch0_path, -1}, {-2, 2}, typeid(int64_t)}.string();
-        auto stream = std::ifstream{signal_path_str, std::ios_base::in | std::ios_base::binary};
-        XCTAssertFalse(stream.fail());
-        stream.read((char *)values, sizeof(values));
-        XCTAssertEqual(stream.gcount(), sizeof(int64_t) * 2);
+        auto result = playing::signal_file::read(signal_path_str, &values, sizeof(int64_t) * 2);
+        XCTAssertTrue(result);
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 10);
         XCTAssertEqual(values[2], 0);
-        stream.read((char *)values, sizeof(values));
-        XCTAssertEqual(stream.gcount(), 0);
-        XCTAssertTrue(stream.eof());
     }
 
     values[0] = values[1] = values[2] = 0;
 
     {
         auto signal_path_str = path::signal_event{path::fragment{ch0_path, 0}, {0, 3}, typeid(int64_t)}.string();
-        auto stream = std::ifstream{signal_path_str, std::ios_base::in | std::ios_base::binary};
-        XCTAssertFalse(stream.fail());
-        stream.read((char *)values, sizeof(values));
-        XCTAssertEqual(stream.gcount(), sizeof(values));
+        auto result = playing::signal_file::read(signal_path_str, &values, sizeof(values));
+        XCTAssertTrue(result);
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 10);
         XCTAssertEqual(values[2], 10);
-        stream.read((char *)values, sizeof(values));
-        XCTAssertEqual(stream.gcount(), 0);
-        XCTAssertTrue(stream.eof());
     }
 
     values[0] = values[1] = values[2] = 0;

@@ -9,8 +9,7 @@
 using namespace yas;
 using namespace yas::playing;
 
-numbers_file::write_result_t numbers_file::write(
-    std::string const &path, std::multimap<playing::frame_index_t, proc::number_event> const &events) {
+numbers_file::write_result_t numbers_file::write(std::string const &path, event_map_t const &events) {
     std::ofstream stream{path, std::ios_base::out | std::ios_base::binary};
     if (!stream) {
         return write_result_t{write_error::open_stream_failed};
@@ -58,6 +57,8 @@ numbers_file::read_result_t numbers_file::read(std::string const &path) {
         return read_result_t{read_error::open_stream_failed};
     }
 
+    event_map_t result;
+
 #warning todo
 
     stream.close();
@@ -65,5 +66,5 @@ numbers_file::read_result_t numbers_file::read(std::string const &path) {
         return read_result_t{read_error::close_stream_failed};
     }
 
-    return read_result_t{nullptr};
+    return read_result_t{std::move(result)};
 }

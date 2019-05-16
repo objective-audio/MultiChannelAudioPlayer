@@ -22,7 +22,6 @@ enum class read_error {
     read_sample_store_type_failed,
     read_value_failed,
     sample_store_type_not_found,
-    close_stream_failed,
 };
 
 using event_map_t = std::multimap<playing::frame_index_t, proc::number_event>;

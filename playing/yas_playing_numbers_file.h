@@ -29,6 +29,6 @@ using event_map_t = std::multimap<playing::frame_index_t, proc::number_event>;
 using write_result_t = result<std::nullptr_t, write_error>;
 using read_result_t = result<event_map_t, read_error>;
 
-write_result_t write(std::string const &, event_map_t const &);
-read_result_t read(std::string const &);
+write_result_t write(std::string const &path, event_map_t const &);
+read_result_t read(std::string const &path);
 }  // namespace yas::playing::numbers_file

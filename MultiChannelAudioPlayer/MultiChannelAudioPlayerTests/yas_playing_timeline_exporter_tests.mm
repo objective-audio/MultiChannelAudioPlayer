@@ -282,7 +282,7 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
     auto const frag_0_0_path_str = path::number_events{path::fragment{ch0_path, 0}}.string();
     XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
-    if (auto result = playing::timeline_utils::read_number_events(frag_0_0_path_str)) {
+    if (auto result = playing::numbers_file::read(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 0);
         XCTAssertEqual(result.value().begin()->second.get<int64_t>(), 100);
@@ -301,7 +301,7 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch1_path, 1}.string()));
     auto const frag_1_1_path_str = path::number_events{path::fragment{ch1_path, 1}}.string();
     XCTAssertTrue(file_manager::content_exists(frag_1_1_path_str));
-    if (auto result = playing::timeline_utils::read_number_events(frag_1_1_path_str)) {
+    if (auto result = playing::numbers_file::read(frag_1_1_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 2);
         XCTAssertEqual(result.value().begin()->second.get<Float64>(), 1.0);
@@ -317,7 +317,7 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
     XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
-    if (auto result = playing::timeline_utils::read_number_events(frag_0_0_path_str)) {
+    if (auto result = playing::numbers_file::read(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 2);
         auto iterator = result.value().begin();
         XCTAssertEqual(iterator->first, 0);
@@ -335,7 +335,7 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
     XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
-    if (auto result = playing::timeline_utils::read_number_events(frag_0_0_path_str)) {
+    if (auto result = playing::numbers_file::read(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 0);
         XCTAssertEqual(result.value().begin()->second.get<int64_t>(), 100);

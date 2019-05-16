@@ -18,8 +18,10 @@ enum class write_error {
 
 enum class read_error {
     open_stream_failed,
-    read_from_stream_failed,
-    invalid_sample_store_type,
+    read_frame_failed,
+    read_sample_store_type_failed,
+    read_value_failed,
+    sample_store_type_not_found,
     close_stream_failed,
 };
 

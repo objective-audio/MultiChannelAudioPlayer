@@ -81,13 +81,13 @@ numbers_file::read_result_t numbers_file::read(std::string const &path) {
             break;
         }
         if (stream.fail() || stream.gcount() != sizeof(proc::time::frame::type)) {
-            return read_result_t{read_error::read_from_stream_failed};
+            return read_result_t{read_error::read_frame_failed};
         }
 
         sample_store_type store_type;
         stream.read((char *)&store_type, sizeof(sample_store_type));
         if (stream.fail() || stream.gcount() != sizeof(sample_store_type)) {
-            return read_result_t{read_error::read_from_stream_failed};
+            return read_result_t{read_error::read_sample_store_type_failed};
         }
 
         switch (store_type) {
@@ -95,82 +95,82 @@ numbers_file::read_result_t numbers_file::read(std::string const &path) {
                 if (auto read_result = read_value<double>(stream)) {
                     result.emplace(frame, std::move(read_result.value()));
                 } else {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
             } break;
             case sample_store_type::float32: {
                 if (auto read_result = read_value<float>(stream)) {
                     result.emplace(frame, std::move(read_result.value()));
                 } else {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
             } break;
             case sample_store_type::int64: {
                 if (auto read_result = read_value<int64_t>(stream)) {
                     result.emplace(frame, std::move(read_result.value()));
                 } else {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
             } break;
             case sample_store_type::uint64: {
                 if (auto read_result = read_value<uint64_t>(stream)) {
                     result.emplace(frame, std::move(read_result.value()));
                 } else {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
             } break;
             case sample_store_type::int32:
                 if (auto read_result = read_value<int32_t>(stream)) {
                     result.emplace(frame, std::move(read_result.value()));
                 } else {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
                 break;
             case sample_store_type::uint32:
                 if (auto read_result = read_value<uint32_t>(stream)) {
                     result.emplace(frame, std::move(read_result.value()));
                 } else {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
                 break;
             case sample_store_type::int16:
                 if (auto read_result = read_value<int16_t>(stream)) {
                     result.emplace(frame, std::move(read_result.value()));
                 } else {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
                 break;
             case sample_store_type::uint16:
                 if (auto read_result = read_value<uint16_t>(stream)) {
                     result.emplace(frame, std::move(read_result.value()));
                 } else {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
                 break;
             case sample_store_type::int8:
                 if (auto read_result = read_value<int8_t>(stream)) {
                     result.emplace(frame, std::move(read_result.value()));
                 } else {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
                 break;
             case sample_store_type::uint8:
                 if (auto read_result = read_value<uint8_t>(stream)) {
                     result.emplace(frame, std::move(read_result.value()));
                 } else {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
                 break;
             case sample_store_type::boolean:
                 bool value;
                 stream.read(reinterpret_cast<char *>(&value), sizeof(bool));
                 if (stream.fail() || stream.gcount() != sizeof(bool)) {
-                    return read_result_t{read_error::read_from_stream_failed};
+                    return read_result_t{read_error::read_value_failed};
                 }
                 result.emplace(frame, proc::make_number_event(yas::boolean{value}));
                 break;
             case sample_store_type::unknown:
-                return read_result_t{read_error::invalid_sample_store_type};
+                return read_result_t{read_error::sample_store_type_not_found};
         }
     }
 

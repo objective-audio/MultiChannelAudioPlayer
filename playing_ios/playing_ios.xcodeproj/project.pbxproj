@@ -12,9 +12,9 @@
 		B61FBF862288F63A00F3E865 /* yas_playing_timeline_container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61FBF842288F63A00F3E865 /* yas_playing_timeline_container.cpp */; };
 		B61FBF872288F63A00F3E865 /* yas_playing_timeline_container.h in Headers */ = {isa = PBXBuildFile; fileRef = B61FBF852288F63A00F3E865 /* yas_playing_timeline_container.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61FBF8A228B9AA200F3E865 /* yas_playing_signal_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61FBF88228B9AA200F3E865 /* yas_playing_signal_file.cpp */; };
-		B61FBF8B228B9AA200F3E865 /* yas_playing_signal_file.h in Headers */ = {isa = PBXBuildFile; fileRef = B61FBF89228B9AA200F3E865 /* yas_playing_signal_file.h */; };
+		B61FBF8B228B9AA200F3E865 /* yas_playing_signal_file.h in Headers */ = {isa = PBXBuildFile; fileRef = B61FBF89228B9AA200F3E865 /* yas_playing_signal_file.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61FBF8E228B9AC700F3E865 /* yas_playing_numbers_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61FBF8C228B9AC700F3E865 /* yas_playing_numbers_file.cpp */; };
-		B61FBF8F228B9AC700F3E865 /* yas_playing_numbers_file.h in Headers */ = {isa = PBXBuildFile; fileRef = B61FBF8D228B9AC700F3E865 /* yas_playing_numbers_file.h */; };
+		B61FBF8F228B9AC700F3E865 /* yas_playing_numbers_file.h in Headers */ = {isa = PBXBuildFile; fileRef = B61FBF8D228B9AC700F3E865 /* yas_playing_numbers_file.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B628798921EB5BAC00566CC1 /* playing.h in Headers */ = {isa = PBXBuildFile; fileRef = B628798721EB5BAC00566CC1 /* playing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62879A621EB61EB00566CC1 /* yas_playing_audio_coordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = B628798E21EB61EB00566CC1 /* yas_playing_audio_coordinator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62879A721EB61EB00566CC1 /* yas_playing_audio_buffer_container.h in Headers */ = {isa = PBXBuildFile; fileRef = B628798F21EB61EB00566CC1 /* yas_playing_audio_buffer_container.h */; settings = {ATTRIBUTES = (Public, ); }; };

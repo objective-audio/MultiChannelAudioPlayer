@@ -5,6 +5,8 @@
 #import <XCTest/XCTest.h>
 #import <cpp_utils/cpp_utils.h>
 #import <playing/playing.h>
+#import <playing/yas_playing_numbers_file.h>
+#import <playing/yas_playing_signal_file.h>
 #import <processing/processing.h>
 #import <fstream>
 
@@ -153,25 +155,13 @@ struct cpp {
     }
 
     {
-        auto stream = std::ifstream{path::number_events{path::fragment{ch1_path, 5}}.string(),
-                                    std::ios_base::in | std::ios_base::binary};
-        XCTAssertFalse(stream.fail());
-        proc::time::frame::type frame;
-        stream.read((char *)&frame, sizeof(proc::time::frame::type));
-        XCTAssertEqual(stream.gcount(), sizeof(proc::time::frame::type));
-        XCTAssertEqual(frame, 10);
-        sample_store_type store_type;
-        stream.read((char *)&store_type, sizeof(sample_store_type));
-        XCTAssertEqual(stream.gcount(), sizeof(sample_store_type));
-        XCTAssertEqual(store_type, sample_store_type::int64);
-        int64_t value;
-        stream.read((char *)&value, sizeof(int64_t));
-        XCTAssertEqual(stream.gcount(), sizeof(int64_t));
-        XCTAssertEqual(value, 11);
-        char dummy;
-        stream.read(&dummy, sizeof(char));
-        XCTAssertEqual(stream.gcount(), 0);
-        XCTAssertTrue(stream.eof());
+        auto result = playing::numbers_file::read(path::number_events{path::fragment{ch1_path, 5}}.string());
+        XCTAssertTrue(result);
+        auto const &event_pairs = result.value();
+        XCTAssertEqual(event_pairs.size(), 1);
+        auto const &event_pair = *event_pairs.begin();
+        XCTAssertEqual(event_pair.first, 10);
+        XCTAssertEqual(event_pair.second.get<int64_t>(), 11);
     }
 }
 
@@ -273,24 +263,13 @@ struct cpp {
     values[0] = values[1] = values[2] = 0;
 
     {
-        auto stream = std::ifstream{numbers_1_3_path_str, std::ios_base::in | std::ios_base::binary};
-        XCTAssertFalse(stream.fail());
-        proc::time::frame::type frame;
-        stream.read((char *)&frame, sizeof(proc::time::frame::type));
-        XCTAssertEqual(stream.gcount(), sizeof(proc::time::frame::type));
-        XCTAssertEqual(frame, 10);
-        sample_store_type store_type;
-        stream.read((char *)&store_type, sizeof(sample_store_type));
-        XCTAssertEqual(stream.gcount(), sizeof(sample_store_type));
-        XCTAssertEqual(store_type, sample_store_type::int64);
-        int64_t value;
-        stream.read((char *)&value, sizeof(int64_t));
-        XCTAssertEqual(stream.gcount(), sizeof(int64_t));
-        XCTAssertEqual(value, 11);
-        char dummy;
-        stream.read(&dummy, sizeof(char));
-        XCTAssertEqual(stream.gcount(), 0);
-        XCTAssertTrue(stream.eof());
+        auto result = playing::numbers_file::read(numbers_1_3_path_str);
+        XCTAssertTrue(result);
+        auto const &event_pairs = result.value();
+        XCTAssertEqual(event_pairs.size(), 1);
+        auto const &event_pair = *event_pairs.begin();
+        XCTAssertEqual(event_pair.first, 10);
+        XCTAssertEqual(event_pair.second.get<int64_t>(), 11);
     }
 }
 

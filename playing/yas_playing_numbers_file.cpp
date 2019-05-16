@@ -174,10 +174,5 @@ numbers_file::read_result_t numbers_file::read(std::string const &path) {
         }
     }
 
-    stream.close();
-    if (stream.fail()) {
-        return read_result_t{read_error::close_stream_failed};
-    }
-
     return read_result_t{std::move(result)};
 }

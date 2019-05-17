@@ -15,7 +15,8 @@ using namespace yas::playing;
 
 namespace yas::playing::timeline_exporter_test {
 struct cpp {
-    std::string root_path = system_path_utils::directory_url(system_path_utils::dir::document).appending("root").path();
+    std::string const root_path =
+        system_path_utils::directory_url(system_path_utils::dir::document).appending("root").path();
     task_queue queue{queue_priority_count};
 };
 }

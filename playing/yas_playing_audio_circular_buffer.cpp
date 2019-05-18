@@ -4,6 +4,7 @@
 
 #include "yas_playing_audio_circular_buffer.h"
 #include <cpp_utils/yas_fast_each.h>
+#include <cpp_utils/yas_thread.h>
 #include <mutex>
 #include "yas_playing_math.h"
 #include "yas_playing_path.h"
@@ -89,12 +90,29 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
     this->_queue.push_back(std::move(task));
 }
 
-void audio_circular_buffer::_send_event_on_main(event event) {
-    auto handler = []() {};
+void audio_circular_buffer::_set_state_on_main(audio_buffer_container::state const state,
+                                               fragment_index_t const frag_idx) {
+    if (!thread::is_main()) {
+        std::weak_ptr<audio_circular_buffer> weak = shared_from_this();
+        auto handler = [weak, state, frag_idx]() {
+            if (auto shared = weak.lock()) {
+                shared->_set_state_on_main(state, frag_idx);
+            }
+        };
+        dispatch_async(dispatch_get_main_queue(), ^{
+            handler();
+        });
+    }
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        handler();
-    });
+    if (state == audio_buffer_container::state::loaded) {
+        this->_states_holder.insert_or_replace(frag_idx, state);
+    } else {
+        this->_states_holder.erase_for_key(frag_idx);
+    }
+}
+
+audio_circular_buffer::state_map_holder_t::chain_t audio_circular_buffer::states_chain() const {
+    return this->_states_holder.chain();
 }
 
 #pragma mark -

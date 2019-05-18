@@ -85,7 +85,7 @@ struct cpp {
     auto const read_result = signal_file::read(file_info, buffer, 0);
 
     XCTAssertTrue(read_result);
-    
+
     XCTAssertEqual(buffer.data_ptr_at_index<double>(0)[0], 1.0);
     XCTAssertEqual(buffer.data_ptr_at_index<double>(0)[1], 2.0);
 }

@@ -46,7 +46,6 @@ void audio_circular_buffer::rotate_buffer(fragment_index_t const next_frag_idx) 
         this->_containers.push_back(container_ptr);
         this->_containers.pop_front();
         fragment_index_t const loading_frag_idx = next_frag_idx + this->_container_count - 1;
-        container_ptr->prepare_loading(loading_frag_idx);
         this->_load_container(container_ptr, loading_frag_idx);
     } else {
         this->reload_all(next_frag_idx);
@@ -59,7 +58,6 @@ void audio_circular_buffer::reload_all(fragment_index_t const top_frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
     for (auto &container_ptr : this->_containers) {
-        container_ptr->prepare_loading(load_frag_idx);
         this->_load_container(container_ptr, load_frag_idx);
         ++load_frag_idx;
     }
@@ -70,7 +68,6 @@ void audio_circular_buffer::reload(fragment_index_t const frag_idx) {
 
     for (auto &container_ptr : this->_containers) {
         if (auto const frag_idx_opt = container_ptr->fragment_idx(); *frag_idx_opt == frag_idx) {
-            container_ptr->prepare_loading(frag_idx);
             this->_load_container(container_ptr, frag_idx);
         }
     }
@@ -81,6 +78,8 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
 
     this->_set_state_on_main(audio_buffer_container::state::unloaded, frag_idx);
+
+    container_ptr->prepare_loading(frag_idx);
 
     std::weak_ptr<audio_circular_buffer> weak = this->shared_from_this();
 

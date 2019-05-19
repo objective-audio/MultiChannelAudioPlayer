@@ -79,9 +79,9 @@ void audio_circular_buffer::reload(fragment_index_t const frag_idx) {
 void audio_circular_buffer::_load_container(audio_buffer_container::ptr container_ptr,
                                             fragment_index_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
-    
+
     this->_set_state_on_main(audio_buffer_container::state::unloaded, frag_idx);
-    
+
     std::weak_ptr<audio_circular_buffer> weak = this->shared_from_this();
 
     task task{[weak, container_ptr, frag_idx, load_handler_ptr = this->_load_handler_ptr](yas::task const &) {

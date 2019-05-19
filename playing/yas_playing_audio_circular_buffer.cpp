@@ -81,7 +81,7 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 
     container_ptr->prepare_loading(frag_idx);
 
-    std::weak_ptr<audio_circular_buffer> weak = this->shared_from_this();
+    audio_circular_buffer::wptr weak = this->shared_from_this();
 
     task task{[weak, container_ptr, frag_idx, load_handler_ptr = this->_load_handler_ptr](yas::task const &) {
                   if (auto load_result = container_ptr->load(frag_idx, *load_handler_ptr)) {
@@ -98,7 +98,7 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 
 void audio_circular_buffer::_set_state_on_main(audio_buffer_container::state const state,
                                                fragment_index_t const frag_idx) {
-    std::weak_ptr<audio_circular_buffer> weak = this->shared_from_this();
+    audio_circular_buffer::wptr weak = this->shared_from_this();
     auto handler = [weak, state, frag_idx]() {
         if (auto shared = weak.lock()) {
             if (state == audio_buffer_container::state::loaded) {

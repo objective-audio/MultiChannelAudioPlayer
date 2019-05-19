@@ -11,7 +11,7 @@
 using namespace yas;
 using namespace yas::playing;
 
-namespace yas::playing::test_utils {
+namespace yas::playing::audio_buffer_container_test {
 static audio::format make_format(double sample_rate) {
     return audio::format{audio::format::args{
         .sample_rate = sample_rate, .channel_count = 1, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
@@ -42,8 +42,8 @@ static audio_buffer_container::ptr make_container(uint32_t const file_length) {
 
 - (void)test_initial {
     uint32_t const file_length = 3;
-    auto format = test_utils::make_format(file_length);
-    auto const container = playing::test_utils::make_container(format, file_length);
+    auto format = audio_buffer_container_test::make_format(file_length);
+    auto const container = playing::audio_buffer_container_test::make_container(format, file_length);
 
     XCTAssertTrue(container);
     XCTAssertFalse(container->fragment_idx());
@@ -57,7 +57,7 @@ static audio_buffer_container::ptr make_container(uint32_t const file_length) {
 }
 
 - (void)test_prepare_loading {
-    auto const container = test_utils::make_container(3);
+    auto const container = audio_buffer_container_test::make_container(3);
 
     XCTAssertFalse(container->fragment_idx());
 
@@ -79,8 +79,8 @@ static audio_buffer_container::ptr make_container(uint32_t const file_length) {
 
 - (void)test_load_and_read_into_buffer {
     uint32_t const file_length = 3;
-    auto format = test_utils::make_format(file_length);
-    auto container = test_utils::make_container(format, file_length);
+    auto format = audio_buffer_container_test::make_format(file_length);
+    auto container = audio_buffer_container_test::make_container(format, file_length);
 
     container->prepare_loading(0);
 
@@ -112,8 +112,8 @@ static audio_buffer_container::ptr make_container(uint32_t const file_length) {
 
 - (void)test_load_error {
     uint32_t const file_length = 3;
-    auto format = test_utils::make_format(file_length);
-    auto container = test_utils::make_container(format, file_length);
+    auto format = audio_buffer_container_test::make_format(file_length);
+    auto container = audio_buffer_container_test::make_container(format, file_length);
 
     container->prepare_loading(0);
 
@@ -124,7 +124,7 @@ static audio_buffer_container::ptr make_container(uint32_t const file_length) {
 
 - (void)test_contains {
     uint32_t const file_length = 3;
-    auto const container = test_utils::make_container(file_length);
+    auto const container = audio_buffer_container_test::make_container(file_length);
 
     container->prepare_loading(0);
     container->load(0, [](audio::pcm_buffer &buffer, int64_t const frag_idx) { return true; });

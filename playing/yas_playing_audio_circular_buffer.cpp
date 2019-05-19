@@ -93,7 +93,7 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 void audio_circular_buffer::_set_state_on_main(audio_buffer_container::state const state,
                                                fragment_index_t const frag_idx) {
     if (!thread::is_main()) {
-        std::weak_ptr<audio_circular_buffer> weak = shared_from_this();
+        std::weak_ptr<audio_circular_buffer> weak = this->shared_from_this();
         auto handler = [weak, state, frag_idx]() {
             if (auto shared = weak.lock()) {
                 shared->_set_state_on_main(state, frag_idx);

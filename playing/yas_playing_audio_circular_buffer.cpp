@@ -79,10 +79,17 @@ void audio_circular_buffer::reload(fragment_index_t const frag_idx) {
 void audio_circular_buffer::_load_container(audio_buffer_container::ptr container_ptr,
                                             fragment_index_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_container_mutex);
+    
+    this->_set_state_on_main(audio_buffer_container::state::unloaded, frag_idx);
+    
+    std::weak_ptr<audio_circular_buffer> weak = this->shared_from_this();
 
-    task task{[container_ptr, frag_idx, load_handler_ptr = this->_load_handler_ptr](yas::task const &) {
-                  auto load_result = container_ptr->load(frag_idx, *load_handler_ptr);
-#warning todo エラーハンドリングする？
+    task task{[weak, container_ptr, frag_idx, load_handler_ptr = this->_load_handler_ptr](yas::task const &) {
+                  if (auto load_result = container_ptr->load(frag_idx, *load_handler_ptr)) {
+                      if (auto shared = weak.lock()) {
+                          shared->_set_state_on_main(audio_buffer_container::state::unloaded, frag_idx);
+                      }
+                  }
               },
               task_option_t{.push_cancel_id = container_ptr->identifier,
                             .priority = static_cast<std::size_t>(queue_priority::playing)}};
@@ -92,23 +99,19 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
 
 void audio_circular_buffer::_set_state_on_main(audio_buffer_container::state const state,
                                                fragment_index_t const frag_idx) {
-    if (!thread::is_main()) {
-        std::weak_ptr<audio_circular_buffer> weak = this->shared_from_this();
-        auto handler = [weak, state, frag_idx]() {
-            if (auto shared = weak.lock()) {
-                shared->_set_state_on_main(state, frag_idx);
+    std::weak_ptr<audio_circular_buffer> weak = this->shared_from_this();
+    auto handler = [weak, state, frag_idx]() {
+        if (auto shared = weak.lock()) {
+            if (state == audio_buffer_container::state::loaded) {
+                shared->_states_holder.insert_or_replace(frag_idx, state);
+            } else {
+                shared->_states_holder.erase_for_key(frag_idx);
             }
-        };
-        dispatch_async(dispatch_get_main_queue(), ^{
-            handler();
-        });
-    }
-
-    if (state == audio_buffer_container::state::loaded) {
-        this->_states_holder.insert_or_replace(frag_idx, state);
-    } else {
-        this->_states_holder.erase_for_key(frag_idx);
-    }
+        }
+    };
+    dispatch_async(dispatch_get_main_queue(), ^{
+        handler();
+    });
 }
 
 audio_circular_buffer::state_map_holder_t::chain_t audio_circular_buffer::states_chain() const {

@@ -58,6 +58,8 @@ struct cpp {
             return true;
         });
 
+    auto observer = circular_buffer->states_chain().perform([](auto const &) {}).sync();
+
     circular_buffer->reload_all(-1);
     queue.wait_until_all_tasks_are_finished();
 #warning todo

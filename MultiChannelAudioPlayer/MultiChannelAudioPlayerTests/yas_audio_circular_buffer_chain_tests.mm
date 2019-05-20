@@ -58,7 +58,13 @@ struct cpp {
             return true;
         });
 
-    auto observer = circular_buffer->states_chain().perform([](auto const &) {}).sync();
+    std::vector<chaining::event> received;
+
+    auto observer =
+        circular_buffer->states_chain().perform([&received](auto const &event) { received.push_back(event); }).sync();
+
+    XCTAssertEqual(received.size(), 1);
+    XCTAssertEqual(received.at(0).type(), chaining::event_type::fetched);
 
     circular_buffer->reload_all(-1);
     queue.wait_until_all_tasks_are_finished();

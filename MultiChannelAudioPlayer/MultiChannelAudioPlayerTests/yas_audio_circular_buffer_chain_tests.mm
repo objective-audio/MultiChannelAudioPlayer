@@ -58,6 +58,10 @@ struct cpp {
             return true;
         });
 
+    playing::audio_circular_buffer::state_map_holder_t states;
+
+    //    auto observer = circular_buffer->states_chain().send_to(states.recei)
+
     std::vector<chaining::event> received;
 
     auto observer =
@@ -67,7 +71,16 @@ struct cpp {
     XCTAssertEqual(received.at(0).type(), chaining::event_type::fetched);
 
     circular_buffer->reload_all(-1);
+
     queue.wait_until_all_tasks_are_finished();
+
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.0]];
+
+    XCTAssertEqual(received.size(), 5);
+    XCTAssertEqual(received.at(1).type(), chaining::event_type::erased);
+    XCTAssertEqual(received.at(2).type(), chaining::event_type::erased);
+    XCTAssertEqual(received.at(3).type(), chaining::event_type::inserted);
+    XCTAssertEqual(received.at(4).type(), chaining::event_type::inserted);
 #warning todo
 }
 

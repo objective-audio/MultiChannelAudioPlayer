@@ -58,13 +58,17 @@ struct cpp {
             return true;
         });
 
+    chaining::observer_pool pool;
+
     playing::audio_circular_buffer::state_map_holder_t states;
 
-    //    auto observer = circular_buffer->states_chain().send_to(states.recei)
+    pool += circular_buffer->states_chain().send_to(states.receiver()).sync();
+
+    XCTAssertEqual(states.size(), 0);
 
     std::vector<chaining::event> received;
 
-    auto observer =
+    pool +=
         circular_buffer->states_chain().perform([&received](auto const &event) { received.push_back(event); }).sync();
 
     XCTAssertEqual(received.size(), 1);
@@ -78,10 +82,14 @@ struct cpp {
 
     XCTAssertEqual(received.size(), 5);
     XCTAssertEqual(received.at(1).type(), chaining::event_type::erased);
-    XCTAssertEqual(received.at(2).type(), chaining::event_type::erased);
-    XCTAssertEqual(received.at(3).type(), chaining::event_type::inserted);
+    // 間の2つの順番は不定
+    //    XCTAssertEqual(received.at(2).type(), chaining::event_type::erased);
+    //    XCTAssertEqual(received.at(3).type(), chaining::event_type::inserted);
     XCTAssertEqual(received.at(4).type(), chaining::event_type::inserted);
-#warning todo
+
+    XCTAssertEqual(states.size(), 2);
+    XCTAssertTrue(states.has_value(-1));
+    XCTAssertTrue(states.has_value(0));
 }
 
 @end

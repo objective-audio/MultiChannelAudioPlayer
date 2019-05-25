@@ -122,10 +122,12 @@ void audio_circular_buffer::_set_state_on_main(audio_buffer_container::state con
 }
 
 audio_circular_buffer::state_map_t const &audio_circular_buffer::states() const {
+    assert(thread::is_main());
     return this->_states_holder.raw();
 }
 
 audio_circular_buffer::state_map_holder_t::chain_t audio_circular_buffer::states_chain() const {
+    assert(thread::is_main());
     return this->_states_holder.chain();
 }
 

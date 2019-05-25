@@ -27,14 +27,9 @@ audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::s
 }
 
 void audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer, frame_index_t const play_frame) {
-    auto lock = std::unique_lock<std::recursive_mutex>(this->_containers_mutex, std::try_to_lock);
-    if (!lock.owns_lock()) {
-        return;
+    if (auto const &container_ptr = this->_front_container()) {
+        container_ptr->read_into_buffer(out_buffer, play_frame);
     }
-
-    auto &container_ptr = this->_containers.front();
-
-    container_ptr->read_into_buffer(out_buffer, play_frame);
 }
 
 void audio_circular_buffer::rotate_buffer(fragment_index_t const next_frag_idx) {
@@ -91,6 +86,16 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
                             .priority = static_cast<std::size_t>(queue_priority::playing)}};
 
     this->_queue.push_back(std::move(task));
+}
+
+audio_buffer_container::ptr const &audio_circular_buffer::_front_container() {
+    auto lock = std::unique_lock<std::recursive_mutex>(this->_containers_mutex, std::try_to_lock);
+    if (lock.owns_lock()) {
+        return this->_containers.front();
+    } else {
+        static audio_buffer_container::ptr const _empty{nullptr};
+        return _empty;
+    }
 }
 
 void audio_circular_buffer::_rotate_containers() {

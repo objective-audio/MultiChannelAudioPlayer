@@ -42,6 +42,7 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
 
     void _load_container(audio_buffer_container::ptr container_ptr, fragment_index_t const frag_idx);
     void _rotate_containers();
+    audio_buffer_container::ptr const &_front_container();
     void _set_state_on_main(audio_buffer_container::state const, fragment_index_t const);
 };
 

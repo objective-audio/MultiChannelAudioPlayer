@@ -116,6 +116,15 @@ audio_buffer_container::ptr playing::make_audio_buffer_container(audio::pcm_buff
 
 #pragma mark -
 
+std::string yas::to_string(playing::audio_buffer_container::state const &state) {
+    switch (state) {
+        case audio_buffer_container::state::loaded:
+            return "loaded";
+        case audio_buffer_container::state::unloaded:
+            return "unloaded";
+    }
+}
+
 std::string yas::to_string(audio_buffer_container::load_error const &error) {
     switch (error) {
         case audio_buffer_container::load_error::fragment_idx_is_null:
@@ -142,4 +151,19 @@ std::string yas::to_string(audio_buffer_container::read_error const &error) {
         case audio_buffer_container::read_error::copy_failed:
             return "copy_failed";
     }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::playing::audio_buffer_container::state const &value) {
+    os << to_string(value);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::playing::audio_buffer_container::load_error const &value) {
+    os << to_string(value);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::playing::audio_buffer_container::read_error const &value) {
+    os << to_string(value);
+    return os;
 }

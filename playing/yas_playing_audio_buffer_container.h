@@ -74,6 +74,11 @@ audio_buffer_container::ptr make_audio_buffer_container(audio::pcm_buffer &&buff
 }  // namespace yas::playing
 
 namespace yas {
+std::string to_string(playing::audio_buffer_container::state const &state);
 std::string to_string(playing::audio_buffer_container::load_error const &error);
 std::string to_string(playing::audio_buffer_container::read_error const &error);
 }  // namespace yas
+
+std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer_container::state const &);
+std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer_container::load_error const &);
+std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer_container::read_error const &);

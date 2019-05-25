@@ -152,4 +152,22 @@ struct cpp {
     XCTAssertEqual(data_ptr[2], 5);
 }
 
+- (void)test_states {
+    auto &cpp = self->_cpp;
+    task_queue &queue = cpp.queue;
+
+    auto circular_buffer = make_audio_circular_buffer(
+        cpp.format, 2, queue, [](audio::pcm_buffer &buffer, int64_t const frag_idx) { return true; });
+
+    XCTAssertEqual(circular_buffer->states().size(), 0);
+
+    circular_buffer->reload_all(-1);
+    queue.wait_until_all_tasks_are_finished();
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.0]];
+
+    XCTAssertEqual(circular_buffer->states().size(), 2);
+    XCTAssertEqual(circular_buffer->states().count(-1), 1);
+    XCTAssertEqual(circular_buffer->states().count(0), 1);
+}
+
 @end
